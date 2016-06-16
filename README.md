@@ -9,3 +9,12 @@ b) the Euler equations.
 There are a lot of assumptions that go into making this code as simple
 as possible, including the assumption that the grid is
 one-dimensional, structured, and the elements are of constant size.
+
+
+# Licensing
+
+See LICENSE.md
+
+# Author contact
+
+Marc T. Henry de Frahan (marchdf@umich.edu)
