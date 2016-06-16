@@ -17,12 +17,24 @@ __status__ = "Development"
 # Imports
 #
 #================================================================================
+import argparse
 import sys, os
 import scipy as sp
 import numpy as np
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import matplotlib.axis as axis
+
+import helpers
+
+#================================================================================
+#
+# Parse arguments
+#
+#================================================================================
+parser = argparse.ArgumentParser(description='A simple one-dimensional Discontinuous Galerkin solver.')
+args = parser.parse_args()
+
 
 #================================================================================
 #
@@ -36,3 +48,26 @@ cmap =['#EE2E2F','#008C48','#185AA9','#F47D23','#662C91','#A21D21','#B43894','#0
 dashseq = [(None,None),[10,5],[10, 4, 3, 4],[3, 3],[10, 4, 3, 4, 3, 4],[3, 3],[3, 3]];
 markertype = ['s','d','o','p','h']
                                         
+#================================================================================
+#
+# Basic information/setup
+#
+#================================================================================
+
+# Setup the basic data directory for all the data output
+codedir = os.getcwd()
+datadir = cwd+'/'+'data'
+helpers.makedir(datadir)
+
+# Change directory to the data directory
+os.chdir(datadir)
+
+
+
+
+
+
+
+
+
+
