@@ -26,6 +26,9 @@ import matplotlib.pyplot as plt
 import matplotlib.axis as axis
 
 import helpers
+import deck
+import basis
+import rk
 
 #================================================================================
 #
@@ -33,6 +36,7 @@ import helpers
 #
 #================================================================================
 parser = argparse.ArgumentParser(description='A simple one-dimensional Discontinuous Galerkin solver.')
+parser.add_argument('-d','--deck', help='Name of input deck file', default="deck.inp")
 args = parser.parse_args()
 
 
@@ -50,24 +54,31 @@ markertype = ['s','d','o','p','h']
                                         
 #================================================================================
 #
-# Basic information/setup
+# Problem setup
 #
 #================================================================================
 
-# Setup the basic data directory for all the data output
-codedir = os.getcwd()
-datadir = cwd+'/'+'data'
-helpers.makedir(datadir)
-
-# Change directory to the data directory
-os.chdir(datadir)
+# parse the deck
+deck = deck.Deck()
+deck.parser(args.deck)
 
 
+# Initialize variables
+
+# Generate basis functions and Gaussian quadrature
+basis = basis.Basis(deck.order)
 
 
-
-
-
+# Apply the initial conditions
 
 
 
+#================================================================================
+#
+# Solve the problem
+#
+#================================================================================
+
+u = np.zeros((1,1))+1
+print(u)
+rk.integrate(u,deck)
