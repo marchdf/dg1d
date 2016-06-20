@@ -15,9 +15,7 @@ import numpy as np
 
 #================================================================================
 def integrate(u,deck):
-    """Integrate in time using RK4
-    
-    """
+    """Integrate in time using RK4"""
 
     # initialize storage variables
     us    = np.zeros(u.shape)
@@ -49,7 +47,6 @@ def integrate(u,deck):
     # TODO printer.print(u)
     count += 1
     tout = tout_array[count]
-
     
     # Main RK4 loop
     while (not done):
@@ -109,6 +106,7 @@ def get_next_time_step(u,cfl,dt,n,t,tf,tout):
 #================================================================================
 def cfl_time_step(u,cfl):
     """Given the solution and the CFL condition, determine the next time step size
+
     """
 
     # TODO
@@ -119,7 +117,9 @@ def cfl_time_step(u,cfl):
 #================================================================================
 def sanity_check_dt(dt,n,t):
     """Make sure the next time step is not absurd
+
     """
+
     if dt < 1e-14:
         print("Next time step is too small ({0:e}<1e-14). Exiting at step {1:7d} and time {2:e}.\n".format(dt,n,t))
         sys.exit()

@@ -66,6 +66,7 @@ deck.parser(args.deck)
 # Initialize variables
 
 # Generate basis functions and Gaussian quadrature
+print("order=",deck.order)
 basis = basis.Basis(deck.order)
 
 
@@ -79,6 +80,6 @@ basis = basis.Basis(deck.order)
 #
 #================================================================================
 
-u = np.zeros((1,1))+1
+u = np.zeros(10)
 print(u)
 rk.integrate(u,deck)
