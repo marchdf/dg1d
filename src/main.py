@@ -66,9 +66,7 @@ deck.parser(args.deck)
 # Initialize variables
 
 # Generate basis functions and Gaussian quadrature
-print("order=",deck.order)
 basis = basis.Basis(deck.order)
-
 
 # Apply the initial conditions
 
