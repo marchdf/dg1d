@@ -22,9 +22,9 @@ class Deck:
         with open(fname) as f:
             for line in f:
                 if "#PDE system" in line:
-                    self.system = next(f)
+                    self.system = next(f).rstrip()
                 elif "#initial condition" in line:
-                    self.ic = next(f)
+                    self.ic = next(f).rstrip()
                 elif "#number of outputs" in line:
                     self.nout = int(next(f))
                 elif "#final time" in line:
@@ -34,6 +34,6 @@ class Deck:
                 elif "#order" in line:
                     self.order = int(next(f))
                 elif "#limiting" in line:
-                    self.limiting = next(f)
+                    self.limiting = next(f).rstrip()
 
                 

@@ -28,6 +28,7 @@ import matplotlib.axis as axis
 import helpers
 import deck
 import basis
+import solution
 import rk
 
 #================================================================================
@@ -62,15 +63,14 @@ markertype = ['s','d','o','p','h']
 deck = deck.Deck()
 deck.parser(args.deck)
 
+# Generate the solution and apply the initial condition
+sol = solution.Solution(deck.ic,deck.system,deck.order)
+sol.apply_ic()
+sol.printer(10)
 
-# Initialize variables
+#sol.loader('u0000000000.dat')
 
-# Generate basis functions and Gaussian quadrature
-basis = basis.Basis(deck.order)
-
-# Apply the initial conditions
-
-
+print(sol.u)
 
 #================================================================================
 #
@@ -79,5 +79,4 @@ basis = basis.Basis(deck.order)
 #================================================================================
 
 u = np.zeros(10)
-print(u)
 rk.integrate(u,deck)
