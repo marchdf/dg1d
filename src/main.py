@@ -66,17 +66,12 @@ deck.parser(args.deck)
 # Generate the solution and apply the initial condition
 sol = solution.Solution(deck.ic,deck.system,deck.order)
 sol.apply_ic()
-sol.printer(10)
 
-#sol.loader('u0000000000.dat')
-
-print(sol.u)
 
 #================================================================================
 #
 # Solve the problem
 #
 #================================================================================
-
-u = np.zeros(10)
-rk.integrate(u,deck)
+print("Integrating the solution in time.")
+rk.integrate(sol,deck)

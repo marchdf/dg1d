@@ -18,7 +18,7 @@ class Deck:
         """Parse the deck file
 
         """
-        print("Parsing the deck file")
+        print("Parsing the deck file.")
         with open(fname) as f:
             for line in f:
                 if "#PDE system" in line:

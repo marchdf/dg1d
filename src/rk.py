@@ -5,7 +5,7 @@
 #================================================================================
 import sys
 import numpy as np
-
+import solution
 
 #================================================================================
 #
@@ -14,26 +14,17 @@ import numpy as np
 #================================================================================
 
 #================================================================================
-def integrate(u,deck):
+def integrate(solution,deck):
     """Integrate in time using RK4"""
 
-    # initialize storage variables
-    us    = np.zeros(u.shape)
-    ustar = np.zeros(u.shape)
-    fstar = np.zeros(u.shape)
-    du    = np.zeros(u.shape)
+    # Initialize storage variables
+    us    = solution.copy()
+    ustar = solution.copy()
+    du    = solution.copy()
+    fstar = np.zeros(solution.u.shape)
     
-    # Counters
-    count = 0 # count output steps
-    n     = 0 # count time steps
-    
-    # time variables
-    t    = 0
-    tf   = deck.finaltime
-    nout = deck.nout
-    tout_array = np.linspace(t,tf,nout)
-    dt   = 0
-    cfl  = deck.cfl
+    # Output time array (ignore the start time)
+    tout_array = iter(np.linspace(solution.t,deck.finaltime,deck.nout)[1:]) 
 
     # Flags
     done = False
@@ -43,68 +34,66 @@ def integrate(u,deck):
     gamma= [1.0/6.0, 2.0/6.0, 2.0/6.0, 1.0/6.0];
 
     # Write the initial condition to file
-    print("Initial condition written to output file.")
-    # TODO printer.print(u)
-    count += 1
-    tout = tout_array[count]
+    solution.printer(0.0)
+    tout = next(tout_array)
     
     # Main RK4 loop
     while (not done):
             
         # Get the next time step
-        dt,output,done =get_next_time_step(u,cfl,dt,n,t,tf,tout)
+        dt,output,done = get_next_time_step(solution,tout,deck.cfl,deck.finaltime)
         
         # Store the solution at the previous step: us = u
-        np.copyto(us,u)
+        us = solution.copy()
 
         # RK inner loop
         for k in range(0,len(beta)):
 
             # Calculate the star quantities
-            ustar = us + beta[k]*du
-            tstar = t  + beta[k]*dt
+            ustar = us.copy();
+            ustar.axpy(beta[k], du)
+            ustar.t += beta[k]*dt
             
             # Limit solution if necessary
             
             # Calculate the residual
-            # TODO fstar = -u
+            fstar = -ustar.u
+            #fstar = dg.residual(solution)
             
             # Calculate the solution increment
-            du = dt*fstar
+            du.u = dt*fstar
 
             # Update the solution
-            u = u + gamma[k]*du
+            solution.axpy(gamma[k],du)
 
         # Update the current time
-        t = t+dt
-        n += 1
+        solution.t += dt
+        solution.n += 1
 
         # Output the solution if necessary
         if output:
-            print("Solution written to file at step {0:7d} and time {1:e} (current time step:{2:e}).\n".format(n,t,dt));
-            # TODO printer.print(u)
+            solution.printer(dt)
             if not done:
-                count += 1
-                tout = tout_array[count]
+                tout = next(tout_array)
 
             
 
 #================================================================================
-def get_next_time_step(u,cfl,dt,n,t,tf,tout):
+def get_next_time_step(solution,tout,cfl,tf):
     """Returns the next time step and output/done flags"""
 
     # Time step from CFL
-    dt = cfl_time_step(u,cfl)
+    dt = cfl_time_step(solution,cfl)
 
     # Sanity check for this timestep
-    sanity_check_dt(dt,n,t)
+    sanity_check_dt(dt,solution.n,solution.t)
 
     # Return the time step and output/done flags
-    return adjust_for_output(dt,t,tf,tout)
+    return adjust_for_output(dt,solution.t,tf,tout)
 
     
 #================================================================================
-def cfl_time_step(u,cfl):
+def cfl_time_step(solution,cfl):
     """Given the solution and the CFL condition, determine the next time step size
 
     """

@@ -7,6 +7,7 @@ import sys
 import re
 import numpy as np
 import basis
+import copy
 
 #================================================================================
 #
@@ -52,9 +53,9 @@ class Solution:
     def printer(self,dt):
         """Outputs the solution to a file"""
 
-        print("Solution written to file at step {0:7d} and time {1:e} (current time step:{2:e}).\n".format(self.n,self.t,dt));
+        print("Solution written to file at step {0:7d} and time {1:e} (current time step:{2:e}).".format(self.n,self.t,dt));
         
-        # Call the printing function
+        # Call the printing function for the specific problem type
         self.printers[self.type]()
 
 
@@ -180,3 +181,14 @@ class Solution:
             # solution coefficients
             self.u[:,e] = self.basis.projection(a,b,f)
             
+
+    #================================================================================
+    def axpy(self, a, x):
+        """Solution addition defined as y <- a*x + y"""
+        self.u = a*x.u + self.u
+
+    #================================================================================
+    def copy(self):
+        """Returns a deep copy of a solution"""
+        return copy.deepcopy(self)
+
