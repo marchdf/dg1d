@@ -5,7 +5,6 @@
 #================================================================================
 import sys
 import numpy as np
-import solution
 
 #================================================================================
 #
@@ -14,7 +13,7 @@ import solution
 #================================================================================
 
 #================================================================================
-def integrate(solution,deck):
+def integrate(solution,deck,dgsolver):
     """Integrate in time using RK4"""
 
     # Initialize storage variables
@@ -57,8 +56,7 @@ def integrate(solution,deck):
             # Limit solution if necessary
             
             # Calculate the residual
-            fstar = -ustar.u
-            #fstar = dg.residual(solution)
+            fstar = dgsolver.residual(ustar)
             
             # Calculate the solution increment
             du.u = dt*fstar

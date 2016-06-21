@@ -27,9 +27,9 @@ import matplotlib.axis as axis
 
 import helpers
 import deck
-import basis
 import solution
 import rk
+import dg
 
 #================================================================================
 #
@@ -59,7 +59,7 @@ markertype = ['s','d','o','p','h']
 #
 #================================================================================
 
-# parse the deck
+# Parse the deck
 deck = deck.Deck()
 deck.parser(args.deck)
 
@@ -67,6 +67,8 @@ deck.parser(args.deck)
 sol = solution.Solution(deck.ic,deck.system,deck.order)
 sol.apply_ic()
 
+# Initialize the DG solver
+dgsolver = dg.DG(sol)
 
 #================================================================================
 #
@@ -74,4 +76,4 @@ sol.apply_ic()
 #
 #================================================================================
 print("Integrating the solution in time.")
-rk.integrate(sol,deck)
+rk.integrate(sol,deck,dgsolver)

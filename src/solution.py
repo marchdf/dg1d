@@ -180,7 +180,6 @@ class Solution:
 
             # solution coefficients
             self.u[:,e] = self.basis.projection(a,b,f)
-            
 
     #================================================================================
     def axpy(self, a, x):

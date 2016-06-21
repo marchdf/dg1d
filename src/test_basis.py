@@ -7,8 +7,6 @@ import unittest
 import basis
 import numpy as np
 import numpy.testing as npt
-import scipy.integrate as integrate
-
 
 #================================================================================
 #
