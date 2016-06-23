@@ -261,14 +261,14 @@ class Solution:
             print("{0:s} is an invalid boundary condition. Exiting.".format(self.bc_r))
     
     #================================================================================
-    def axpy(self, a, x):
-        """Solution addition defined as y <- a*x + y"""
-        self.u += a*x.u
-
-    #================================================================================
     def copy(self):
         """Returns a deep copy of a solution"""
         return copy.deepcopy(self)
+
+    #================================================================================
+    def copy_data_only(self,other):
+        """Copy data u from other solution into the self"""
+        self.u = np.copy(other.u)
 
     #================================================================================
     def riemann(self,ul,ur):

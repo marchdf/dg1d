@@ -30,8 +30,8 @@ def integrate(solution,deck,dgsolver):
     done = False
 
     # RK4 coefficients
-    beta = [0.0, 0.5, 0.5, 1.0]
-    gamma= [1.0/6.0, 2.0/6.0, 2.0/6.0, 1.0/6.0];
+    betas  = [0.0, 0.5, 0.5, 1.0]
+    gammas = [1.0/6.0, 2.0/6.0, 2.0/6.0, 1.0/6.0];
 
     # Write the initial condition to file
     solution.printer(0,0.0)
@@ -45,15 +45,15 @@ def integrate(solution,deck,dgsolver):
         dt,output,done = get_next_time_step(solution,tout,deck.cfl,deck.finaltime)
         
         # Store the solution at the previous step: us = u
-        us = solution.copy()
+        us.copy_data_only(solution)
 
         # RK inner loop
-        for k in range(0,len(beta)):
+        for beta,gamma in zip(betas,gammas):
 
             # Calculate the star quantities
-            ustar = us.copy();
-            ustar.axpy(beta[k], du)
-            ustar.t += beta[k]*dt
+            ustar.copy_data_only(us)
+            ustar.u += beta*du.u
+            ustar.t += beta*dt
             
             # Limit solution if necessary
             
@@ -64,7 +64,7 @@ def integrate(solution,deck,dgsolver):
             du.u = dt*fstar
 
             # Update the solution
-            solution.axpy(gamma[k],du)
+            solution.u += gamma*du.u
 
         # Update the current time
         solution.t += dt
@@ -77,8 +77,6 @@ def integrate(solution,deck,dgsolver):
                 nout += 1
                 tout = next(tout_array)
                 
-
-            
 
 #================================================================================
 def get_next_time_step(solution,tout,cfl,tf):
