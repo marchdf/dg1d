@@ -46,6 +46,8 @@ class Solution:
             'printer' : self.print_advection,
             'loader'  : self.load_advection,
             'riemann' : self.riemann_advection,
+            'interior_flux' : self.interior_flux_advection,
+            'max_wave_speed': self.max_wave_speed_advection,
             'sinewave': self.sinewave,
             'ictest'  : self.ictest,
         }
@@ -273,8 +275,39 @@ class Solution:
         """Returns the flux at an interface by calling the right Riemann solver"""
         return self.keywords['riemann'](ul,ur)
 
-
     #================================================================================
     def riemann_advection(self,ul,ur):
-        """Returns the flux for the advection equation (simple upwinding)"""
+        """Returns the interface flux for the advection equation (simple upwinding)"""
         return ul
+    
+    #================================================================================
+    def interior_flux(self,ug):
+        """Returns the interio flux given the solution at the Gaussian nodes"""
+        return self.keywords['interior_flux'](ug)
+
+    #================================================================================
+    def interior_flux_advection(self,ug):
+        """Returns the interior flux for the advection equation"""
+        return ug
+
+    #================================================================================
+    def max_wave_speed(self):
+        """Returns the maximum wave speed in the domain (based on the cell averages)"""
+        return self.keywords['max_wave_speed']()
+
+    #================================================================================
+    def max_wave_speed_advection(self):
+        """Returns the maximum wave speed for advection"""
+        return 1
+
+    #================================================================================
+    def collocate(self):
+        """Collocate the solution to the Gaussian quadrature nodes"""
+        return np.dot(self.basis.phi, self.u)
+
+
+    #================================================================================
+    def collocate_faces(self):
+        """Collocate the solution to the cell edges/faces"""
+        return np.dot(self.basis.psi, self.u)
+

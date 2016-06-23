@@ -100,9 +100,11 @@ def cfl_time_step(solution,cfl):
 
     """
 
-    # TODO
-    
-    return 0.001
+    # Get the maximum wave speed in the domain
+    v = solution.max_wave_speed()
+
+    # Return the time step
+    return solution.dx*cfl/( v * (2*solution.basis.p+1) )
     
     
 #================================================================================
