@@ -65,7 +65,9 @@ deck.parser(args.deck)
 
 # Generate the solution and apply the initial condition
 sol = solution.Solution(deck.ic,deck.system,deck.order)
+#sol = solution.Solution('ictest 2', 'advection', 3)
 sol.apply_ic()
+sol.apply_bc()
 
 # Initialize the DG solver
 dgsolver = dg.DG(sol)

@@ -23,6 +23,7 @@ def integrate(solution,deck,dgsolver):
     fstar = np.zeros(solution.u.shape)
     
     # Output time array (ignore the start time)
+    nout = 0
     tout_array = iter(np.linspace(solution.t,deck.finaltime,deck.nout)[1:]) 
 
     # Flags
@@ -33,7 +34,8 @@ def integrate(solution,deck,dgsolver):
     gamma= [1.0/6.0, 2.0/6.0, 2.0/6.0, 1.0/6.0];
 
     # Write the initial condition to file
-    solution.printer(0.0)
+    solution.printer(0,0.0)
+    nout += 1
     tout = next(tout_array)
     
     # Main RK4 loop
@@ -70,9 +72,11 @@ def integrate(solution,deck,dgsolver):
 
         # Output the solution if necessary
         if output:
-            solution.printer(dt)
+            solution.printer(nout,dt)
             if not done:
+                nout += 1
                 tout = next(tout_array)
+                
 
             
 
@@ -98,7 +102,7 @@ def cfl_time_step(solution,cfl):
 
     # TODO
     
-    return 0.1
+    return 0.001
     
     
 #================================================================================

@@ -68,7 +68,7 @@ class Basis:
             phi[:,n] = leg.legval(self.x,l.coef)
 
             # Evaluate the gradient at the Gaussian nodes and multiply by the weights
-            dphi_w[:,n] = leg.legval(self.x,dl.coef)*self.w
+            dphi_w[n,:] = leg.legval(self.x,dl.coef)*self.w
 
         return phi, dphi_w
 
@@ -80,8 +80,8 @@ class Basis:
         psi will be used to evaluate a solution at the cell edges.
         
         """
-        n    = np.arange(0,self.N_s)
-        psi  = [(-1)**n, np.ones(self.N_s)]
+        psi = np.ones((2,self.N_s))
+        psi[0,1::2] = -1
         return psi
         
     
