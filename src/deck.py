@@ -48,3 +48,18 @@ class Deck:
                     self.limiting = next(f).rstrip()
 
                 
+#================================================================================
+def write_deck(WORKDIR,defs):
+    """Writes a deck file to WORKDIR given some problem definitions
+    
+    Returns the filename of the deck
+    """
+    
+    deckname = WORKDIR+'/deck.inp'
+    
+    with open(deckname, "w") as f:
+        for l in defs:
+            f.write('#'+l[0]+'\n'+l[1]+'\n')
+            
+    return deckname 
+

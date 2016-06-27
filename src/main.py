@@ -36,13 +36,11 @@ parser = argparse.ArgumentParser(description='A simple one-dimensional Discontin
 parser.add_argument('-d','--deck', help='Name of input deck file', default="deck.inp")
 args = parser.parse_args()
 
-
 #================================================================================
 #
 # Some defaults variables
 #
 #================================================================================
-
 
 #================================================================================
 #
