@@ -13,14 +13,93 @@ import numpy as np
 #================================================================================
 
 #================================================================================
-def integrate(solution,deck,dgsolver):
-    """Integrate in time using RK4"""
+def integrate(solution,deck,dgsolver,rktype='low_storage_rk4'):
+    """Integrate in time using an RK scheme"""
+
+    if rktype == 'low_storage_rk4':
+        low_storage_rk4(solution,deck,dgsolver)
+
+    elif rktype == 'rk4':
+        rk4(solution,deck,dgsolver)
+        
+#================================================================================
+def rk4(solution,deck,dgsolver):
+    """Integrate in time using the classic RK4 scheme"""
+
+
+    # Initialize storage variables
+    K  = [np.zeros(solution.u.shape) for _ in range(4)] #[solution.copy() for _ in range(4)]
+    uk = solution.copy()
+    
+    # Output time array (ignore the start time)
+    nout = 0
+    tout_array = iter(np.linspace(solution.t,deck.finaltime,deck.nout)[1:]) 
+
+    # Flags
+    done = False
+    
+    # Coefficients
+    coeffs = [1./6., 1./3., 1./3., 1./6.]
+    alphas = [0.0,0.5,0.5,1.0]
+
+    betas = np.zeros((4,4-1))
+    betas[1,0] = 0.5
+    betas[2,1] = 0.5
+    betas[3,2] = 1.
+
+    # Write the initial condition to file
+    solution.printer(0,0.0)
+    nout += 1
+    tout = next(tout_array)
+
+
+    # main RK loop
+    while (not done):
+
+        # Get the next time step
+        dt,output,done = get_next_time_step(solution,tout,deck.cfl,deck.finaltime)
+
+        # RK inner loop
+        for k,(c,alpha) in enumerate(zip(coeffs,alphas)):
+
+            # Get the solution at this sub-time step:
+            # x_k = x_0 + \Delta t \sum_{k=0}^{n-1} \beta_{k,j} f(t_j,x_j)
+            # t_k = t_0 + \alpha_k \Delta t
+            uk.copy_data_only(solution)
+            uk.t += alpha * dt
+            for j,beta in enumerate(betas[k,:]):
+                uk.u += beta * K[j]
+            
+            # Evaluate and store the solution increment: dt * f(t_k, x_k)
+            K[k] = dt*dgsolver.residual(uk)
+
+        # Weighted sum of the residuals
+        #solution.u += K[k]
+        solution.u += coeffs[0]*K[0] + coeffs[1]*K[1] + coeffs[2]*K[2] + coeffs[3]*K[3]
+
+        # Update the current time
+        solution.t += dt
+        solution.n += 1
+
+        # Output the solution if necessary
+        if output:
+            solution.printer(nout,dt)
+            if not done:
+                nout += 1
+                tout = next(tout_array)
+
+
+    
+
+    
+#================================================================================
+def low_storage_rk4(solution,deck,dgsolver):
+    """Integrate in time using the classic RK4 scheme with low storage algorithm"""
 
     # Initialize storage variables
     us    = solution.copy()
     ustar = solution.copy()
-    du    = solution.copy()
-    fstar = np.zeros(solution.u.shape)
+    du = np.zeros(solution.u.shape)
     
     # Output time array (ignore the start time)
     nout = 0
@@ -31,7 +110,7 @@ def integrate(solution,deck,dgsolver):
 
     # RK4 coefficients
     betas  = [0.0, 0.5, 0.5, 1.0]
-    gammas = [1.0/6.0, 2.0/6.0, 2.0/6.0, 1.0/6.0];
+    gammas = [1./6., 1./3., 1./3., 1./6.];
 
     # Write the initial condition to file
     solution.printer(0,0.0)
@@ -52,19 +131,16 @@ def integrate(solution,deck,dgsolver):
 
             # Calculate the star quantities
             ustar.copy_data_only(us)
-            ustar.u += beta*du.u
+            ustar.u += beta*du
             ustar.t += beta*dt
             
             # Limit solution if necessary
             
-            # Calculate the residual
-            fstar = dgsolver.residual(ustar)
+            # Calculate the solution increment (=dt*residual)
+            du = dt * dgsolver.residual(ustar)
             
-            # Calculate the solution increment
-            du.u = dt*fstar
-
             # Update the solution
-            solution.u += gamma*du.u
+            solution.u += gamma*du
 
         # Update the current time
         solution.t += dt
