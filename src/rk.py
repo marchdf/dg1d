@@ -26,10 +26,16 @@ def integrate(solution,deck,dgsolver,rktype='low_storage_rk4'):
 def rk4(solution,deck,dgsolver):
     """Integrate in time using the classic RK4 scheme"""
 
+    # Coefficients
+    coeffs = [1./6., 1./3., 1./3., 1./6.]
+    alphas = [0.0,0.5,0.5,1.0]
 
-    # Initialize storage variables
-    K  = [np.zeros(solution.u.shape) for _ in range(4)] #[solution.copy() for _ in range(4)]
-    uk = solution.copy()
+    stages = len(coeffs)
+
+    betas = np.zeros((stages,stages-1))
+    betas[1,0] = 0.5
+    betas[2,1] = 0.5
+    betas[3,2] = 1.
     
     # Output time array (ignore the start time)
     nout = 0
@@ -38,20 +44,15 @@ def rk4(solution,deck,dgsolver):
     # Flags
     done = False
     
-    # Coefficients
-    coeffs = [1./6., 1./3., 1./3., 1./6.]
-    alphas = [0.0,0.5,0.5,1.0]
-
-    betas = np.zeros((4,4-1))
-    betas[1,0] = 0.5
-    betas[2,1] = 0.5
-    betas[3,2] = 1.
-
+    # Initialize storage variables
+    K  = [np.zeros(solution.u.shape) for _ in range(stages)]
+    us = solution.copy()
+    uk = solution.copy()
+   
     # Write the initial condition to file
     solution.printer(0,0.0)
     nout += 1
     tout = next(tout_array)
-
 
     # main RK loop
     while (not done):
@@ -59,23 +60,25 @@ def rk4(solution,deck,dgsolver):
         # Get the next time step
         dt,output,done = get_next_time_step(solution,tout,deck.cfl,deck.finaltime)
 
+        # Store the solution at the previous step: us = u
+        us.copy_data_only(solution)
+        
         # RK inner loop
         for k,(c,alpha) in enumerate(zip(coeffs,alphas)):
 
             # Get the solution at this sub-time step:
-            # x_k = x_0 + \Delta t \sum_{k=0}^{n-1} \beta_{k,j} f(t_j,x_j)
+            # u_k = u_0 + \Delta t \sum_{k=0}^{n-1} \beta_{k,j} f(t_j,u_j)
             # t_k = t_0 + \alpha_k \Delta t
-            uk.copy_data_only(solution)
+            uk.copy_data_only(us)
+            for j,beta in enumerate(betas[k,:k]):
+                uk.smart_axpy(beta,K[j])
             uk.t += alpha * dt
-            for j,beta in enumerate(betas[k,:]):
-                uk.u += beta * K[j]
             
-            # Evaluate and store the solution increment: dt * f(t_k, x_k)
+            # Evaluate and store the solution increment: dt * f(t_k, u_k)
             K[k] = dt*dgsolver.residual(uk)
 
-        # Weighted sum of the residuals
-        #solution.u += K[k]
-        solution.u += coeffs[0]*K[0] + coeffs[1]*K[1] + coeffs[2]*K[2] + coeffs[3]*K[3]
+            # Weighted sum of the residuals
+            solution.smart_axpy(c,K[k])
 
         # Update the current time
         solution.t += dt
@@ -88,9 +91,7 @@ def rk4(solution,deck,dgsolver):
                 nout += 1
                 tout = next(tout_array)
 
-
-    
-
+        
     
 #================================================================================
 def low_storage_rk4(solution,deck,dgsolver):
@@ -131,7 +132,7 @@ def low_storage_rk4(solution,deck,dgsolver):
 
             # Calculate the star quantities
             ustar.copy_data_only(us)
-            ustar.u += beta*du
+            ustar.smart_axpy(beta,du)
             ustar.t += beta*dt
             
             # Limit solution if necessary
@@ -140,7 +141,7 @@ def low_storage_rk4(solution,deck,dgsolver):
             du = dt * dgsolver.residual(ustar)
             
             # Update the solution
-            solution.u += gamma*du
+            solution.smart_axpy(gamma,du)
 
         # Update the current time
         solution.t += dt

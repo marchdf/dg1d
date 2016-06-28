@@ -270,6 +270,13 @@ class Solution:
         """Copy data u from other solution into the self"""
         self.u = np.copy(other.u)
 
+
+    #================================================================================
+    def smart_axpy(self,a,x):
+        """Adds a*x to u only if a is non-zero"""
+        if np.fabs(a) > 1e-14:
+            self.u += a*x
+
     #================================================================================
     def riemann(self,ul,ur):
         """Returns the flux at an interface by calling the right Riemann solver"""
