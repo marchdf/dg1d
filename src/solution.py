@@ -150,8 +150,8 @@ class Solution:
         """Sets up the advection of a simple sine wave at a constant velocity"""
 
         # Domain specifications
-        A = -2
-        B =  2
+        A = -1
+        B =  1
 
         # Initial condition function
         def f(x):

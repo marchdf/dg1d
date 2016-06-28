@@ -103,6 +103,7 @@ def cfl_time_step(solution,cfl):
 
     # Return the time step
     return solution.dx*cfl/( v * (2*solution.basis.p+1) )
+    #return (solution.dx**2)*cfl/( v * (2*solution.basis.p+1) )
     
     
 #================================================================================
@@ -125,14 +126,15 @@ def adjust_for_output(dt,t,tf,tout):
     (also checks if you are done with the time integration)
         
     """
-    eps = 1e-14
+    #eps = 1e-14
 
     # If we reached the final time (or almost)
-    if dt > (tf-t) - eps:
+    if dt > tf-t:
         return tf-t, True, True
         
     # If we reached an output time
-    elif dt > (tout-t) - eps:
+    #elif dt > (tout-t) - eps:
+    elif dt > tout-t:
         return tout-t, True, False    
 
     else:
