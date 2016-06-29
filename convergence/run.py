@@ -12,7 +12,7 @@ import sys
 import shutil
 import subprocess as sp
 
-codedir = '/home/marchdf/dg1d/src/'
+codedir = '/home/marchdf/dg1d/dg1d/'
 sys.path.insert(0, codedir)
 import deck as deck
 
@@ -44,7 +44,7 @@ basedir = os.getcwd()
 datadir = basedir
 
 orders = [2]
-resolutions = [1024] #[8,16,32,64,128,256,512] #[8,16,32,64,128,256,512] # [32768] #[8,16,32,64,128,256,512,1024,2048,4096,8192,16384]
+resolutions = [64] #[8,16,32,64,128,256,512] #[8,16,32,64,128,256,512] # [32768] #[8,16,32,64,128,256,512,1024,2048,4096,8192,16384]
 
 
 for p, order in enumerate(orders):
@@ -53,6 +53,7 @@ for p, order in enumerate(orders):
 
         # problem definitions
         defs = [ ['PDE system' , 'advection'],
+                 ['RK scheme' , 'rk10'],
                  ['initial condition' , 'sinewave '+str(res)],
                  ['number of outputs' , '11'],
                  ['final time', '2'],

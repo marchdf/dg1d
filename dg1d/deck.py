@@ -17,6 +17,7 @@ class Deck:
 
         # Typical values for the deck
         self.system = "advection"
+        self.rk = ''
         self.ic = "sinewave"
         self.nout = 10
         self.finaltime = 1
@@ -34,6 +35,8 @@ class Deck:
             for line in f:
                 if "#PDE system" in line:
                     self.system = next(f).rstrip()
+                elif "#RK scheme" in line:
+                    self.rk = next(f).rstrip()
                 elif "#initial condition" in line:
                     self.ic = next(f).rstrip()
                 elif "#number of outputs" in line:

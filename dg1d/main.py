@@ -20,6 +20,7 @@ __status__ = "Development"
 import argparse
 import sys, os
 import numpy as np
+import subprocess
 
 import helpers
 import deck
@@ -42,11 +43,23 @@ args = parser.parse_args()
 #
 #================================================================================
 
+
+#================================================================================
+#
+# Function definitions
+#
+#================================================================================
+def get_git_revision_hash():
+    """Returns the git version of this project"""
+    return subprocess.check_output(['git', 'describe'])
+
+
 #================================================================================
 #
 # Problem setup
 #
 #================================================================================
+print('Code version: ',get_git_revision_hash())
 
 # Parse the deck
 deck = deck.Deck()
@@ -54,7 +67,6 @@ deck.parser(args.deck)
 
 # Generate the solution and apply the initial condition
 sol = solution.Solution(deck.ic,deck.system,deck.order)
-#sol = solution.Solution('ictest 2', 'advection', 3)
 sol.apply_ic()
 sol.apply_bc()
 
@@ -67,4 +79,4 @@ dgsolver = dg.DG(sol)
 #
 #================================================================================
 print("Integrating the solution in time.")
-rk.integrate(sol,deck,dgsolver,'rk10')
+rk.integrate(sol,deck,dgsolver,deck.rk)
