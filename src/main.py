@@ -67,4 +67,4 @@ dgsolver = dg.DG(sol)
 #
 #================================================================================
 print("Integrating the solution in time.")
-rk.integrate(sol,deck,dgsolver,'rk4')
+rk.integrate(sol,deck,dgsolver,'rk10')

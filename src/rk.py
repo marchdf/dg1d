@@ -5,6 +5,7 @@
 #================================================================================
 import sys
 import numpy as np
+import rk_coeffs as rkc
 
 #================================================================================
 #
@@ -19,36 +20,45 @@ def integrate(solution,deck,dgsolver,rktype='low_storage_rk4'):
     if rktype == 'low_storage_rk4':
         low_storage_rk4(solution,deck,dgsolver)
 
-    elif rktype == 'rk4':
-        rk4(solution,deck,dgsolver)
-        
+    else:
+        if rktype == 'rk3':
+            coeffs, alphas, betas = rkc.get_rk3_coefficients()
+
+        elif rktype == 'rk4':
+            coeffs, alphas, betas = rkc.get_rk4_coefficients()
+
+        elif rktype == 'rk10':
+            coeffs, alphas, betas = rkc.get_rk10_coefficients()
+
+        elif rktype == 'rk12':
+            coeffs, alphas, betas = rkc.get_rk12_coefficients()
+
+        elif rktype == 'rk14':
+            coeffs, alphas, betas = rkc.get_rk14_coefficients()
+
+        else:
+            print('Unrecognized RK option, default to RK4')
+            coeffs, alphas, betas = rkc.get_rk4_coefficients()
+
+        classic_rk(solution,deck,dgsolver,coeffs,alphas,betas)
+
+
 #================================================================================
-def rk4(solution,deck,dgsolver):
+def classic_rk(solution,deck,dgsolver,coeffs,alphas,betas):
     """Integrate in time using the classic RK4 scheme"""
 
-    # Coefficients
-    coeffs = [1./6., 1./3., 1./3., 1./6.]
-    alphas = [0.0,0.5,0.5,1.0]
-
-    stages = len(coeffs)
-
-    betas = np.zeros((stages,stages-1))
-    betas[1,0] = 0.5
-    betas[2,1] = 0.5
-    betas[3,2] = 1.
-    
+    # Initialize storage variables
+    K  = [np.zeros(solution.u.shape) for _ in range(len(coeffs))]
+    us = solution.copy()
+    uk = solution.copy()
+   
     # Output time array (ignore the start time)
     nout = 0
     tout_array = iter(np.linspace(solution.t,deck.finaltime,deck.nout)[1:]) 
 
     # Flags
     done = False
-    
-    # Initialize storage variables
-    K  = [np.zeros(solution.u.shape) for _ in range(stages)]
-    us = solution.copy()
-    uk = solution.copy()
-   
+
     # Write the initial condition to file
     solution.printer(0,0.0)
     nout += 1
