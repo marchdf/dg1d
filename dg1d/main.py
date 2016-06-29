@@ -51,15 +51,14 @@ args = parser.parse_args()
 #================================================================================
 def get_git_revision_hash():
     """Returns the git version of this project"""
-    return subprocess.check_output(['git', 'describe'])
-
+    return subprocess.check_output(['git', 'describe','--always'],universal_newlines=True)
 
 #================================================================================
 #
 # Problem setup
 #
 #================================================================================
-print('Code version: ',get_git_revision_hash())
+print('Code version: ', get_git_revision_hash())
 
 # Parse the deck
 deck = deck.Deck()
