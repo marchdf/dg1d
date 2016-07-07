@@ -24,6 +24,7 @@ class Deck:
         self.cfl = 0.5
         self.order = 1
         self.limiting = False
+        self.enhance = ''
 
     #================================================================================
     def parser(self,fname):
@@ -49,6 +50,8 @@ class Deck:
                     self.order = int(next(f))
                 elif "#limiting" in line:
                     self.limiting = next(f).rstrip()
+                elif "#enhancement" in line:
+                    self.enhance = next(f).rstrip()
 
                 
 #================================================================================

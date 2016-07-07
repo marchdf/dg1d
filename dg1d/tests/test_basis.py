@@ -8,6 +8,9 @@ import basis
 import numpy as np
 import numpy.testing as npt
 
+from numpy.polynomial import Polynomial as P   # import the Legendre class
+from numpy.polynomial import Legendre as L     # import the Legendre class
+
 #================================================================================
 #
 # Class definitions
@@ -74,6 +77,38 @@ class BasisTestCase(unittest.TestCase):
             test_basis = basis.Basis(order)
             c = test_basis.projection(a,b,f)
             npt.assert_array_almost_equal(c,np.array([9.966711e-02, 9.940095e-02, -3.325404e-04, -6.630519e-05]))
+
+
+
+        #================================================================================
+        # shift_legendre_polynomial
+        def test_shift_legendre_polynomial(self):
+                """Is the shifting of Legendre polynomials correct"""
+                
+                # Given a Legendre Polynomial: L(x) = 0.5*(3x^2 -1)
+                l = L.basis(2)
+                
+                # Evaluate L(x+2)
+                ls = basis.shift_legendre_polynomial(l,2)
+                
+                # This should be equal to 5.5 + 6x + 1.5 x^2
+                npt.assert_array_almost_equal(ls.convert(kind=P).coef,np.array([5.5,6,1.5]),decimal=9)
+
+
+
+        #================================================================================
+        # integrate_legendre_product
+        def test_integrate_legendre_product(self):
+                """Is the integral of the product of two Legendre polynomials correct"""
+                
+                # Given a Legendre Polynomial: L(x) = 0.5*(3x^2 -1)
+                l1 = L.basis(2)
+                
+                # Evaluate L(x+2)
+                l2 = basis.shift_legendre_polynomial(l1,2)
+                
+                # The integral of l1*l2 over [-1,1] = 0.4
+                self.assertAlmostEqual(basis.integrate_legendre_product(l1,l2), 0.4)
 
             
 if __name__ == '__main__':

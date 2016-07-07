@@ -21,16 +21,22 @@ import deck as deck
 # Function definitions
 #
 #================================================================================
-def runcode(deck):
-    """Run the DG code given the input deck"""
+def runcode(deck,background=True):
+    """Run the DG code (in background by default) given the input deck
+
+    If background is False, then wait for the process to finish and
+    give me a return code.
+    """
 
     # Launch the code
     log = open('logfile', "w")
     proc = sp.Popen(codedir+'main.py -d '+deck, shell=True, stdout=log,stderr=sp.PIPE)
+    retcode = 0
 
-    # Wait for it to end and get the output
-    retcode = proc.wait()
-    log.flush()
+    # If you don't want to send the process to the background
+    if (not background):
+        retcode = proc.wait()
+        log.flush()
 
     return retcode
 
@@ -43,8 +49,8 @@ def runcode(deck):
 basedir = os.getcwd()
 datadir = basedir
 
-orders = [2]
-resolutions = [64] #[8,16,32,64,128,256,512] #[8,16,32,64,128,256,512] # [32768] #[8,16,32,64,128,256,512,1024,2048,4096,8192,16384]
+orders = [1,2,3]
+resolutions = [4] #[8,16,32,64,128,256,512,1024,2048]  #[8,16,32,64,128,256,512,1024,2048,4096,8192,16384,32768]
 
 
 for p, order in enumerate(orders):

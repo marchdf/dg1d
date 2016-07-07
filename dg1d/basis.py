@@ -136,3 +136,34 @@ class Basis:
     def shifted_xgauss(self,a,b):
         """Return the Gaussian nodes in the interval [a,b]"""
         return 0.5*(b-a)*self.x + 0.5*(b+a)
+
+
+
+    
+#================================================================================
+def shift_legendre_polynomial(l,shift):
+    """Returns the Legendre polynomial shifted by a certain amount
+
+    Basically, given a Legendre polynomial l(x), return l(x+shift)
+    """
+
+    # Shift the window of the polynomial to get the new coefficients
+    ls = L.cast(l,window = l.window - shift)
+
+    # Create a Legendre polynomial with these new coefficients and the
+    # default window
+    return L(ls.coef)
+
+
+#================================================================================
+def integrate_legendre_product(l1,l2):
+    """Returns the integral of the product of two Legendre polynomials in the interval [-1,1]"""
+
+    # Multiplication
+    mul = l1*l2
+
+    # Integration
+    imul = mul.integ()
+
+    # Evaluate the integral from [-1,1]
+    return imul(1) - imul(-1)

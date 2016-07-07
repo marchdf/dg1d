@@ -68,7 +68,7 @@ def error_norm(u0,uf,etype='L2'):
 #
 #================================================================================
 
-orders = [2,3,4]
+orders = [1,2,3,4]
 
 #================================================================================
 #
@@ -110,11 +110,26 @@ for p, order in enumerate(orders):
     plt.loglog(resolutions,errors,markertype[p],color=cmap[p],mec=cmap[p],mfc=cmap[p],lw=2,ls='-',ms=10)
 
     # theoretical error
-    th = dxs**(2*order+1)*errors[1]/dxs[1]**(2*order+1)
+    th = dxs**(2*order+1)*errors[0]/dxs[0]**(2*order+1)
     plt.loglog(resolutions,th,color=cmap[-1],lw=2,ls='-')
-    ax = plt.gca()
-    plt.setp(ax,ylim=[1e-13,1e0])
 
+
+
+
+# Format the plot and save
+plt.figure(1)
+ax = plt.gca()
+plt.xlabel(r"number of elements",fontsize=22,fontweight='bold')
+plt.text(0, 1.05,r"$L_2$ error", transform=ax.transAxes, fontsize=22, fontweight='bold', ha='center')
+plt.setp(ax.get_xmajorticklabels(),fontsize=18,fontweight='bold');
+plt.setp(ax.get_ymajorticklabels(),fontsize=18,fontweight='bold');
+plt.setp(ax,xlim=[2,1e4],ylim=[1e-14,1e0])
+plt.yticks([1e-14,1e-11,1e-8,1e-5,1e-2])
+ax.spines['right'].set_color('none')
+ax.spines['top'].set_color('none')
+ax.xaxis.set_ticks_position('bottom')
+ax.yaxis.set_ticks_position('left')
+plt.savefig('convergence.pdf',format='pdf')
 
 if args.show:
     plt.show()

@@ -8,6 +8,7 @@ import re
 import numpy as np
 import basis
 import copy
+import enhance
 
 #================================================================================
 #
@@ -18,7 +19,7 @@ class Solution:
     'Generate the solution (initialize, ic, mesh, etc)'
 
     #================================================================================
-    def __init__(self,icline,system,order):
+    def __init__(self,icline,system,order,enhancement_type=''):
         
         print("Generating the solution.")
 
@@ -56,6 +57,11 @@ class Solution:
         self.bc_l = ''
         self.bc_r = ''
 
+        # Enhancement (if necessary)
+        enhancement_type = 'icb 1'
+        if (enhancement_type is not ''):
+            self.enhance = enhance.Enhance(order,enhancement_type)
+            
     #================================================================================
     def printer(self,nout,dt):
         """Outputs the solution to a file"""
@@ -116,7 +122,6 @@ class Solution:
             self.t = float(line[3])
             self.bc_l = line[5].rstrip()
             self.bc_r = line[7].rstrip()
-
 
         # Make the basis
         order = self.u.shape[0]-1
