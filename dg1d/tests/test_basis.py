@@ -20,12 +20,12 @@ class BasisTestCase(unittest.TestCase):
         """Tests for `basis.py`."""
 
         #================================================================================
-        # eval_basis_gauss
-        def test_eval_basis_gauss(self):
+        # evaluate_basis_gauss
+        def test_evaluate_basis_gauss(self):
             """Are the basis correctly evaluated at the Gaussian quadrature nodes?"""
             order = 3
             test_basis = basis.Basis(order)
-            phi,dphi_w = test_basis.eval_basis_gauss()
+            phi,dphi_w = test_basis.evaluate_basis_gauss()
             npt.assert_array_almost_equal(phi, np.array([[ 1. , -0.861136312,  0.612333621, -0.304746985],
                                                          [ 1. , -0.339981044, -0.326619335,  0.411728   ],
                                                          [ 1. ,  0.339981044, -0.326619335, -0.411728   ],
@@ -37,12 +37,12 @@ class BasisTestCase(unittest.TestCase):
                                                             [ 1.412870929, -0.412870929, -0.412870929,  1.412870929]]), decimal = 9)
 
         #================================================================================
-        # eval_basis_edges
-        def test_eval_basis_edges(self):
+        # evaluate_basis_edges
+        def test_evaluate_basis_edges(self):
             """Are the basis correctly evaluated at the edges?"""
             order = 3
             test_basis = basis.Basis(order)
-            psi = test_basis.eval_basis_edges()
+            psi = test_basis.evaluate_basis_edges()
             npt.assert_array_almost_equal(psi, np.array([[ 1.0, -1.0, 1.0, -1.0],
                                                          [ 1.0,  1.0, 1.0,  1.0]]), decimal = 9)
 

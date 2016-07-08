@@ -51,6 +51,7 @@ class Solution:
             'max_wave_speed': self.max_wave_speed_advection,
             'sinewave': self.sinewave,
             'ictest'  : self.ictest,
+            'evaluate_face_solution' : self.collocate_faces,
         }
 
         # Boundary condition type (left/right)
@@ -58,8 +59,9 @@ class Solution:
         self.bc_r = ''
 
         # Enhancement (if necessary)
-        enhancement_type = 'icb 1'
+        enhancement_type = 'icb 0 1'
         if (enhancement_type is not ''):
+            self.keywords['evaluate_face_solution'] = self.enhanced_faces
             self.enhance = enhance.Enhance(order,enhancement_type)
             
     #================================================================================
@@ -275,7 +277,6 @@ class Solution:
         """Copy data u from other solution into the self"""
         self.u = np.copy(other.u)
 
-
     #================================================================================
     def smart_axpy(self,a,x):
         """Adds a*x to u only if a is non-zero"""
@@ -319,7 +320,18 @@ class Solution:
 
 
     #================================================================================
+    def evaluate_faces(self):
+        """Evaluate the solution at the cell edges/faces"""
+
+        # Call the correct face evaluation procedure
+        return self.keywords['evaluate_face_solution']()
+
+    #================================================================================
     def collocate_faces(self):
         """Collocate the solution to the cell edges/faces"""
         return np.dot(self.basis.psi, self.u)
 
+    #================================================================================
+    def enhanced_faces(self):
+        """Get the value of the enhanced solution at the faces"""
+        return self.enhance.face_value(self.u)

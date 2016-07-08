@@ -44,8 +44,8 @@ class DG:
         # Collocate the solution to the Gaussian nodes
         self.ug = solution.collocate()
 
-        # Collocate to the cell edge values
-        self.uf = solution.collocate_faces()
+        # Evaluate the solution at the cell face
+        self.uf = solution.evaluate_faces()
        
         # Evaluate the interior fluxes
         self.F = solution.interior_flux(self.ug)

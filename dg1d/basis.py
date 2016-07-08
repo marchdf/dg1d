@@ -36,17 +36,17 @@ class Basis:
         self.N_G = len(self.x)
         
         # Construct useful basis matrices
-        self.phi, self.dphi_w = self.eval_basis_gauss()
+        self.phi, self.dphi_w = self.evaluate_basis_gauss()
 
         # Construct the matrix to evaluate a solution at the cell edges
-        self.psi = self.eval_basis_edges()
+        self.psi = self.evaluate_basis_edges()
         
         # Construct the (unscaled) mass matrix and its inverse
         self.m, self.minv = self.mass_matrix()
 
 
     #================================================================================
-    def eval_basis_gauss(self):
+    def evaluate_basis_gauss(self):
         """Evaluate the basis at the Gaussian quadrature nodes.
 
         phi will be used to transform Legendre solution coefficients
@@ -74,7 +74,7 @@ class Basis:
 
 
     #================================================================================
-    def eval_basis_edges(self):
+    def evaluate_basis_edges(self):
         """Evaluate the basis at the Gaussian quadrature nodes.
 
         psi will be used to evaluate a solution at the cell edges.
