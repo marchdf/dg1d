@@ -62,8 +62,7 @@ class Solution:
         try:
             self.keywords[self.icname]()
         except Exception as e:
-            print("Invalid initial condition. Exiting.\n",e)
-            sys.exit()
+            print("Invalid initial condition. This will be an empty solution.\n",e)
 
         # Enhancement (if necessary)
         if (enhancement_type is not ''):
