@@ -39,11 +39,11 @@ class Enhance:
         
         # The enhanced basis
         self.basis = basis.Basis(self.order)
-        #self.basis = basis.Basis(solution_order)
 
-        
+        # Get the enhancement vectors
         A,Ainv,B,Binv = enhancement_matrices(solution_order,self.modes)
         self.alphaL, self.alphaR, self.betaL, self.betaR = left_enhancement_vectors(Ainv,Binv,solution_order,self.modes,self.basis.psi)
+
         print('bye')
 
 
@@ -75,8 +75,6 @@ def left_enhancement_vectors(Ainv,Binv,solution_order,modes,psi):
     vs = np.dot(psi[0,:],Binv)
     ve = np.dot(psi[1,:],Ainv)
 
-    print(Binv)
-    
     # Split to get the vector acting on the left solution
     betaR  = vs[:solution_order+1]
     alphaL = ve[:solution_order+1]
@@ -90,7 +88,7 @@ def left_enhancement_vectors(Ainv,Binv,solution_order,modes,psi):
         if i not in modes:
             betaL  = np.insert(betaL ,i,0)
             alphaR = np.insert(alphaR,i,0)
-    
+            
     return alphaL,alphaR,betaL,betaR
 
 #================================================================================
@@ -99,6 +97,13 @@ def enhancement_matrices(solution_order,modes):
     
     Returns A and inv(A) where A \hat{u} = [uL;some_modes_of(uR)]
             B and inv(B) where B \hat{u} = [uR;some_modes_of(uL)]
+
+    Note: this is slightly different than what I do in
+    icb_functions.py (called by advection.py) where the right hand
+    side contains the normalization factors (i.e A x = b where b =
+    uL_i \int \phi_i \phi_i dx). Here I put \int \phi_i \phi_i dx into
+    A and B (denoted norm down in the code below).
+
     """
 
     # Enhanced solution order
@@ -125,8 +130,9 @@ def enhancement_matrices(solution_order,modes):
             lr = basis.shift_legendre_polynomial(L.basis(j),-2)
             
             # Inner product for the left and right enhancements
-            cl[i,j] = basis.integrate_legendre_product(l1,ll) / basis.integrate_legendre_product(l1,l1)
-            cr[i,j] = basis.integrate_legendre_product(l1,lr) / basis.integrate_legendre_product(l1,l1)
+            norm = basis.integrate_legendre_product(l1,l1)
+            cl[i,j] = basis.integrate_legendre_product(l1,ll) / norm
+            cr[i,j] = basis.integrate_legendre_product(l1,lr) / norm
                 
     # Put the matrices together
     A = np.vstack((np.hstack((a,b)),cl))
