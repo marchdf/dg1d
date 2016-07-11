@@ -58,11 +58,17 @@ class Solution:
         self.bc_l = ''
         self.bc_r = ''
 
+        # Apply the initial condition
+        try:
+            self.keywords[self.icname]()
+        except Exception as e:
+            print("Invalid initial condition. Exiting.\n",e)
+            sys.exit()
+
         # Enhancement (if necessary)
-        enhancement_type = 'icb 0 1'
         if (enhancement_type is not ''):
             self.keywords['evaluate_face_solution'] = self.enhanced_faces
-            self.enhance = enhance.Enhance(order,enhancement_type)
+            self.enhance = enhance.Enhance(order,enhancement_type,self.u.shape[1])
             
     #================================================================================
     def printer(self,nout,dt):
@@ -138,21 +144,6 @@ class Solution:
 
 
     #================================================================================
-    def apply_ic(self):
-        """Apply the initial condition"""
-
-        # Set the time/time step to zero
-        self.t = 0
-        self.n = 0
-
-        # Call the initial condition function
-        try:
-            self.keywords[self.icname]()
-        except Exception as e:
-            print("Invalid initial condition. Exiting.\n",e)
-            sys.exit()
-
-    #================================================================================
     def sinewave(self):
         """Sets up the advection of a simple sine wave at a constant velocity"""
 
@@ -190,7 +181,6 @@ class Solution:
 
         # Scale the inverse mass matrix
         self.scaled_minv = self.basis.minv*2.0/self.dx
-
 
     #================================================================================
     def ictest(self):
@@ -317,7 +307,6 @@ class Solution:
     def collocate(self):
         """Collocate the solution to the Gaussian quadrature nodes"""
         return np.dot(self.basis.phi, self.u)
-
 
     #================================================================================
     def evaluate_faces(self):

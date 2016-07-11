@@ -22,7 +22,6 @@ class SolutionTestCase(unittest.TestCase):
         # Set up
         def setUp(self):
                 self.solution = solution.Solution('sinewave 10', 'advection', 3)
-                self.solution.apply_ic()
 
         #================================================================================
         # collocate
@@ -42,6 +41,8 @@ class SolutionTestCase(unittest.TestCase):
         # collocate_faces
         def test_collocate_faces(self):
                 """Is the collocation procedure for the faces correct?"""
+
+
                 uf = self.solution.collocate_faces()
                 
                 npt.assert_array_almost_equal(uf[:,1:-1],
@@ -54,7 +55,6 @@ class SolutionTestCase(unittest.TestCase):
         def test_ictest(self):
                 """Is the initial condition setup correct (populate, x, xc, dx, ghosts, scaled_minv)?"""
                 sol = solution.Solution('ictest 2', 'advection', 3)
-                sol.apply_ic()
                 
                 # coefficient calculation
                 npt.assert_array_almost_equal(sol.u, np.array([[ 0.,  0.11523009,  0.79166704,  0.],

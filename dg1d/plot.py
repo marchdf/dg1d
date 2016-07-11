@@ -36,6 +36,7 @@ import dg
 #================================================================================
 parser = argparse.ArgumentParser(description='A simple plot tool for the one-dimensional DG data')
 parser.add_argument('-s','--show', help='Show the plots', action='store_true')
+parser.add_argument('-f','--file', dest='fname', help='File to load', metavar = "FILE", required=True)
 args = parser.parse_args()
 
 
@@ -58,13 +59,13 @@ markertype = ['s','d','o','p','h']
 #================================================================================
 
 solution = solution.Solution('empty','empty',0)
-solution.loader('u0000000007.dat')
+solution.loader(args.fname)
 
 # Collocate the solution to the Gaussian nodes
 ug = solution.collocate()
 
 # Collocate to the cell edge values
-uf = solution.collocate_faces()
+uf = solution.evaluate_faces()
 
 # Plot each element solution in a different color
 for e in range(solution.N_E):
