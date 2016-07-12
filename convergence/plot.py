@@ -106,6 +106,7 @@ for p, order in enumerate(orders):
     
         
     # Plot the errors
+    print( - np.diff(np.log(errors)) / np.diff(np.log(resolutions)), 2*order + 1)
     plt.figure(1)
     plt.loglog(resolutions,errors,markertype[p],color=cmap[p],mec=cmap[p],mfc=cmap[p],lw=2,ls='-',ms=10)
 

@@ -21,6 +21,8 @@ import argparse
 import sys, os
 import numpy as np
 import subprocess
+import time
+from datetime import timedelta
 
 import helpers
 import deck
@@ -58,6 +60,7 @@ def get_git_revision_hash():
 # Problem setup
 #
 #================================================================================
+start = time.time()
 print('Code version: ', get_git_revision_hash())
 
 # Parse the deck
@@ -78,3 +81,9 @@ dgsolver = dg.DG(sol)
 #================================================================================
 print("Integrating the solution in time.")
 rk.integrate(sol,deck,dgsolver,deck.rk)
+
+
+# output timer
+end = time.time() - start
+print("Elapsed time "+str(timedelta(seconds=end)) + " (or {0:f} seconds)".format(end))
+

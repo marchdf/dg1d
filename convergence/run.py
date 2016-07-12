@@ -49,20 +49,33 @@ def runcode(deck,background=True):
 basedir = os.getcwd()
 datadir = basedir
 
-orders = [1,2,3]
-resolutions = [4] #[8,16,32,64,128,256,512,1024,2048]  #[8,16,32,64,128,256,512,1024,2048,4096,8192,16384,32768]
+orders = [1]
+resolutions = [4,8,16,32,64,128,256,512,1024]  #[8,16,32,64,128,256,512,1024,2048,4096,8192,16384,32768]
+
+# orders = [2]
+# resolutions = [4,8,16,32,64,128,256,512]  #[8,16,32,64,128,256,512,1024,2048,4096,8192,16384,32768]
+
+# orders = [3]
+# resolutions = [4,8,16,32,64,128]  #[8,16,32,64,128,256,512,1024,2048,4096,8192,16384,32768]
+
+# orders = [4]
+# resolutions = [4,8,16,32,64]  #[8,16,32,64,128,256,512,1024,2048,4096,8192,16384,32768]
 
 
 for p, order in enumerate(orders):
+
+    # remove old order directory
+    shutil.rmtree(datadir + '/' + str(order), ignore_errors=True)
+
     for k,res in enumerate(resolutions):
     
 
         # problem definitions
         defs = [ ['PDE system' , 'advection'],
-                 ['RK scheme' , 'rk10'],
+                 ['RK scheme' , 'rk12'],
                  ['initial condition' , 'sinewave '+str(res)],
                  ['number of outputs' , '11'],
-                 ['final time', '2'],
+                 ['final time', '50'],
                  ['Courant-Friedrichs-Lewy condition' , '0.5'],
                  ['order' , str(order)],
                  ['limiting' , '0']]
@@ -71,7 +84,6 @@ for p, order in enumerate(orders):
         # working directory for the data
         workdir =  datadir + '/' + str(order)+'/'+str(res)
         print('Creating directory',workdir,'and go to it')
-        shutil.rmtree(workdir, ignore_errors=True)
         os.makedirs(workdir)
         os.chdir(workdir)
         
