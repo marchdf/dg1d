@@ -63,6 +63,17 @@ def error_norm(u0,uf,etype='L2'):
         
 
 #================================================================================
+def get_timer(fname):
+    """Get the program elapsed time from the logfile"""
+
+    with open(fname) as f:
+        for line in f:
+            if 'seconds' in line:
+                return line.split()[4]
+
+    
+    
+#================================================================================
 #
 # Problem setup
 #
@@ -85,6 +96,7 @@ for p, order in enumerate(orders):
     # Initialize variables
     dxs    = 2.0/np.array(resolutions)
     errors = np.zeros(len(resolutions))
+    timers = np.zeros(len(resolutions))
     
     for k,res in enumerate(resolutions):
 
@@ -103,7 +115,9 @@ for p, order in enumerate(orders):
 
         # Get the cell-average error
         errors[k] = error_norm(u0e,u0f,'L2')
-    
+
+        # Get the elapsed time
+        timers[k] = get_timer(ppdir+'/logfile')
         
     # Plot the errors
     print( - np.diff(np.log(errors)) / np.diff(np.log(resolutions)), 2*order + 1)
@@ -114,7 +128,9 @@ for p, order in enumerate(orders):
     th = dxs**(2*order+1)*errors[0]/dxs[0]**(2*order+1)
     plt.loglog(resolutions,th,color=cmap[-1],lw=2,ls='-')
 
-
+    # Plot the efficiency
+    plt.figure(2)
+    plt.loglog(timers,errors,markertype[p],color=cmap[p],mec=cmap[p],mfc=cmap[p],lw=2,ls='-',ms=10)
 
 
 # Format the plot and save
@@ -131,6 +147,21 @@ ax.spines['top'].set_color('none')
 ax.xaxis.set_ticks_position('bottom')
 ax.yaxis.set_ticks_position('left')
 plt.savefig('convergence.pdf',format='pdf')
+
+# Format the plot and save
+plt.figure(2)
+ax = plt.gca()
+plt.xlabel(r"time",fontsize=22,fontweight='bold')
+plt.text(0, 1.05,r"$L_2$ error", transform=ax.transAxes, fontsize=22, fontweight='bold', ha='center')
+plt.setp(ax.get_xmajorticklabels(),fontsize=18,fontweight='bold');
+plt.setp(ax.get_ymajorticklabels(),fontsize=18,fontweight='bold');
+plt.setp(ax,xlim=[1e-1,2e2],ylim=[1e-14,1e0])
+plt.yticks([1e-14,1e-11,1e-8,1e-5,1e-2])
+ax.spines['right'].set_color('none')
+ax.spines['top'].set_color('none')
+ax.xaxis.set_ticks_position('bottom')
+ax.yaxis.set_ticks_position('left')
+plt.savefig('efficiency.pdf',format='pdf')
 
 if args.show:
     plt.show()

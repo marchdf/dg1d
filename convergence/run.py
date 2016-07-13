@@ -52,14 +52,14 @@ datadir = basedir
 orders = [1]
 resolutions = [4,8,16,32,64,128,256,512,1024]  #[8,16,32,64,128,256,512,1024,2048,4096,8192,16384,32768]
 
-# orders = [2]
-# resolutions = [4,8,16,32,64,128,256,512]  #[8,16,32,64,128,256,512,1024,2048,4096,8192,16384,32768]
+orders = [2]
+resolutions = [4,8,16,32,64,128,256,512]  #[8,16,32,64,128,256,512,1024,2048,4096,8192,16384,32768]
 
-# orders = [3]
-# resolutions = [4,8,16,32,64,128]  #[8,16,32,64,128,256,512,1024,2048,4096,8192,16384,32768]
+orders = [3]
+resolutions = [4,8,16,32,64,128]  #[8,16,32,64,128,256,512,1024,2048,4096,8192,16384,32768]
 
-# orders = [4]
-# resolutions = [4,8,16,32,64]  #[8,16,32,64,128,256,512,1024,2048,4096,8192,16384,32768]
+orders = [4]
+resolutions = [4,8,16,32,64]  #[8,16,32,64,128,256,512,1024,2048,4096,8192,16384,32768]
 
 
 for p, order in enumerate(orders):
@@ -75,7 +75,7 @@ for p, order in enumerate(orders):
                  ['RK scheme' , 'rk12'],
                  ['initial condition' , 'sinewave '+str(res)],
                  ['number of outputs' , '11'],
-                 ['final time', '50'],
+                 ['final time', '8'],
                  ['Courant-Friedrichs-Lewy condition' , '0.5'],
                  ['order' , str(order)],
                  ['limiting' , '0']]
@@ -91,7 +91,7 @@ for p, order in enumerate(orders):
         deckname = deck.write_deck(workdir,defs)
         
         # run the code
-        runcode(deckname)
+        runcode(deckname,False)
         
         # Go back to our base directory
         os.chdir(basedir)
