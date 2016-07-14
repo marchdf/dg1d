@@ -155,9 +155,9 @@ def approximate_stability_boundary(coeffs,B,fignum=0,coloridx=0,pltlabel=''):
     I = np.diag(e)
 
     # Construct the polynomial expression (stability function)
-    num = 100
-    zrs = np.linspace(-3.5,1,num)
-    zis = np.linspace(0,3.5,num)
+    num = 200
+    zrs = np.linspace(-6,3,num)
+    zis = np.linspace(0,6,num)
     ZR, ZI = np.meshgrid(zrs,zis)
     Z = ZR + 1j * ZI
     sigma = np.zeros((num,num))
@@ -189,6 +189,12 @@ def get_formatted_rk_coeffs(method='rk4'):
         coeffs, alphas, betas = rkc.get_rk3_coefficients()
     elif method == 'rk4':
         coeffs, alphas, betas = rkc.get_rk4_coefficients()
+    elif method == 'rk5':
+        coeffs, alphas, betas = rkc.get_rk5_coefficients()
+    elif method == 'rk6':
+        coeffs, alphas, betas = rkc.get_rk6_coefficients()
+    elif method == 'rk8':
+        coeffs, alphas, betas = rkc.get_rk8_coefficients()
     elif method == 'rk10':
         coeffs, alphas, betas = rkc.get_rk10_coefficients()
     elif method == 'rk12':
@@ -223,7 +229,7 @@ def get_formatted_rk_coeffs(method='rk4'):
 
 
 # Methods to plot
-methods = ['rk3','rk4','rk10','rk12','rk14']
+methods = ['rk3','rk4','rk5','rk6','rk8','rk10','rk12','rk14']
 ps = [None] * len(methods)
 
 # Loop over these methods
@@ -244,4 +250,3 @@ plt.savefig('rk_stability.pdf',format='pdf')
 
 if args.show:
     plt.show()
-

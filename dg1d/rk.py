@@ -27,6 +27,15 @@ def integrate(solution,deck,dgsolver,rktype='low_storage_rk4'):
         elif rktype == 'rk4':
             coeffs, alphas, betas = rkc.get_rk4_coefficients()
 
+        elif rktype == 'rk5':
+            coeffs, alphas, betas = rkc.get_rk5_coefficients()
+
+        elif rktype == 'rk6':
+            coeffs, alphas, betas = rkc.get_rk6_coefficients()
+
+        elif rktype == 'rk8':
+            coeffs, alphas, betas = rkc.get_rk8_coefficients()
+
         elif rktype == 'rk10':
             coeffs, alphas, betas = rkc.get_rk10_coefficients()
 
