@@ -23,7 +23,7 @@ class Enhance:
     'Generate enhancement procedures'
 
     #================================================================================
-    def __init__(self,solution_order,method,N_E):
+    def __init__(self,solution_order,method,solution_size):
 
         print("Generating the enhancement procedure.")
         
@@ -45,18 +45,18 @@ class Enhance:
         self.alphaL, self.alphaR, self.betaL, self.betaR = left_enhancement_vectors(Ainv,Binv,solution_order,self.modes,self.basis.psi)
 
         # Pre-allocated storage of the face values
-        self.uf_tmp = np.zeros((2,N_E))
+        self.uf_tmp = np.zeros((2,solution_size))
 
 
     #================================================================================
-    def face_value(self,u):
+    def face_value(self,u,N_F):
         """Calculates the value of the enhanced solution at the faces"""
 
         # Faces at j-1/2
-        self.uf_tmp[0,1:] = np.dot(self.betaL , u[:,:-1]) + np.dot(self.betaR , u[:,1:])
+        self.uf_tmp[0,N_F:] = np.dot(self.betaL , u[:,:-N_F]) + np.dot(self.betaR , u[:,N_F:])
 
         # Faces at j+1/2
-        self.uf_tmp[1,:-1] = np.dot(self.alphaL, u[:,:-1]) + np.dot(self.alphaR, u[:,1:])
+        self.uf_tmp[1,:-N_F] = np.dot(self.alphaL, u[:,:-N_F]) + np.dot(self.alphaR, u[:,N_F:])
 
         return self.uf_tmp
 

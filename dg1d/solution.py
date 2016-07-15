@@ -6,8 +6,10 @@
 import sys
 import re
 import numpy as np
-import basis
+import itertools
 import copy
+
+import basis
 import enhance
 
 #================================================================================
@@ -35,10 +37,11 @@ class Solution:
         self.t   = 0
         self.n   = 0
         self.N_E = 0
+        self.N_F = 1
         self.x   = np.empty(self.N_E+1)
         self.xc  = np.empty(self.N_E)
         self.dx  = 0
-        self.u   = np.empty([self.basis.N_s, self.N_E])
+        self.u   = np.empty([self.basis.N_s, self.N_E*self.N_F])
         self.scaled_minv = np.empty([self.basis.N_s])
 
         # Manipulation functions
@@ -50,6 +53,7 @@ class Solution:
             'interior_flux' : self.interior_flux_advection,
             'max_wave_speed': self.max_wave_speed_advection,
             'sinewave': self.sinewave,
+            'rhobump' : self.rhobump,
             'ictest'  : self.ictest,
             'evaluate_face_solution' : self.collocate_faces,
         }
@@ -88,6 +92,29 @@ class Solution:
 
         # output file name
         fname = 'u{0:010d}.dat'.format(nout)
+
+        # Concatenate element centroids with the solution (ignore ghost cells)
+        xc_u = np.c_[ self.xc, self.u[:,1:-1].transpose()] 
+
+        # Make a descriptive header
+        hline = 'n={0:d}, t={1:.18e}, bc_l={2:s}, bc_r={3:s}\nxc'.format(self.n,self.t,self.bc_l,self.bc_r)
+        for i in range(self.basis.N_s):
+            hline += ', u{0:d}'.format(i)
+        
+        # Save the data to a file
+        np.savetxt(fname, xc_u, fmt='%.18e', delimiter=',', header=hline)
+
+
+    #================================================================================
+    def print_euler(self,nout):
+        """Print the solution for the Euler PDE system.
+
+        The format is chosen so that it is easy to plot using matplotlib
+        """
+
+        # output file names
+        fields = ['rho','rhou','E']
+        fnames = [field+'{0:010d}.dat'.format(nout) for field in fields]
 
         # Concatenate element centroids with the solution (ignore ghost cells)
         xc_u = np.c_[ self.xc, self.u[:,1:-1].transpose()] 
@@ -182,6 +209,43 @@ class Solution:
         self.scaled_minv = self.basis.minv*2.0/self.dx
 
     #================================================================================
+    def rhobump(self):
+        """Sets up the advection of a simple density bump at a constant velocity"""
+
+        # Domain specifications
+        A = -1
+        B =  1
+
+        # Initial condition function
+        def f(x):
+            return np.sin(2*np.pi*x)
+
+        # Set the boundary condition
+        self.bc_l = 'periodic'
+        self.bc_r = 'periodic'
+
+        # Number of elements
+        self.N_E = int(self.params[0])
+        self.N_F = 3
+        
+        # Discretize the domain, get the element edges and the element
+        # centroids
+        self.x,self.dx = np.linspace(A, B, self.N_E+1, retstep=True)
+        self.xc = (self.x[1:] + self.x[:-1]) * 0.5
+        
+        # Initialize the initial condition
+        self.u = np.zeros([self.basis.p+1, self.N_E*self.N_F])
+        
+        # Populate the solution
+        self.populate(f)
+        
+        # Add the ghost cells
+        self.add_ghosts()
+
+        # Scale the inverse mass matrix
+        self.scaled_minv = self.basis.minv*2.0/self.dx
+
+    #================================================================================
     def ictest(self):
         """Sets up a test solution."""
 
@@ -230,29 +294,29 @@ class Solution:
             a = self.x[e]
             b = self.x[e+1]
 
-            # solution coefficients
-            self.u[:,e] = self.basis.projection(a,b,f)
+            for field in range(self.N_F):
+                # solution coefficients
+                self.u[:,e*self.N_F+field] = self.basis.projection(a,b,f)
 
 
     #================================================================================
     def add_ghosts(self):
         """Add ghost cells to the solution vector"""
-        self.u = np.c_[ np.zeros(self.basis.N_s), self.u, np.zeros(self.basis.N_s)] 
-
+        self.u = np.c_[ np.zeros((self.basis.N_s,self.N_F)), self.u, np.zeros((self.basis.N_s,self.N_F))] 
 
     #================================================================================
     def apply_bc(self):
         """Populates the ghost cells with the correct data depending on the BC"""
-
+        
         # On the left side of the domain
         if self.bc_l is 'periodic':
-            self.u[:,0]  = self.u[:,-2]
+            self.u[:,0:self.N_F]  = self.u[:,-2*self.N_F:-self.N_F]
         else:
             print("{0:s} is an invalid boundary condition. Exiting.".format(self.bc_l))
         
         # On the right side of the domain
         if self.bc_r is 'periodic':
-            self.u[:,-1] = self.u[:,1]
+            self.u[:,-self.N_F:] = self.u[:,self.N_F:2*self.N_F]
         else:
             print("{0:s} is an invalid boundary condition. Exiting.".format(self.bc_r))
     
@@ -322,4 +386,4 @@ class Solution:
     #================================================================================
     def enhanced_faces(self):
         """Get the value of the enhanced solution at the faces"""
-        return self.enhance.face_value(self.u)
+        return self.enhance.face_value(self.u,self.N_F)
