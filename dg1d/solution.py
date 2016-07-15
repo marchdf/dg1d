@@ -45,18 +45,7 @@ class Solution:
         self.scaled_minv = np.empty([self.basis.N_s])
 
         # Manipulation functions
-        self.keywords = {
-            'system'  : system,
-            'printer' : self.print_advection,
-            'loader'  : self.load_advection,
-            'riemann' : self.riemann_advection,
-            'interior_flux' : self.interior_flux_advection,
-            'max_wave_speed': self.max_wave_speed_advection,
-            'sinewave': self.sinewave,
-            'rhobump' : self.rhobump,
-            'ictest'  : self.ictest,
-            'evaluate_face_solution' : self.collocate_faces,
-        }
+        self.set_manipulation_functions(system)
 
         # Boundary condition type (left/right)
         self.bc_l = ''
@@ -73,48 +62,45 @@ class Solution:
             self.keywords['evaluate_face_solution'] = self.enhanced_faces
             self.enhance = enhance.Enhance(order,enhancement_type,self.u.shape[1])
             
+
+    #================================================================================
+    def set_manipulation_functions(self,system):
+        """Define a dictionary containing the necessary functions"""        
+
+        # Default
+        self.keywords = {
+            'system'  : system,
+            'fields'  : ['u'],
+            'loader'  : self.load_advection,
+            'riemann' : self.riemann_advection,
+            'interior_flux' : self.interior_flux_advection,
+            'max_wave_speed': self.max_wave_speed_advection,
+            'sinewave': self.sinewave,
+            'rhobump' : self.rhobump,
+            'ictest'  : self.ictest,
+            'evaluate_face_solution' : self.collocate_faces,
+        }
+        
+        # Modify some of these if solving Euler PDEs
+        if system == 'euler':
+            self.keywords['fields'] = ['rho','rhou','E']
+            self.keywords['loader'] = self.load_advection
+            self.keywords['riemann'] = self.riemann_advection
+            self.keywords['interior_flux'] = self.interior_flux_advection
+            self.keywords['max_wave_speed'] = self.max_wave_speed_advection
+
+
     #================================================================================
     def printer(self,nout,dt):
-        """Outputs the solution to a file"""
+        """Outputs the solution to a file
+
+        The format is chosen so that it is easy to plot using matplotlib
+        """
 
         print("Solution written to file at step {0:7d} and time {1:e} (current time step:{2:e}).".format(self.n,self.t,dt));
         
-        # Call the printing function for the specific problem type
-        self.keywords['printer'](nout)
-
-
-    #================================================================================
-    def print_advection(self,nout):
-        """Print the solution for linear advection PDE system.
-
-        The format is chosen so that it is easy to plot using matplotlib
-        """
-
-        # output file name
-        fname = 'u{0:010d}.dat'.format(nout)
-
-        # Concatenate element centroids with the solution (ignore ghost cells)
-        xc_u = np.c_[ self.xc, self.u[:,1:-1].transpose()] 
-
-        # Make a descriptive header
-        hline = 'n={0:d}, t={1:.18e}, bc_l={2:s}, bc_r={3:s}\nxc'.format(self.n,self.t,self.bc_l,self.bc_r)
-        for i in range(self.basis.N_s):
-            hline += ', u{0:d}'.format(i)
-        
-        # Save the data to a file
-        np.savetxt(fname, xc_u, fmt='%.18e', delimiter=',', header=hline)
-
-
-    #================================================================================
-    def print_euler(self,nout):
-        """Print the solution for the Euler PDE system.
-
-        The format is chosen so that it is easy to plot using matplotlib
-        """
-
         # output file names
-        fields = ['rho','rhou','E']
-        fnames = [field+'{0:010d}.dat'.format(nout) for field in fields]
+        fnames = [field+'{0:010d}.dat'.format(nout) for field in self.keywords['fields']]
 
         # loop on all the fields
         for field,fname in enumerate(fnames):
@@ -132,6 +118,7 @@ class Solution:
         
             # Save the data to a file
             np.savetxt(fname, xc_u, fmt='%.18e', delimiter=',', header=hline)
+
 
     #================================================================================
     def loader(self,fname):
@@ -174,8 +161,6 @@ class Solution:
         B = self.xc[-1] + 0.5*self.dx
         self.x,self.dx = np.linspace(A, B, self.N_E+1, retstep=True)
 
-
-        
 
     #================================================================================
     def sinewave(self):
@@ -258,14 +243,6 @@ class Solution:
 
         # Scale the inverse mass matrix
         self.scaled_minv = self.basis.minv*2.0/self.dx
-
-        # Set the other functions
-        self.keywords['printer'] = self.print_euler
-        self.keywords['loader'] = self.load_advection
-        self.keywords['riemann'] = self.riemann_advection
-        self.keywords['interior_flux'] = self.interior_flux_advection
-        self.keywords['max_wave_speed'] = self.max_wave_speed_advection
-
 
     #================================================================================
     def ictest(self):
