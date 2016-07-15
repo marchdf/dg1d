@@ -61,7 +61,7 @@ class Solution:
         # Boundary condition type (left/right)
         self.bc_l = ''
         self.bc_r = ''
-
+                   
         # Apply the initial condition
         try:
             self.keywords[self.icname]()
@@ -116,16 +116,22 @@ class Solution:
         fields = ['rho','rhou','E']
         fnames = [field+'{0:010d}.dat'.format(nout) for field in fields]
 
-        # Concatenate element centroids with the solution (ignore ghost cells)
-        xc_u = np.c_[ self.xc, self.u[:,1:-1].transpose()] 
-
-        # Make a descriptive header
-        hline = 'n={0:d}, t={1:.18e}, bc_l={2:s}, bc_r={3:s}\nxc'.format(self.n,self.t,self.bc_l,self.bc_r)
-        for i in range(self.basis.N_s):
-            hline += ', u{0:d}'.format(i)
+        # loop on all the fields
+        for field,fname in enumerate(fnames):
         
-        # Save the data to a file
-        np.savetxt(fname, xc_u, fmt='%.18e', delimiter=',', header=hline)
+            # Concatenate element centroids with the solution (ignore ghost cells)
+            start =    self.N_F + field
+            end   = -2*self.N_F + 1 + field
+            step  =    self.N_F
+            xc_u = np.c_[ self.xc, self.u[:,start:end:step].transpose()] 
+
+            # Make a descriptive header
+            hline = 'n={0:d}, t={1:.18e}, bc_l={2:s}, bc_r={3:s}\nxc'.format(self.n,self.t,self.bc_l,self.bc_r)
+            for i in range(self.basis.N_s):
+                hline += ', u{0:d}'.format(i)
+        
+            # Save the data to a file
+            np.savetxt(fname, xc_u, fmt='%.18e', delimiter=',', header=hline)
 
     #================================================================================
     def loader(self,fname):
@@ -169,6 +175,8 @@ class Solution:
         self.x,self.dx = np.linspace(A, B, self.N_E+1, retstep=True)
 
 
+        
+
     #================================================================================
     def sinewave(self):
         """Sets up the advection of a simple sine wave at a constant velocity"""
@@ -200,7 +208,7 @@ class Solution:
         self.u = np.zeros([self.basis.p+1, self.N_E])
         
         # Populate the solution
-        self.populate(f)
+        self.populate([f])
         
         # Add the ghost cells
         self.add_ghosts()
@@ -219,6 +227,12 @@ class Solution:
         # Initial condition function
         def f(x):
             return np.sin(2*np.pi*x)
+        # Initial condition function
+        def g(x):
+            return np.sin(4*np.pi*x)
+        # Initial condition function
+        def h(x):
+            return np.sin(8*np.pi*x)
 
         # Set the boundary condition
         self.bc_l = 'periodic'
@@ -237,13 +251,21 @@ class Solution:
         self.u = np.zeros([self.basis.p+1, self.N_E*self.N_F])
         
         # Populate the solution
-        self.populate(f)
+        self.populate([f,g,h])
         
         # Add the ghost cells
         self.add_ghosts()
 
         # Scale the inverse mass matrix
         self.scaled_minv = self.basis.minv*2.0/self.dx
+
+        # Set the other functions
+        self.keywords['printer'] = self.print_euler
+        self.keywords['loader'] = self.load_advection
+        self.keywords['riemann'] = self.riemann_advection
+        self.keywords['interior_flux'] = self.interior_flux_advection
+        self.keywords['max_wave_speed'] = self.max_wave_speed_advection
+
 
     #================================================================================
     def ictest(self):
@@ -276,7 +298,7 @@ class Solution:
         self.u = np.zeros([self.basis.p+1, self.N_E])
         
         # Populate the solution
-        self.populate(f)
+        self.populate([f])
         
         # Add the ghost cells
         self.add_ghosts()
@@ -286,7 +308,10 @@ class Solution:
 
     #================================================================================
     def populate(self,f):
-        """Populate the initial condition, given a function f"""
+        """Populate the initial condition, given a function f
+
+        f is a list of functions, one value for each field
+        """
         
         for e in range(self.N_E):
 
@@ -296,7 +321,7 @@ class Solution:
 
             for field in range(self.N_F):
                 # solution coefficients
-                self.u[:,e*self.N_F+field] = self.basis.projection(a,b,f)
+                self.u[:,e*self.N_F+field] = self.basis.projection(a,b,f[field])
 
 
     #================================================================================
