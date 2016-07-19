@@ -11,6 +11,7 @@ import copy
 
 import basis
 import enhance
+import riemann
 
 #================================================================================
 #
@@ -71,7 +72,7 @@ class Solution:
         self.keywords = {
             'system'  : system,
             'fields'  : ['u'],
-            'riemann' : self.riemann_advection,
+            'riemann' : riemann.advection_upwinding,
             'interior_flux' : self.interior_flux_advection,
             'max_wave_speed': self.max_wave_speed_advection,
             'sinewave': self.sinewave,
@@ -83,7 +84,7 @@ class Solution:
         # Modify some of these if solving Euler PDEs
         if system == 'euler':
             self.keywords['fields'] = ['rho','rhou','E']
-            self.keywords['riemann'] = self.riemann_advection
+            self.keywords['riemann'] = riemann.euler_rusanov
             self.keywords['interior_flux'] = self.interior_flux_advection
             self.keywords['max_wave_speed'] = self.max_wave_speed_advection
             self.N_F = 3
@@ -190,7 +191,7 @@ class Solution:
 
         # Initial condition function
         def f(x):
-            return np.sin(2*np.pi*x)
+            return [np.sin(2*np.pi*x)]
 
         # Set the boundary condition
         self.bc_l = 'periodic'
@@ -211,7 +212,7 @@ class Solution:
         self.u = np.zeros([self.basis.p+1, self.N_E])
         
         # Populate the solution
-        self.populate([f])
+        self.populate(f)
         
         # Add the ghost cells
         self.add_ghosts()
@@ -229,13 +230,12 @@ class Solution:
 
         # Initial condition function
         def f(x):
-            return np.sin(2*np.pi*x)
-        # Initial condition function
-        def g(x):
-            return np.sin(4*np.pi*x)
-        # Initial condition function
-        def h(x):
-            return np.sin(8*np.pi*x)
+            gamma = 1.4
+            rho = np.sin(2*np.pi*x) + 2
+            u   = 1
+            p   = 1
+            E   = 0.5*rho*u*u + p/(gamma-1)
+            return [rho, rho*u, E]
 
         # Set the boundary condition
         self.bc_l = 'periodic'
@@ -253,7 +253,7 @@ class Solution:
         self.u = np.zeros([self.basis.p+1, self.N_E*self.N_F])
         
         # Populate the solution
-        self.populate([f,g,h])
+        self.populate(f)
         
         # Add the ghost cells
         self.add_ghosts()
@@ -271,7 +271,7 @@ class Solution:
 
         # Initial condition function
         def f(x):
-            return np.sin(x-np.pi/3)**3 + 1
+            return [np.sin(x-np.pi/3)**3 + 1]
 
         # Set the boundary condition
         self.bc_l = 'periodic'
@@ -292,7 +292,7 @@ class Solution:
         self.u = np.zeros([self.basis.p+1, self.N_E])
         
         # Populate the solution
-        self.populate([f])
+        self.populate(f)
         
         # Add the ghost cells
         self.add_ghosts()
@@ -315,7 +315,7 @@ class Solution:
 
             for field in range(self.N_F):
                 # solution coefficients
-                self.u[:,e*self.N_F+field] = self.basis.projection(a,b,f[field])
+                self.u[:,e*self.N_F+field] = self.basis.projection(a,b,f,field)
 
 
     #================================================================================
@@ -359,11 +359,6 @@ class Solution:
     def riemann(self,ul,ur):
         """Returns the flux at an interface by calling the right Riemann solver"""
         return self.keywords['riemann'](ul,ur)
-
-    #================================================================================
-    def riemann_advection(self,ul,ur):
-        """Returns the interface flux for the advection equation (simple upwinding)"""
-        return ul
     
     #================================================================================
     def interior_flux(self,ug):

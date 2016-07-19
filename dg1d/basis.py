@@ -98,7 +98,7 @@ class Basis:
 
 
     #================================================================================
-    def projection(self,a,b,f):
+    def projection(self,a,b,f,component=0):
         """Given a function, returns the approximating polynomial in the interval [a,b]
     
         We are basically projecting the function into the Legendre basis space
@@ -111,11 +111,13 @@ class Basis:
              int_a^b f(x) g(x) dx \approx \sum_{k=0}^{p-1} w_k dx/2 f(\frac{b-a}{2} x_k + \frac{b+a}{2}) g(\frac{b-a}{2} x_k + \frac{b+a}{2})
              phi^(n)(\frac{b-a}{2} x_k + \frac{b+a}{2}) = L^n(x_k) (where L is the Legendre polynomial on [-1,1])
 
+        component is the component of f we want to use (assume scalar function)
+
         """
 
         # Evaluate the function at the local Gaussian nodes
         xg = self.shifted_xgauss(a,b)
-        fgauss = f(xg)
+        fgauss = f(xg)[component]
 
         # There are two ways to do the projection.
         # 1) Manually

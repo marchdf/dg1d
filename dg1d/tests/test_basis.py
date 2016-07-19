@@ -64,13 +64,13 @@ class BasisTestCase(unittest.TestCase):
             """Is the projection correct for f(x) = x^2 on [-1,1]"""
             order = 3
             test_basis = basis.Basis(order)
-            f = lambda x: x*x
+            f = lambda x: [x*x]
             c = test_basis.projection(-1,1,f)
             npt.assert_array_almost_equal(c,[1./3,0,2./3,0])
 
         def test_projection1(self):
             """Is the projection correct for f(x) = sin(x) on [0,0.2]"""
-            f = lambda x: np.sin(x)
+            f = lambda x: [np.sin(x)]
             a = 0
             b = 0.2
             order = 3
