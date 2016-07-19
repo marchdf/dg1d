@@ -71,7 +71,6 @@ class Solution:
         self.keywords = {
             'system'  : system,
             'fields'  : ['u'],
-            'loader'  : self.load_advection,
             'riemann' : self.riemann_advection,
             'interior_flux' : self.interior_flux_advection,
             'max_wave_speed': self.max_wave_speed_advection,
@@ -84,10 +83,10 @@ class Solution:
         # Modify some of these if solving Euler PDEs
         if system == 'euler':
             self.keywords['fields'] = ['rho','rhou','E']
-            self.keywords['loader'] = self.load_advection
             self.keywords['riemann'] = self.riemann_advection
             self.keywords['interior_flux'] = self.interior_flux_advection
             self.keywords['max_wave_speed'] = self.max_wave_speed_advection
+            self.N_F = 3
 
 
     #================================================================================
@@ -100,7 +99,7 @@ class Solution:
         print("Solution written to file at step {0:7d} and time {1:e} (current time step:{2:e}).".format(self.n,self.t,dt));
         
         # output file names
-        fnames = [field+'{0:010d}.dat'.format(nout) for field in self.keywords['fields']]
+        fnames = self.format_fnames(nout)
 
         # loop on all the fields
         for field,fname in enumerate(fnames):
@@ -121,28 +120,21 @@ class Solution:
 
 
     #================================================================================
-    def loader(self,fname):
+    def loader(self,step):
         """Load the solution from a file"""
 
-        print("Loading file",fname);
-        
-        # Call the loading function
-        self.keywords['loader'](fname)
+        print("Loading solution at step",step);
 
+        # File names
+        fnames = self.format_fnames(step)
 
-    #================================================================================
-    def load_advection(self,fname):
-        """Load the solution for linear advection PDE system.
+        #
+        # Read data from one file
+        # 
+        self.xc = np.loadtxt(fnames[0], delimiter=',', usecols=(0,))
 
-        """
-
-        # Load the data from the file
-        dat = np.loadtxt(fname, delimiter=',')
-        self.xc = dat[:,0]
-        self.u  = dat[:,1::].transpose()
-        
-        # Parse the header for the solution time information
-        with open(fname,'r') as f:
+        # Parse the header and first line for the solution information
+        with open(fnames[0],'r') as f:
             line = f.readline()
             line = re.split('=|,',line)
             self.n = int(line[1])
@@ -150,18 +142,44 @@ class Solution:
             self.bc_l = line[5].rstrip()
             self.bc_r = line[7].rstrip()
 
+            # get the number of solution coefficients
+            line = f.readline()
+            N_s  = len(line.split(',')) - 1
+
         # Make the basis
-        order = self.u.shape[0]-1
+        order = N_s-1
         self.basis = basis.Basis(order)
 
         # Domain specifications
-        self.N_E = np.shape(self.u)[1]
+        self.N_E = len(self.xc)
         self.dx  = self.xc[1] - self.xc[0]
         A = self.xc[0]  - 0.5*self.dx
         B = self.xc[-1] + 0.5*self.dx
-        self.x,self.dx = np.linspace(A, B, self.N_E+1, retstep=True)
+        self.x, self.dx = np.linspace(A, B, self.N_E+1, retstep=True)
+
+        #
+        # Read solution data from all the files
+        #
+        self.u = np.zeros((N_s,self.N_E*self.N_F))
+        self.add_ghosts()
+        for field,fname in enumerate(fnames):
+            print(fname)
+        
+            # Load the data from the file
+            dat = np.loadtxt(fname, delimiter=',')
+
+            # Store the data
+            start =    self.N_F + field
+            end   = -2*self.N_F + 1 + field
+            step  =    self.N_F
+            self.u[:,start:end:step]  = dat[:,1::].transpose()
 
 
+    #================================================================================
+    def format_fnames(self,step):
+        """Returns a list of file names for a given step"""
+        return [field+'{0:010d}.dat'.format(step) for field in self.keywords['fields']]
+            
     #================================================================================
     def sinewave(self):
         """Sets up the advection of a simple sine wave at a constant velocity"""
@@ -225,7 +243,6 @@ class Solution:
 
         # Number of elements
         self.N_E = int(self.params[0])
-        self.N_F = 3
         
         # Discretize the domain, get the element edges and the element
         # centroids

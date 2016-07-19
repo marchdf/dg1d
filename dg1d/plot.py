@@ -36,7 +36,8 @@ import dg
 #================================================================================
 parser = argparse.ArgumentParser(description='A simple plot tool for the one-dimensional DG data')
 parser.add_argument('-s','--show', help='Show the plots', action='store_true')
-parser.add_argument('-f','--file', dest='fname', help='File to load', metavar = "FILE", required=True)
+parser.add_argument('-f','--file', dest='step', help='File to load', type=int, required=True)
+parser.add_argument('-t','--type', dest='system', help='Type of system to solve', type=str, default='advection')
 args = parser.parse_args()
 
 
@@ -58,8 +59,8 @@ markertype = ['s','d','o','p','h']
 #
 #================================================================================
 
-solution = solution.Solution('empty','empty',0)
-solution.loader(args.fname)
+solution = solution.Solution('empty',args.system,0)
+solution.loader(args.step)
 
 # Collocate the solution to the Gaussian nodes
 ug = solution.collocate()
@@ -67,22 +68,28 @@ ug = solution.collocate()
 # Collocate to the cell edge values
 uf = solution.evaluate_faces()
 
-# Plot each element solution in a different color
-for e in range(solution.N_E):
-    a = solution.x[e]
-    b = solution.x[e+1]
-    xg = 0.5*(b-a)*solution.basis.x + 0.5*(b+a)
+# Plot each field
+for field in range(solution.N_F):
 
-    # plot the solution at the Gaussian nodes (circles)
-    plt.plot(xg,ug[:,e],'o',mfc=cmap[e%len(cmap)],mec=cmap[e%len(cmap)])
+    plt.figure(field)
+    
+    # Plot each element solution in a different color
+    # Skip plotting the ghost cells
+    for e in range(1,solution.N_E+1):
+        a = solution.x[e-1]
+        b = solution.x[e]
+        xg = 0.5*(b-a)*solution.basis.x + 0.5*(b+a)
+        
+        # plot the solution at the Gaussian nodes (circles)
+        plt.plot(xg,ug[:,e*solution.N_F+field],'o',mfc=cmap[e%len(cmap)],mec=cmap[e%len(cmap)])
+        
+        # Plot the solution at the cell edges (squares)
+        plt.plot([a,b],uf[:,e*solution.N_F+field],'s',mfc=cmap[e%len(cmap)],mec='black')
 
-    # Plot the solution at the cell edges (squares)
-    plt.plot([a,b],uf[:,e],'s',mfc=cmap[e%len(cmap)],mec='black')
-
-# Plot the exact solution
-xe = np.linspace(-1,1,200)
-fe = np.sin(2*np.pi*xe)
-plt.plot(xe,fe,'k')
+    # Plot the exact solution
+    xe = np.linspace(-1,1,200)
+    fe = np.sin(2*np.pi*xe)
+    plt.plot(xe,fe,'k')
 
 if args.show:
     plt.show()
