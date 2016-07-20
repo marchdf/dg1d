@@ -11,7 +11,8 @@ import copy
 
 import basis
 import enhance
-import riemann
+import advection_fluxes
+import euler_fluxes
 
 #================================================================================
 #
@@ -72,9 +73,9 @@ class Solution:
         self.keywords = {
             'system'  : system,
             'fields'  : ['u'],
-            'riemann' : riemann.advection_upwinding,
-            'interior_flux' : self.interior_flux_advection,
-            'max_wave_speed': self.max_wave_speed_advection,
+            'riemann' : advection_fluxes.riemann_upwinding,
+            'interior_flux' : advection_fluxes.interior_flux,
+            'max_wave_speed': advection_fluxes.max_wave_speed,
             'sinewave': self.sinewave,
             'rhobump' : self.rhobump,
             'ictest'  : self.ictest,
@@ -84,9 +85,9 @@ class Solution:
         # Modify some of these if solving Euler PDEs
         if system == 'euler':
             self.keywords['fields'] = ['rho','rhou','E']
-            self.keywords['riemann'] = riemann.euler_rusanov
-            self.keywords['interior_flux'] = self.interior_flux_advection
-            self.keywords['max_wave_speed'] = self.max_wave_speed_advection
+            self.keywords['riemann'] = euler_fluxes.riemann_rusanov
+            self.keywords['interior_flux'] = euler_fluxes.interior_flux
+            self.keywords['max_wave_speed'] = euler_fluxes.max_wave_speed
             self.N_F = 3
 
 
@@ -366,19 +367,9 @@ class Solution:
         return self.keywords['interior_flux'](ug)
 
     #================================================================================
-    def interior_flux_advection(self,ug):
-        """Returns the interior flux for the advection equation"""
-        return ug
-
-    #================================================================================
     def max_wave_speed(self):
         """Returns the maximum wave speed in the domain (based on the cell averages)"""
-        return self.keywords['max_wave_speed']()
-
-    #================================================================================
-    def max_wave_speed_advection(self):
-        """Returns the maximum wave speed for advection"""
-        return 1
+        return self.keywords['max_wave_speed'](self.u)
 
     #================================================================================
     def collocate(self):
