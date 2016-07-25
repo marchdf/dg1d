@@ -27,22 +27,16 @@ def max_wave_speed(u):
     # Initialize
     maxvap = 0 
 
-    # Loop on all elements
-    for i in range(0,u.shape[1],3):
+    # Primitive variables
+    rho = u[0,0::3]
+    v   = u[0,1::3]/rho
+    E   = u[0,2::3]
+    p   = (gamma-1)*(E-0.5*rho*v*v)    
 
-        rho = u[0,i]
-        v   = u[0,i+1]/rho
-        E   = u[0,i+2]
-        p = (gamma-1)*(E - 0.5*rho*v*v)
+    # Get the wave speed
+    wave_speed = np.fabs(v) + np.sqrt(gamma*p/rho)
 
-        # Get the wave speed
-        wave_speed = np.fabs(v) + np.sqrt(gamma*p/rho)
-
-        # Get the maximum
-        if maxvap < wave_speed:
-            maxvap = wave_speed
-
-    return maxvap
+    return np.max(wave_speed)
 
 #================================================================================
 def riemann_rusanov(ul,ur):
