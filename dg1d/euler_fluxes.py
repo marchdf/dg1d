@@ -98,18 +98,15 @@ def interior_flux(ug):
     # Initialize
     F = np.zeros(ug.shape)
 
-    # Loop on all the elements
-    for i in range(0,ug.shape[1],3):
-        for j in range(0,ug.shape[0]):
-
-            rho = ug[j,i]
-            v   = ug[j,i+1]/rho
-            E   = ug[j,i+2]
-            p = (gamma-1)*(E - 0.5*rho*v*v)
-            
-            # Flux in x-direction
-            F[j,i]   = rho*v
-            F[j,i+1] = rho*v*v + p
-            F[j,i+2] = (E+p)*v
-        
+    # Primitive variables
+    rho = ug[:,0::3]
+    v   = ug[:,1::3]/rho
+    E   = ug[:,2::3]
+    p   = (gamma-1)*(E-0.5*rho*v*v)    
+    
+    # Flux in x-direction
+    F[:,0::3] = ug[:,1::3]
+    F[:,1::3] = rho*v*v + p
+    F[:,2::3] = (E+p)*v
+    
     return F
