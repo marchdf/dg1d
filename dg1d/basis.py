@@ -115,9 +115,11 @@ class Basis:
 
         """
 
-        # Evaluate the function at the local Gaussian nodes
-        xg = self.shifted_xgauss(a,b)
-        fgauss = f(xg)[component]
+        # Evaluate the function at the local Gaussian nodes (one at a time)
+        xgs = self.shifted_xgauss(a,b)
+        fgauss = np.zeros(xgs.shape)
+        for g,xg in enumerate(xgs):
+            fgauss[g] = f(xg)[component]
 
         # There are two ways to do the projection.
         # 1) Manually

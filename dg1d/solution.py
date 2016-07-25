@@ -78,6 +78,7 @@ class Solution:
             'max_wave_speed': advection_fluxes.max_wave_speed,
             'sinewave': self.sinewave,
             'rhobump' : self.rhobump,
+            'simplew' : self.simplew,
             'ictest'  : self.ictest,
             'evaluate_face_solution' : self.collocate_faces,
         }
@@ -263,6 +264,83 @@ class Solution:
         self.scaled_minv = self.basis.minv*2.0/self.dx
 
     #================================================================================
+    def simplew(self):
+        """Initial condition for two rarefaction waves moving away from each other.
+
+        See Marcus Lo's thesis p. 164 or my notes 22/7/16. I had to
+        fix a lot of typos to make this work.
+        """
+
+        
+        # Domain specifications
+        A = -3
+        B =  3
+
+        # Initial condition function
+        def f(x):
+
+            # define some constants
+            gamma = 1.4
+            rho0 = gamma
+            p0 = 1
+            u0L = -2./np.sqrt(gamma)
+            u0R =  2./np.sqrt(gamma)
+            M0L = -1
+            M0R =  1           
+            a0  = 1/np.sqrt(gamma)
+
+            # Velocities vary in different regions
+            if x<-1.5 :
+                u   = u0L
+                rho = rho0 * (1+(gamma-1)/2* (u/a0))**(2.0/(gamma-1))
+                p   = p0   * (1+(gamma-1)/2* (u/a0))**(2.0*gamma/(gamma-1))
+            elif ((x>=-1.5) and (x<=-0.5)):
+                u   = a0*(M0L- u0L/(2*a0) * np.tanh((x+1)/(0.25-(x+1)*(x+1))))
+                rho = rho0 * (1+(gamma-1)/2* (u/a0))**(2.0/(gamma-1))
+                p   = p0   * (1+(gamma-1)/2* (u/a0))**(2.0*gamma/(gamma-1))
+            elif ((x>-0.5) and (x<0.5)):
+                u   = 0
+                rho = rho0
+                p   = p0
+            elif ((x>=0.5) and (x<=1.5)):
+                u   = a0*(M0R + u0R/(2*a0) * np.tanh((x-1)/(0.25-(x-1)**2)))
+                rho = rho0 * (1+(gamma-1)/2* (-u/a0))**(2.0/(gamma-1))
+                p   = p0   * (1+(gamma-1)/2* (-u/a0))**(2.0*gamma/(gamma-1))
+            elif (x>1.5):
+                u   = u0R
+                rho = rho0 * (1+(gamma-1)/2* (-u/a0))**(2.0/(gamma-1))
+                p   = p0   * (1+(gamma-1)/2* (-u/a0))**(2.0*gamma/(gamma-1))
+               
+            # Now for the density/pressure/energy fields
+            E   = p/(gamma-1) + 0.5*rho*u*u
+            
+            return [rho, rho*u, E]
+
+        # Set the boundary condition
+        self.bc_l = 'zerograd'
+        self.bc_r = 'zerograd'
+
+        # Number of elements
+        self.N_E = int(self.params[0])
+        
+        # Discretize the domain, get the element edges and the element
+        # centroids
+        self.x,self.dx = np.linspace(A, B, self.N_E+1, retstep=True)
+        self.xc = (self.x[1:] + self.x[:-1]) * 0.5
+        
+        # Initialize the initial condition
+        self.u = np.zeros([self.basis.p+1, self.N_E*self.N_F])
+        
+        # Populate the solution
+        self.populate(f)
+        
+        # Add the ghost cells
+        self.add_ghosts()
+
+        # Scale the inverse mass matrix
+        self.scaled_minv = self.basis.minv*2.0/self.dx
+
+    #================================================================================
     def ictest(self):
         """Sets up a test solution."""
 
@@ -331,12 +409,16 @@ class Solution:
         # On the left side of the domain
         if self.bc_l is 'periodic':
             self.u[:,0:self.N_F]  = self.u[:,-2*self.N_F:-self.N_F]
+        elif self.bc_l is 'zerograd':
+            self.u[:,0:self.N_F]  = self.u[:,self.N_F:2*self.N_F]
         else:
             print("{0:s} is an invalid boundary condition. Exiting.".format(self.bc_l))
         
         # On the right side of the domain
         if self.bc_r is 'periodic':
             self.u[:,-self.N_F:] = self.u[:,self.N_F:2*self.N_F]
+        elif self.bc_r is 'zerograd':
+            self.u[:,-self.N_F:] = self.u[:,-2*self.N_F:-self.N_F]
         else:
             print("{0:s} is an invalid boundary condition. Exiting.".format(self.bc_r))
     

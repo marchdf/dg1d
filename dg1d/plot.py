@@ -87,9 +87,10 @@ for field in range(solution.N_F):
         plt.plot([a,b],uf[:,e*solution.N_F+field],'s',mfc=cmap[e%len(cmap)],mec='black')
 
     # Plot the exact solution
-    xe = np.linspace(-1,1,200)
-    fe = np.sin(2*np.pi*xe)
-    plt.plot(xe,fe,'k')
+    if args.system == 'advection':
+        xe = np.linspace(-1,1,200)
+        fe = np.sin(2*np.pi*xe)
+        plt.plot(xe,fe,'k')
 
 if args.show:
     plt.show()
