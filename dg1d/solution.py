@@ -79,6 +79,7 @@ class Solution:
             'sinewave': self.sinewave,
             'rhobump' : self.rhobump,
             'simplew' : self.simplew,
+            'entrpyw' : self.entrpyw,
             'ictest'  : self.ictest,
             'evaluate_face_solution' : self.collocate_faces,
         }
@@ -319,6 +320,59 @@ class Solution:
         # Set the boundary condition
         self.bc_l = 'zerograd'
         self.bc_r = 'zerograd'
+
+        # Number of elements
+        self.N_E = int(self.params[0])
+        
+        # Discretize the domain, get the element edges and the element
+        # centroids
+        self.x,self.dx = np.linspace(A, B, self.N_E+1, retstep=True)
+        self.xc = (self.x[1:] + self.x[:-1]) * 0.5
+        
+        # Initialize the initial condition
+        self.u = np.zeros([self.basis.p+1, self.N_E*self.N_F])
+        
+        # Populate the solution
+        self.populate(f)
+        
+        # Add the ghost cells
+        self.add_ghosts()
+
+        # Scale the inverse mass matrix
+        self.scaled_minv = self.basis.minv*2.0/self.dx
+
+    #================================================================================
+    def entrpyw(self):
+        """Initial condition for an entropy wave.
+        
+        See "I do like CFD" Vol 1 (2nd edition) by Masatsuka on page 240
+        """
+        
+        # Domain specifications
+        A = -1
+        B =  1
+
+        # Initial condition function
+        def f(x):
+
+            # define some constants
+            gamma = 1.4
+            rho0  = 1
+            u0    = 1
+            p0    = 1
+            A     = 0.2
+
+            # Fill the fields
+            rho = rho0 + A * np.sin(np.pi*x)
+            u   = u0
+            p   = p0
+            E   = p/(gamma-1) + 0.5*rho*u*u
+            
+            return [rho, rho*u, E]
+
+        # Set the boundary condition
+        self.bc_l = 'periodic'
+        self.bc_r = 'periodic'
 
         # Number of elements
         self.N_E = int(self.params[0])

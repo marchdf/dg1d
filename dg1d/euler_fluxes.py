@@ -13,7 +13,6 @@ import numpy as np
 #================================================================================
 gamma = 1.4
 
-
 #================================================================================
 #
 # Function definitions
@@ -23,9 +22,6 @@ gamma = 1.4
 #================================================================================
 def max_wave_speed(u):
     """Returns the maximum wave speed for the Euler system"""
-
-    # Initialize
-    maxvap = 0 
 
     # Primitive variables
     rho = u[0,0::3]
@@ -75,7 +71,6 @@ def riemann_rusanov(ul,ur):
     F[2::3] = 0.5*((EL+pL)*vL + (ER+pR)*vR - maxvap*(ER-EL))
 
     return F
-
 
 #================================================================================
 def interior_flux(ug):
