@@ -13,6 +13,7 @@ import basis
 import enhance
 import advection_fluxes
 import euler_fluxes
+import constants
 
 #================================================================================
 #
@@ -77,7 +78,6 @@ class Solution:
             'interior_flux' : advection_fluxes.interior_flux,
             'max_wave_speed': advection_fluxes.max_wave_speed,
             'sinewave': self.sinewave,
-            'rhobump' : self.rhobump,
             'simplew' : self.simplew,
             'entrpyw' : self.entrpyw,
             'ictest'  : self.ictest,
@@ -223,46 +223,6 @@ class Solution:
         # Scale the inverse mass matrix
         self.scaled_minv = self.basis.minv*2.0/self.dx
 
-    #================================================================================
-    def rhobump(self):
-        """Sets up the advection of a simple density bump at a constant velocity"""
-
-        # Domain specifications
-        A = -1
-        B =  1
-
-        # Initial condition function
-        def f(x):
-            gamma = 1.4
-            rho = np.sin(2*np.pi*x) + 2
-            u   = 1
-            p   = 1
-            E   = 0.5*rho*u*u + p/(gamma-1)
-            return [rho, rho*u, E]
-
-        # Set the boundary condition
-        self.bc_l = 'periodic'
-        self.bc_r = 'periodic'
-
-        # Number of elements
-        self.N_E = int(self.params[0])
-        
-        # Discretize the domain, get the element edges and the element
-        # centroids
-        self.x,self.dx = np.linspace(A, B, self.N_E+1, retstep=True)
-        self.xc = (self.x[1:] + self.x[:-1]) * 0.5
-        
-        # Initialize the initial condition
-        self.u = np.zeros([self.basis.p+1, self.N_E*self.N_F])
-        
-        # Populate the solution
-        self.populate(f)
-        
-        # Add the ghost cells
-        self.add_ghosts()
-
-        # Scale the inverse mass matrix
-        self.scaled_minv = self.basis.minv*2.0/self.dx
 
     #================================================================================
     def simplew(self):
@@ -272,36 +232,35 @@ class Solution:
         See Marcus Lo's thesis p. 164 (lots of typos) 
         Or read my notes 27/7/16. 
         """
-
         
         # Domain specifications
         A = -4
         B =  4
 
+        # define some constants
+        constants.gamma = 3
+        
         # Initial condition function
         def f(x):
 
-            # define some constants
-            gamma = 1.4
-            u0 = 2./gamma
-
             # Velocities vary in different regions
+            u0 = 2./constants.gamma
             if x<=-1.5 :
                 u   = -u0
             elif ((x>-1.5) and (x<-0.5)):
-                u   = -1/gamma * (1 - np.tanh((x+1)/(0.25-(x+1)**2))) 
+                u   = -1/constants.gamma * (1 - np.tanh((x+1)/(0.25-(x+1)**2))) 
             elif ((x>=-0.5) and (x<=0.5)):
                 u   = 0
             elif ((x>0.5) and (x<1.5)):
-                u   =  1/gamma * (1 + np.tanh((x-1)/(0.25-(x-1)**2)))
+                u   =  1/constants.gamma * (1 + np.tanh((x-1)/(0.25-(x-1)**2)))
             elif (x>=1.5):
                 u   = u0
                
             # Now for the speed of sound/density/pressure/energy fields
-            a   = 1 - (gamma-1)/2 * np.fabs(u)
-            rho = gamma * (a**(2/(gamma-1)))
-            p   = rho*a*a/gamma
-            E   = p/(gamma-1) + 0.5*rho*u*u
+            a   = 1 - (constants.gamma-1)/2 * np.fabs(u)
+            rho = constants.gamma * (a**(2/(constants.gamma-1)))
+            p   = rho*a*a/constants.gamma
+            E   = p/(constants.gamma-1) + 0.5*rho*u*u
             
             return [rho, rho*u, E]
 
@@ -344,7 +303,6 @@ class Solution:
         def f(x):
 
             # define some constants
-            gamma = 1.4
             rho0  = 1
             u0    = 1
             p0    = 1
@@ -354,7 +312,7 @@ class Solution:
             rho = rho0 + A * np.sin(np.pi*x)
             u   = u0
             p   = p0
-            E   = p/(gamma-1) + 0.5*rho*u*u
+            E   = p/(constants.gamma-1) + 0.5*rho*u*u
             
             return [rho, rho*u, E]
 

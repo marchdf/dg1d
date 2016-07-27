@@ -29,6 +29,7 @@ import deck
 import solution
 import rk
 import dg
+import constants
 
 #================================================================================
 #
@@ -63,6 +64,9 @@ def get_git_revision_hash():
 start = time.time()
 print('Code version: ', get_git_revision_hash())
 
+# Initialize some global constants
+constants.init()
+
 # Parse the deck
 deck = deck.Deck()
 deck.parser(args.deck)
@@ -82,8 +86,6 @@ dgsolver = dg.DG(sol)
 print("Integrating the solution in time.")
 rk.integrate(sol,deck,dgsolver,deck.rk)
 
-
 # output timer
 end = time.time() - start
 print("Elapsed time "+str(timedelta(seconds=end)) + " (or {0:f} seconds)".format(end))
-

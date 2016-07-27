@@ -5,13 +5,7 @@
 #================================================================================
 import sys
 import numpy as np
-
-#================================================================================
-#
-# Constants
-#
-#================================================================================
-gamma = 1.4
+import constants
 
 #================================================================================
 #
@@ -27,10 +21,10 @@ def max_wave_speed(u):
     rho = u[0,0::3]
     v   = u[0,1::3]/rho
     E   = u[0,2::3]
-    p   = (gamma-1)*(E-0.5*rho*v*v)    
+    p   = (constants.gamma-1)*(E-0.5*rho*v*v)    
 
     # Get the wave speed
-    wave_speed = np.fabs(v) + np.sqrt(gamma*p/rho)
+    wave_speed = np.fabs(v) + np.sqrt(constants.gamma*p/rho)
 
     return np.max(wave_speed)
 
@@ -49,14 +43,14 @@ def riemann_rusanov(ul,ur):
     rhoL = ul[0::3]
     vL   = ul[1::3]/rhoL
     EL   = ul[2::3]
-    pL   = (gamma-1)*(EL-0.5*rhoL*vL*vL)    
-    aL   = np.sqrt(gamma*pL/rhoL)
+    pL   = (constants.gamma-1)*(EL-0.5*rhoL*vL*vL)    
+    aL   = np.sqrt(constants.gamma*pL/rhoL)
 
     rhoR = ur[0::3]
     vR   = ur[1::3]/rhoR
     ER   = ur[2::3]
-    pR   = (gamma-1)*(ER - 0.5*rhoR*vR*vR)
-    aR   = np.sqrt(gamma*pR/rhoR)
+    pR   = (constants.gamma-1)*(ER - 0.5*rhoR*vR*vR)
+    aR   = np.sqrt(constants.gamma*pR/rhoR)
 
     # Find the maximum eigenvalue for each interface
     maxvap = np.maximum(np.fabs(vL)+aL,np.fabs(vR)+aR)
@@ -83,7 +77,7 @@ def interior_flux(ug):
     rho = ug[:,0::3]
     v   = ug[:,1::3]/rho
     E   = ug[:,2::3]
-    p   = (gamma-1)*(E-0.5*rho*v*v)    
+    p   = (constants.gamma-1)*(E-0.5*rho*v*v)    
     
     # Flux in x-direction
     F[:,0::3] = ug[:,1::3]
