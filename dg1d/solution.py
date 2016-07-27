@@ -268,51 +268,39 @@ class Solution:
     def simplew(self):
         """Initial condition for two rarefaction waves moving away from each other.
 
-        See Marcus Lo's thesis p. 164 or my notes 22/7/16. I had to
-        fix a lot of typos to make this work.
+        See the High Order CFD Workshop 1 and 2 problem C1.5.
+        See Marcus Lo's thesis p. 164 (lots of typos) 
+        Or read my notes 27/7/16. 
         """
 
         
         # Domain specifications
-        A = -3
-        B =  3
+        A = -4
+        B =  4
 
         # Initial condition function
         def f(x):
 
             # define some constants
             gamma = 1.4
-            rho0 = gamma
-            p0 = 1
-            u0L = -2./np.sqrt(gamma)
-            u0R =  2./np.sqrt(gamma)
-            M0L = -1
-            M0R =  1           
-            a0  = 1/np.sqrt(gamma)
+            u0 = 2./gamma
 
             # Velocities vary in different regions
-            if x<-1.5 :
-                u   = u0L
-                rho = rho0 * (1+(gamma-1)/2* (u/a0))**(2.0/(gamma-1))
-                p   = p0   * (1+(gamma-1)/2* (u/a0))**(2.0*gamma/(gamma-1))
-            elif ((x>=-1.5) and (x<=-0.5)):
-                u   = a0*(M0L- u0L/(2*a0) * np.tanh((x+1)/(0.25-(x+1)*(x+1))))
-                rho = rho0 * (1+(gamma-1)/2* (u/a0))**(2.0/(gamma-1))
-                p   = p0   * (1+(gamma-1)/2* (u/a0))**(2.0*gamma/(gamma-1))
-            elif ((x>-0.5) and (x<0.5)):
+            if x<=-1.5 :
+                u   = -u0
+            elif ((x>-1.5) and (x<-0.5)):
+                u   = -1/gamma * (1 - np.tanh((x+1)/(0.25-(x+1)**2))) 
+            elif ((x>=-0.5) and (x<=0.5)):
                 u   = 0
-                rho = rho0
-                p   = p0
-            elif ((x>=0.5) and (x<=1.5)):
-                u   = a0*(M0R + u0R/(2*a0) * np.tanh((x-1)/(0.25-(x-1)**2)))
-                rho = rho0 * (1+(gamma-1)/2* (-u/a0))**(2.0/(gamma-1))
-                p   = p0   * (1+(gamma-1)/2* (-u/a0))**(2.0*gamma/(gamma-1))
-            elif (x>1.5):
-                u   = u0R
-                rho = rho0 * (1+(gamma-1)/2* (-u/a0))**(2.0/(gamma-1))
-                p   = p0   * (1+(gamma-1)/2* (-u/a0))**(2.0*gamma/(gamma-1))
+            elif ((x>0.5) and (x<1.5)):
+                u   =  1/gamma * (1 + np.tanh((x-1)/(0.25-(x-1)**2)))
+            elif (x>=1.5):
+                u   = u0
                
-            # Now for the density/pressure/energy fields
+            # Now for the speed of sound/density/pressure/energy fields
+            a   = 1 - (gamma-1)/2 * np.fabs(u)
+            rho = gamma * (a**(2/(gamma-1)))
+            p   = rho*a*a/gamma
             E   = p/(gamma-1) + 0.5*rho*u*u
             
             return [rho, rho*u, E]
