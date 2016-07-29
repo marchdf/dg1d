@@ -70,7 +70,8 @@ class Solution:
             self.keywords['evaluate_face_solution'] = self.enhanced_faces
             self.enhance = enhance.Enhance(order,enhancement_type,self.u.shape[1])
 
-        
+        # Initialize some global constants
+        constants.init()
             
 
     #================================================================================
@@ -87,6 +88,7 @@ class Solution:
             'sinewave': self.sinewave,
             'simplew' : self.simplew,
             'entrpyw' : self.entrpyw,
+            'acsticw' : self.acsticw,
             'ictest'  : self.ictest,
             'evaluate_face_solution' : self.collocate_faces,
         }
@@ -207,28 +209,8 @@ class Solution:
         self.bc_l = 'periodic'
         self.bc_r = 'periodic'
 
-        # Number of elements
-        self.N_E = int(self.params[0])
-        
-        # Discretize the domain, get the element edges and the element
-        # centroids
-        self.x,self.dx = np.linspace(A, B, self.N_E+1, retstep=True)
-        self.xc = (self.x[1:] + self.x[:-1]) * 0.5
-        # self.xg = np.zeros((self.basis.N_G,self.N_E))
-        # for e in range(self.N_E):
-        #     self.xg[:,e] = self.basis.shifted_xgauss(self.x[e],self.x[e+1])
-        
-        # Initialize the initial condition
-        self.u = np.zeros([self.basis.p+1, self.N_E])
-        
-        # Populate the solution
-        self.populate(f)
-        
-        # Add the ghost cells
-        self.add_ghosts()
-
-        # Scale the inverse mass matrix
-        self.scaled_minv = self.basis.minv*2.0/self.dx
+        # Set up the rest of the IC
+        self.setup_common_ic(f,A,B)
 
 
     #================================================================================
@@ -275,25 +257,9 @@ class Solution:
         self.bc_l = 'zerograd'
         self.bc_r = 'zerograd'
 
-        # Number of elements
-        self.N_E = int(self.params[0])
-        
-        # Discretize the domain, get the element edges and the element
-        # centroids
-        self.x,self.dx = np.linspace(A, B, self.N_E+1, retstep=True)
-        self.xc = (self.x[1:] + self.x[:-1]) * 0.5
-        
-        # Initialize the initial condition
-        self.u = np.zeros([self.basis.p+1, self.N_E*self.N_F])
-        
-        # Populate the solution
-        self.populate(f)
-        
-        # Add the ghost cells
-        self.add_ghosts()
+        # Set up the rest of the IC
+        self.setup_common_ic(f,A,B)
 
-        # Scale the inverse mass matrix
-        self.scaled_minv = self.basis.minv*2.0/self.dx
 
     #================================================================================
     def entrpyw(self):
@@ -327,25 +293,49 @@ class Solution:
         self.bc_l = 'periodic'
         self.bc_r = 'periodic'
 
-        # Number of elements
-        self.N_E = int(self.params[0])
-        
-        # Discretize the domain, get the element edges and the element
-        # centroids
-        self.x,self.dx = np.linspace(A, B, self.N_E+1, retstep=True)
-        self.xc = (self.x[1:] + self.x[:-1]) * 0.5
-        
-        # Initialize the initial condition
-        self.u = np.zeros([self.basis.p+1, self.N_E*self.N_F])
-        
-        # Populate the solution
-        self.populate(f)
-        
-        # Add the ghost cells
-        self.add_ghosts()
+        # Set up the rest of the IC
+        self.setup_common_ic(f,A,B)
 
-        # Scale the inverse mass matrix
-        self.scaled_minv = self.basis.minv*2.0/self.dx
+
+    #================================================================================
+    def acsticw(self):
+        """Initial condition for the propagation of an acoustic wave.
+        
+        Adapted from Mauro's JCP, Eric's thesis, and Eric's project
+        for his CFD class.
+
+        """
+        
+        # Domain specifications
+        A = -1
+        B =  1
+       
+        # Initial condition function
+        def f(x):
+
+            # define some constants
+            rho0  = 1
+            u0    = 0
+            p0    = 1/constants.gamma
+
+            epsilon = 1e-4
+            h = lambda x: epsilon * (np.cos(0.5*np.pi*x)**8)
+            
+            # Fill the fields
+            rho = rho0 + h(x)
+            u   = u0
+            p   = p0   + h(x)
+            E   = p/(constants.gamma-1) + 0.5*rho*u*u
+            
+            return [rho, rho*u, E]
+
+        # Set the boundary condition
+        self.bc_l = 'periodic'
+        self.bc_r = 'periodic'
+
+        # Set up the rest of the IC
+        self.setup_common_ic(f,A,B)
+
 
     #================================================================================
     def ictest(self):
@@ -362,6 +352,13 @@ class Solution:
         # Set the boundary condition
         self.bc_l = 'periodic'
         self.bc_r = 'periodic'
+
+        # Set up the rest of the IC
+        self.setup_common_ic(f,A,B)
+
+    #================================================================================
+    def setup_common_ic(self,f,A,B):
+        """Common stuff always done when setting up an initial condition"""
 
         # Number of elements
         self.N_E = int(self.params[0])
@@ -385,6 +382,9 @@ class Solution:
 
         # Scale the inverse mass matrix
         self.scaled_minv = self.basis.minv*2.0/self.dx
+
+        
+
 
     #================================================================================
     def populate(self,f):

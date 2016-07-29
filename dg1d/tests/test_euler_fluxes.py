@@ -5,7 +5,6 @@
 #================================================================================
 import unittest
 import euler_fluxes
-import constants
 import numpy as np
 import numpy.testing as npt
 
@@ -17,13 +16,6 @@ import numpy.testing as npt
 class EulerFluxesTestCase(unittest.TestCase):
         """Tests for `euler_fluxes.py`."""
 
-        #================================================================================
-        # Set up
-        def setUp(self):
-                # Initialize some global constants       
-                constants.init()
-
-        
         #================================================================================
         # max_wave_speed
         def test_max_wave_speed(self):

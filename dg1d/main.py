@@ -29,7 +29,6 @@ import deck
 import solution
 import rk
 import dg
-import constants
 
 #================================================================================
 #
@@ -63,9 +62,6 @@ def get_git_revision_hash():
 #================================================================================
 start = time.time()
 print('Code version: ', get_git_revision_hash())
-
-# Initialize some global constants
-constants.init()
 
 # Parse the deck
 deck = deck.Deck()
