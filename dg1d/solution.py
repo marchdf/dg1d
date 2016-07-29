@@ -48,6 +48,9 @@ class Solution:
         self.u   = np.empty([self.basis.N_s, self.N_E*self.N_F])
         self.scaled_minv = np.empty([self.basis.N_s])
 
+        # Initialize some global constants
+        constants.init()
+        
         # Manipulation functions
         self.set_manipulation_functions(system)
 
@@ -62,7 +65,7 @@ class Solution:
             print("Invalid initial condition. This will be an empty solution.\n",e)
 
         # Limiting (if necessary)
-        if (limiting_type is not ''):
+        if (limiting_type is not 'none'):
             self.limiter = limiting.Limiter(limiting_type,self)
 
         # Enhancement (if necessary)
@@ -70,8 +73,6 @@ class Solution:
             self.keywords['evaluate_face_solution'] = self.enhanced_faces
             self.enhance = enhance.Enhance(order,enhancement_type,self.u.shape[1])
 
-        # Initialize some global constants
-        constants.init()
             
 
     #================================================================================
@@ -372,7 +373,7 @@ class Solution:
         #     self.xg[:,e] = self.basis.shifted_xgauss(self.x[e],self.x[e+1])
         
         # Initialize the initial condition
-        self.u = np.zeros([self.basis.p+1, self.N_E])
+        self.u = np.zeros([self.basis.p+1, self.N_E*self.N_F])
         
         # Populate the solution
         self.populate(f)

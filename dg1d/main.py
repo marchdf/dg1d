@@ -68,7 +68,7 @@ deck = deck.Deck()
 deck.parser(args.deck)
 
 # Generate the solution and apply the initial condition
-sol = solution.Solution(deck.ic,deck.system,deck.order,deck.enhance,deck.limiting)
+sol = solution.Solution(deck.ic,deck.system,deck.order,deck.limiting,deck.enhance)
 sol.apply_bc()
 
 # Initialize the DG solver

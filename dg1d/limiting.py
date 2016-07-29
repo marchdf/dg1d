@@ -36,8 +36,7 @@ class Limiter:
             print('Adaptive limiting')
             
         else:
-            print('No limiting. Invalid limiting option:',limiting_type,'. Exiting.')
-            sys.exit()
+            print('No limiting.')
             
             
     #================================================================================
