@@ -23,7 +23,7 @@ class Deck:
         self.finaltime = 1
         self.cfl = 0.5
         self.order = 1
-        self.limiting = False
+        self.limiting = ''
         self.enhance = ''
 
     #================================================================================
