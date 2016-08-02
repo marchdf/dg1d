@@ -33,8 +33,6 @@ class LimitingTestCase(unittest.TestCase):
     # test_limiting_procedure
     def test_limiting_procedure(self):
         """Is the limiting procedure correct?"""
-    
-        
 
 
         # Test limiting

@@ -10,7 +10,6 @@ import itertools
 import copy
 
 import basis
-import limiting
 import enhance
 import advection_fluxes
 import euler_fluxes
@@ -25,7 +24,7 @@ class Solution:
     'Generate the solution (initialize, ic, mesh, etc)'
 
     #================================================================================
-    def __init__(self,icline,system,order,limiting_type='',enhancement_type=''):
+    def __init__(self,icline,system,order,enhancement_type=''):
         
         print("Generating the solution.")
 
@@ -63,10 +62,6 @@ class Solution:
             self.keywords[self.icname]()
         except Exception as e:
             print("Invalid initial condition. This will be an empty solution.\n",e)
-
-        # Limiting (if necessary)
-        if (limiting_type is not 'none'):
-            self.limiter = limiting.Limiter(limiting_type,self)
 
         # Enhancement (if necessary)
         if (enhancement_type is not ''):

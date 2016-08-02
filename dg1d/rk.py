@@ -14,46 +14,46 @@ import rk_coeffs as rkc
 #================================================================================
 
 #================================================================================
-def integrate(solution,deck,dgsolver,rktype='low_storage_rk4'):
+def integrate(solution,deck,dgsolver,limiter):
     """Integrate in time using an RK scheme"""
 
-    if rktype == 'low_storage_rk4':
+    if deck.rk == 'low_storage_rk4':
         low_storage_rk4(solution,deck,dgsolver)
 
     else:
-        if rktype == 'rk3':
+        if deck.rk   == 'rk3':
             coeffs, alphas, betas = rkc.get_rk3_coefficients()
 
-        elif rktype == 'rk4':
+        elif deck.rk == 'rk4':
             coeffs, alphas, betas = rkc.get_rk4_coefficients()
 
-        elif rktype == 'rk5':
+        elif deck.rk == 'rk5':
             coeffs, alphas, betas = rkc.get_rk5_coefficients()
 
-        elif rktype == 'rk6':
+        elif deck.rk == 'rk6':
             coeffs, alphas, betas = rkc.get_rk6_coefficients()
 
-        elif rktype == 'rk8':
+        elif deck.rk == 'rk8':
             coeffs, alphas, betas = rkc.get_rk8_coefficients()
 
-        elif rktype == 'rk10':
+        elif deck.rk == 'rk10':
             coeffs, alphas, betas = rkc.get_rk10_coefficients()
 
-        elif rktype == 'rk12':
+        elif deck.rk == 'rk12':
             coeffs, alphas, betas = rkc.get_rk12_coefficients()
 
-        elif rktype == 'rk14':
+        elif deck.rk == 'rk14':
             coeffs, alphas, betas = rkc.get_rk14_coefficients()
 
         else:
             print('Unrecognized RK option, default to RK4')
             coeffs, alphas, betas = rkc.get_rk4_coefficients()
 
-        classic_rk(solution,deck,dgsolver,coeffs,alphas,betas)
+        classic_rk(solution,deck,dgsolver,limiter,coeffs,alphas,betas)
 
 
 #================================================================================
-def classic_rk(solution,deck,dgsolver,coeffs,alphas,betas):
+def classic_rk(solution,deck,dgsolver,limiter,coeffs,alphas,betas):
     """Integrate in time using the classic RK4 scheme"""
 
     # Initialize storage variables
@@ -92,12 +92,18 @@ def classic_rk(solution,deck,dgsolver,coeffs,alphas,betas):
             for j,beta in enumerate(betas[k,:k]):
                 uk.smart_axpy(beta,K[j])
             uk.t += alpha * dt
+
+            # Limit solution if necessary
+            if k > 0: limiter.limit(uk)
             
-            # Evaluate and store the solution increment: dt * f(t_k, u_k)
+            # Evaluate and store the solution increment: K_k = \Delta t  f(t_k, u_k)
             K[k] = dt*dgsolver.residual(uk)
 
             # Weighted sum of the residuals
             solution.smart_axpy(c,K[k])
+
+        # Limit solution if necessary
+        limiter.limit(solution)
 
         # Update the current time
         solution.t += dt
@@ -155,6 +161,7 @@ def low_storage_rk4(solution,deck,dgsolver):
             ustar.t += beta*dt
             
             # Limit solution if necessary
+            if k > 0: limiter.limit(ustar)
             
             # Calculate the solution increment (=dt*residual)
             du = dt * dgsolver.residual(ustar)
@@ -162,6 +169,9 @@ def low_storage_rk4(solution,deck,dgsolver):
             # Update the solution
             solution.smart_axpy(gamma,du)
 
+        # Limit solution if necessary
+        limiter.limit(solution)
+        
         # Update the current time
         solution.t += dt
         solution.n += 1

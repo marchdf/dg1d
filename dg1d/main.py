@@ -29,6 +29,7 @@ import deck
 import solution
 import rk
 import dg
+import limiting
 
 #================================================================================
 #
@@ -68,11 +69,14 @@ deck = deck.Deck()
 deck.parser(args.deck)
 
 # Generate the solution and apply the initial condition
-sol = solution.Solution(deck.ic,deck.system,deck.order,deck.limiting,deck.enhance)
+sol = solution.Solution(deck.ic,deck.system,deck.order,deck.enhance)
 sol.apply_bc()
 
 # Initialize the DG solver
 dgsolver = dg.DG(sol)
+
+# Initialize the limiter
+limiter = limiting.Limiter(deck.limiting,sol)
 
 #================================================================================
 #
@@ -80,7 +84,7 @@ dgsolver = dg.DG(sol)
 #
 #================================================================================
 print("Integrating the solution in time.")
-rk.integrate(sol,deck,dgsolver,deck.rk)
+rk.integrate(sol,deck,dgsolver,limiter)
 
 # output timer
 end = time.time() - start

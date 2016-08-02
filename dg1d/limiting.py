@@ -27,13 +27,18 @@ class Limiter:
         # http://stackoverflow.com/questions/16229823/how-to-multiply-numpy-2d-array-with-numpy-1d-array
         self.c = 1.0/(2*np.arange(0,solution.basis.p) + 1)[:, None]
 
+        # By default, do not limit
+        self.do_limiting = False 
+        
         # Pre-allocate some vectors when doing limiting everywhere in
         # the domain
-        if limiting_type is 'full':
+        if limiting_type == 'full':
             print('Limiting everywhere')
+            self.do_limiting = True
             
-        elif limiting_type is 'adaptive':
+        elif limiting_type == 'adaptive':
             print('Adaptive limiting')
+            self.do_limiting = True
             
         else:
             print('No limiting.')
@@ -43,12 +48,13 @@ class Limiter:
     def limit(self,solution):
         """Limit a solution"""
 
-        # Get the differences with the left/right neighbors
-        deltam,deltap = self.deltas(solution)
-        
-        # Apply the minmod procedure
-        solution.u[1:,solution.N_F:-solution.N_F] = self.minmod(deltam,deltap,solution.u[1:,solution.N_F:-solution.N_F])
+        if self.do_limiting:
 
+            # Get the differences with the left/right neighbors
+            deltam,deltap = self.deltas(solution)
+        
+            # Apply the minmod procedure
+            solution.u[1:,solution.N_F:-solution.N_F] = self.minmod(deltam,deltap,solution.u[1:,solution.N_F:-solution.N_F])
 
 
     #================================================================================
