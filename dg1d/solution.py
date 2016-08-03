@@ -379,8 +379,6 @@ class Solution:
         # Scale the inverse mass matrix
         self.scaled_minv = self.basis.minv*2.0/self.dx
 
-        
-
 
     #================================================================================
     def populate(self,f):
@@ -399,11 +397,11 @@ class Solution:
                 # solution coefficients
                 self.u[:,e*self.N_F+field] = self.basis.projection(a,b,f,field)
 
-
     #================================================================================
     def add_ghosts(self):
         """Add ghost cells to the solution vector"""
         self.u = np.c_[ np.zeros((self.basis.N_s,self.N_F)), self.u, np.zeros((self.basis.N_s,self.N_F))] 
+
 
     #================================================================================
     def apply_bc(self):
@@ -438,7 +436,7 @@ class Solution:
     #================================================================================
     def smart_axpy(self,a,x):
         """Adds a*x to u only if a is non-zero"""
-        if np.fabs(a) > 1e-14:
+        if np.fabs(a) > 1e-15:
             self.u += a*x
 
     #================================================================================

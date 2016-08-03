@@ -34,7 +34,6 @@ class LimitingTestCase(unittest.TestCase):
     def test_limiting_procedure(self):
         """Is the limiting procedure correct?"""
 
-
         # Test limiting
         self.limiter.limit(self.solution)
         npt.assert_array_almost_equal(self.solution.u, np.array([[ 3.,  3.,  3.,  1.,  1.,  1.,  2.,  2.,  2.,  3.,  3.,  3.,  1.,  1.,  1.,],

@@ -68,15 +68,17 @@ print('Code version: ', get_git_revision_hash())
 deck = deck.Deck()
 deck.parser(args.deck)
 
-# Generate the solution and apply the initial condition
+# Generate the solution and apply the boundary conditions
 sol = solution.Solution(deck.ic,deck.system,deck.order,deck.enhance)
 sol.apply_bc()
+
 
 # Initialize the DG solver
 dgsolver = dg.DG(sol)
 
-# Initialize the limiter
+# Initialize the limiter and limit solution if necessary
 limiter = limiting.Limiter(deck.limiting,sol)
+limiter.limit(sol)
 
 #================================================================================
 #

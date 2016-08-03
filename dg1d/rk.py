@@ -18,7 +18,7 @@ def integrate(solution,deck,dgsolver,limiter):
     """Integrate in time using an RK scheme"""
 
     if deck.rk == 'low_storage_rk4':
-        low_storage_rk4(solution,deck,dgsolver)
+        low_storage_rk4(solution,deck,dgsolver,limiter)
 
     else:
         if deck.rk   == 'rk3':
@@ -95,19 +95,21 @@ def classic_rk(solution,deck,dgsolver,limiter,coeffs,alphas,betas):
 
             # Limit solution if necessary
             if k > 0: limiter.limit(uk)
-            
+
             # Evaluate and store the solution increment: K_k = \Delta t  f(t_k, u_k)
             K[k] = dt*dgsolver.residual(uk)
 
             # Weighted sum of the residuals
             solution.smart_axpy(c,K[k])
 
-        # Limit solution if necessary
-        limiter.limit(solution)
-
-        # Update the current time
+        # Update the current time and make sure the boundary elements
+        # are correct
         solution.t += dt
         solution.n += 1
+        solution.apply_bc()
+
+        # Limit solution if necessary
+        limiter.limit(solution)
 
         # Output the solution if necessary
         if output:
@@ -119,7 +121,7 @@ def classic_rk(solution,deck,dgsolver,limiter,coeffs,alphas,betas):
         
     
 #================================================================================
-def low_storage_rk4(solution,deck,dgsolver):
+def low_storage_rk4(solution,deck,dgsolver,limiter):
     """Integrate in time using the classic RK4 scheme with low storage algorithm"""
 
     # Initialize storage variables
@@ -153,7 +155,7 @@ def low_storage_rk4(solution,deck,dgsolver):
         us.copy_data_only(solution)
 
         # RK inner loop
-        for beta,gamma in zip(betas,gammas):
+        for k,(beta,gamma) in enumerate(zip(betas,gammas)):
 
             # Calculate the star quantities
             ustar.copy_data_only(us)
@@ -169,12 +171,14 @@ def low_storage_rk4(solution,deck,dgsolver):
             # Update the solution
             solution.smart_axpy(gamma,du)
 
-        # Limit solution if necessary
-        limiter.limit(solution)
-        
-        # Update the current time
+        # Update the current time and make sure the boundary elements
+        # are correct
         solution.t += dt
         solution.n += 1
+        solution.apply_bc()
+
+        # Limit solution if necessary
+        limiter.limit(solution)
 
         # Output the solution if necessary
         if output:

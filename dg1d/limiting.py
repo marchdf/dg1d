@@ -59,7 +59,7 @@ class Limiter:
 
     #================================================================================
     def deltas(self,solution):
-        """Calculate the difference between left and right neightbors"""
+        """Calculate the difference between left and right neighbors"""
 
         # Total number of elements in the solution (including ghosts)
         total_num_element = solution.u.shape[1]
@@ -77,8 +77,8 @@ class Limiter:
         idxr = idx + solution.N_F
 
         # Differences with the left and right neighbors
-        deltam = (solution.u[:-1,idx]  - solution.u[:-1,idxl]) *self.c
-        deltap = (solution.u[:-1,idxr] - solution.u[:-1,idx])  *self.c
+        deltam = (solution.u[:-1,idx]  - solution.u[:-1,idxl]) * self.c
+        deltap = (solution.u[:-1,idxr] - solution.u[:-1,idx])  * self.c
 
         return deltam,deltap
         
