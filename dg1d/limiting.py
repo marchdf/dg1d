@@ -54,7 +54,20 @@ class Limiter:
             deltam,deltap = self.deltas(solution)
         
             # Apply the minmod procedure
-            solution.u[1:,solution.N_F:-solution.N_F] = self.minmod(deltam,deltap,solution.u[1:,solution.N_F:-solution.N_F])
+            #solution.u[1:,solution.N_F:-solution.N_F] = self.minmod(deltam,deltap,solution.u[1:,solution.N_F:-solution.N_F])
+
+            result = self.minmod(deltam,deltap,solution.u[1:,solution.N_F:-solution.N_F])
+            for e in range(1,solution.N_E+1):
+                for f in range(0,solution.N_F):
+
+                    stop = False
+                    
+                    for k in range(solution.basis.p,0,-1):
+                        if (np.fabs(solution.u[k,e*solution.N_F+f] - result[k-1,(e-1)*solution.N_F+f]) < 1e-14) or stop:
+                            stop = True
+                        else:
+                            solution.u[k,e*solution.N_F+f] = result[k-1,(e-1)*solution.N_F+f]
+                                        
 
 
     #================================================================================
