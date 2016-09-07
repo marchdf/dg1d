@@ -11,8 +11,8 @@ import copy
 
 import basis
 import enhance
-import advection_fluxes
-import euler_fluxes
+import advection_physics
+import euler_physics
 import constants
 
 #================================================================================
@@ -78,9 +78,10 @@ class Solution:
         self.keywords = {
             'system'  : system,
             'fields'  : ['u'],
-            'riemann' : advection_fluxes.riemann_upwinding,
-            'interior_flux' : advection_fluxes.interior_flux,
-            'max_wave_speed': advection_fluxes.max_wave_speed,
+            'riemann' : advection_physics.riemann_upwinding,
+            'interior_flux' : advection_physics.interior_flux,
+            'max_wave_speed': advection_physics.max_wave_speed,
+            'sensing': advection_physics.sensing,
             'sinewave': self.sinewave,
             'simplew' : self.simplew,
             'entrpyw' : self.entrpyw,
@@ -92,9 +93,10 @@ class Solution:
         # Modify some of these if solving Euler PDEs
         if system == 'euler':
             self.keywords['fields'] = ['rho','rhou','E']
-            self.keywords['riemann'] = euler_fluxes.riemann_rusanov
-            self.keywords['interior_flux'] = euler_fluxes.interior_flux
-            self.keywords['max_wave_speed'] = euler_fluxes.max_wave_speed
+            self.keywords['riemann'] = euler_physics.riemann_rusanov
+            self.keywords['interior_flux'] = euler_physics.interior_flux
+            self.keywords['max_wave_speed'] = euler_physics.max_wave_speed
+            self.keywords['sensing'] =  euler_physics.sensing
             self.N_F = 3
 
 

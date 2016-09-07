@@ -85,3 +85,58 @@ def interior_flux(ug):
     F[:,2::3] = (E+p)*v
     
     return F
+
+#================================================================================
+def sensing(sensors,thresholds,solution):
+    """Two sensors to detect contact discontinuities and shocks for the
+    Euler equations. See Henry de Frahan et al. JCP (2015)
+
+    """
+
+
+    # left/right solution
+    ul = solution.u[0,:-solution.N_F]
+    ur = solution.u[0,solution.N_F:]
+
+    # physical variables
+    rhoL = ul[0::3]
+    vL   = ul[1::3]/rhoL
+    EL   = ul[2::3]
+    pL   = (constants.gamma-1)*(EL-0.5*rhoL*vL*vL)    
+    aL   = np.sqrt(constants.gamma*pL/rhoL)
+    HL   = (EL + pL)/rhoL
+    
+    rhoR = ur[0::3]
+    vR   = ur[1::3]/rhoR
+    ER   = ur[2::3]
+    pR   = (constants.gamma-1)*(ER - 0.5*rhoR*vR*vR)
+    aR   = np.sqrt(constants.gamma*pR/rhoR)
+    HR   = (ER + pR)/rhoR
+    
+    # Roe averages
+    RT  = np.sqrt(rhoR/rhoL);
+    v   = (vL+RT*vR)/(1+RT);
+    H   = (HL+RT*HR)/(1+RT);
+    a   = np.sqrt((constants.gamma-1)*(H-0.5*v*v));
+
+    # Discontinuity sensor
+    drho = rhoR - rhoL; # contact wave strength
+    dp   = pR - pL
+    dV2  = drho - dp/(a*a);
+
+    xsi = np.fabs(dV2)/(rhoL+rhoR);
+    XSI = 2*xsi/((1+xsi)*(1+xsi));
+
+    idx = np.array(np.where(XSI > thresholds[0]))
+    sensors[idx] = 1
+    sensors[idx+1] = 1
+
+    # Shock sensor
+    phi = np.fabs(dp) / (pL + pR)
+    PHI = 2*phi/((1+phi)*(1+phi))
+  
+    idx = np.array(np.where( (PHI > thresholds[1]) and (vL-aL > v-a) and (v-a>vR-aR) ))
+    sensors[idx] = 2
+    sensors[idx+1] = 2
+
+    print("hello euler")
