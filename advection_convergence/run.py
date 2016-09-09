@@ -12,7 +12,7 @@ import sys
 import shutil
 import subprocess as sp
 
-codedir = '/home/marchdf/dg1d/dg1d/'
+codedir = '../dg1d/'
 sys.path.insert(0, codedir)
 import deck as deck
 

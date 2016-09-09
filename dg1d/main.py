@@ -72,7 +72,6 @@ deck.parser(args.deck)
 sol = solution.Solution(deck.ic,deck.system,deck.order,deck.enhance)
 sol.apply_bc()
 
-
 # Initialize the DG solver
 dgsolver = dg.DG(sol)
 
