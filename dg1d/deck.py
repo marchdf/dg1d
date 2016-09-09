@@ -52,6 +52,9 @@ class Deck:
                     self.limiting = next(f).rstrip()
                 elif "#enhancement" in line:
                     self.enhance = next(f).rstrip()
+                elif "#sensor thresholds" in line:
+                    line = next(f).rstrip()
+                    self.sensor_thresholds = [float(i) for i in line.split()]
 
                 
 #================================================================================
