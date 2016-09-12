@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #
 #
 """@package sample plotting
@@ -67,6 +67,22 @@ ug = solution.collocate()
 
 # Collocate to the cell edge values
 uf = solution.evaluate_faces()
+
+# Get the primitive variables for Euler
+if args.system == 'euler':
+    gamma  = 1.4
+    rho  = ug[:,0::solution.N_F]
+    u    = ug[:,1::solution.N_F]/rho
+    p    = (gamma-1)*(ug[:,2::solution.N_F] - 0.5*rho*u*u)
+    ug[:,1::solution.N_F]   = u
+    ug[:,2::solution.N_F]   = p
+
+    rho  = uf[:,0::solution.N_F]
+    u    = uf[:,1::solution.N_F]/rho
+    p    = (gamma-1)*(uf[:,2::solution.N_F] - 0.5*rho*u*u)
+    uf[:,1::solution.N_F]   = u
+    uf[:,2::solution.N_F]   = p
+
 
 # Plot each field
 for field in range(solution.N_F):

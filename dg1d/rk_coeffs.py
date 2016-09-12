@@ -96,8 +96,7 @@ def get_rk5_coefficients():
 #================================================================================
 def get_rk6_coefficients():
     """Returns the coefficients for the Alshina sixth order method
-
-    Alshina "Optimal First- to Sixth-Order Accurate Runge–Kutta Schemes" (2008)
+    Alshina "Optimal First to Sixth Order Accurate Runge Kutta Schemes" (2008)
     """
 
     # Bottom row of Butcher table

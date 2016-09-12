@@ -86,6 +86,7 @@ class Solution:
             'simplew' : self.simplew,
             'entrpyw' : self.entrpyw,
             'acsticw' : self.acsticw,
+            'sodtube' : self.sodtube,
             'ictest'  : self.ictest,
             'evaluate_face_solution' : self.collocate_faces,
         }
@@ -330,6 +331,44 @@ class Solution:
         # Set the boundary condition
         self.bc_l = 'periodic'
         self.bc_r = 'periodic'
+
+        # Set up the rest of the IC
+        self.setup_common_ic(f,A,B)
+
+
+    #================================================================================
+    def sodtube(self):
+        """Initial condition for the Sod shock tube problem.
+        
+        """
+        
+        # Domain specifications
+        A = -1
+        B =  1
+        print('hello')
+        # Initial condition function
+        def f(x):
+
+            # define some constants
+            constants.gamma = 1.4
+
+            # left state
+            if x < 0:
+                rho = 1
+                u   = 0
+                p   = 1.0
+                return [rho, rho*u, 1.0/(constants.gamma-1.0)*p + 0.5*rho*u*u]
+
+            # Right state
+            elif x >= 0:
+                rho = 0.125
+                u   = 0
+                p   = 0.1
+                return [rho, rho*u, 1.0/(constants.gamma-1.0)*p + 0.5*rho*u*u]
+
+        # Set the boundary condition
+        self.bc_l = 'zerograd'
+        self.bc_r = 'zerograd'
 
         # Set up the rest of the IC
         self.setup_common_ic(f,A,B)

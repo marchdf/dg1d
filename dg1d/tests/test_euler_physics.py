@@ -4,7 +4,7 @@
 #
 #================================================================================
 import unittest
-import euler_fluxes
+import euler_physics
 import numpy as np
 import numpy.testing as npt
 
@@ -13,8 +13,8 @@ import numpy.testing as npt
 # Class definitions
 #
 #================================================================================
-class EulerFluxesTestCase(unittest.TestCase):
-        """Tests for `euler_fluxes.py`."""
+class EulerPhysicsTestCase(unittest.TestCase):
+        """Tests for `euler_physics.py`."""
 
         #================================================================================
         # max_wave_speed
@@ -25,7 +25,7 @@ class EulerFluxesTestCase(unittest.TestCase):
                 u = np.arange(1,12*3+1).reshape((3,12))
 
                 # Get the maximum wave speed
-                m = euler_fluxes.max_wave_speed(u)
+                m = euler_physics.max_wave_speed(u)
 
                 # test
                 npt.assert_array_almost_equal(m,2.74833147735, decimal = 7)
@@ -41,7 +41,7 @@ class EulerFluxesTestCase(unittest.TestCase):
                 ur = np.arange(1,13)[::-1]
             
                 # Get the flux
-                F = euler_fluxes.riemann_rusanov(ul,ur)
+                F = euler_physics.riemann_rusanov(ul,ur)
 
                 # test
                 npt.assert_array_almost_equal(F,
@@ -57,7 +57,7 @@ class EulerFluxesTestCase(unittest.TestCase):
                 u = np.arange(1,12*3+1).reshape((3,12))
 
                 # Get the maximum wave speed
-                F = euler_fluxes.interior_flux(u)
+                F = euler_physics.interior_flux(u)
             
                 # test
                 npt.assert_array_almost_equal(F,
