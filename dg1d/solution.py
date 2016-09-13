@@ -87,6 +87,7 @@ class Solution:
             'entrpyw' : self.entrpyw,
             'acsticw' : self.acsticw,
             'sodtube' : self.sodtube,
+            'shuoshe' : self.shuoshe,
             'ictest'  : self.ictest,
             'evaluate_face_solution' : self.collocate_faces,
         }
@@ -345,7 +346,7 @@ class Solution:
         # Domain specifications
         A = -1
         B =  1
-        print('hello')
+
         # Initial condition function
         def f(x):
 
@@ -364,6 +365,44 @@ class Solution:
                 rho = 0.125
                 u   = 0
                 p   = 0.1
+                return [rho, rho*u, 1.0/(constants.gamma-1.0)*p + 0.5*rho*u*u]
+
+        # Set the boundary condition
+        self.bc_l = 'zerograd'
+        self.bc_r = 'zerograd'
+
+        # Set up the rest of the IC
+        self.setup_common_ic(f,A,B)
+
+
+    #================================================================================
+    def shuoshe(self):
+        """Initial condition for the Shu-Osher problem
+        
+        """
+        
+        # Domain specifications
+        A = 0
+        B = 10
+
+        # Initial condition function
+        def f(x):
+
+            # define some constants
+            constants.gamma = 1.4
+
+            # left state
+            if x <= 1:
+                rho = 3.857143
+                u   = 2.629369
+                p   = 10.3333
+                return [rho, rho*u, 1.0/(constants.gamma-1.0)*p + 0.5*rho*u*u]
+
+            # Right state
+            elif x > 1:
+                rho = 1.0+0.2*np.sin(5.0*(x-5.0))
+                u   = 0
+                p   = 1
                 return [rho, rho*u, 1.0/(constants.gamma-1.0)*p + 0.5*rho*u*u]
 
         # Set the boundary condition
