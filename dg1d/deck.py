@@ -25,6 +25,7 @@ class Deck:
         self.order = 1
         self.limiting = ''
         self.enhance = ''
+        self.sensor_thresholds = []
 
     #================================================================================
     def parser(self,fname):

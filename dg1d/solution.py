@@ -14,6 +14,7 @@ import enhance
 import advection_physics
 import euler_physics
 import constants
+import sensor
 
 #================================================================================
 #
@@ -24,7 +25,7 @@ class Solution:
     'Generate the solution (initialize, ic, mesh, etc)'
 
     #================================================================================
-    def __init__(self,icline,system,order,enhancement_type=''):
+    def __init__(self,icline,system,order,enhancement_type='',sensor_thresholds=[]):
         
         print("Generating the solution.")
 
@@ -68,7 +69,11 @@ class Solution:
             self.keywords['evaluate_face_solution'] = self.enhanced_faces
             self.enhance = enhance.Enhance(order,enhancement_type,self.u.shape[1])
 
-            
+        # Sensors
+        self.issensing = False
+        if sensor_thresholds:
+            self.issensing = True
+            self.sensors = sensor.Sensor(sensor_thresholds,self.N_E+2)
 
     #================================================================================
     def set_manipulation_functions(self,system):
@@ -112,8 +117,13 @@ class Solution:
         print("Solution written to file at step {0:7d} and time {1:e} (current time step:{2:e}).".format(self.n,self.t,dt));
         
         # output file names
-        fnames = self.format_fnames(nout)
+        fnames = self.format_fnames(nout,self.keywords['fields'])
 
+        # Descriptive header
+        hline = 'n={0:d}, t={1:.18e}, bc_l={2:s}, bc_r={3:s}\nxc'.format(self.n,self.t,self.bc_l,self.bc_r)
+        for i in range(self.basis.N_s):
+            hline += ', u{0:d}'.format(i)
+        
         # loop on all the fields
         for field,fname in enumerate(fnames):
         
@@ -122,14 +132,22 @@ class Solution:
             end   = -2*self.N_F + 1 + field
             step  =    self.N_F
             xc_u = np.c_[ self.xc, self.u[:,start:end:step].transpose()] 
-
-            # Make a descriptive header
-            hline = 'n={0:d}, t={1:.18e}, bc_l={2:s}, bc_r={3:s}\nxc'.format(self.n,self.t,self.bc_l,self.bc_r)
-            for i in range(self.basis.N_s):
-                hline += ', u{0:d}'.format(i)
-        
+       
             # Save the data to a file
             np.savetxt(fname, xc_u, fmt='%.18e', delimiter=',', header=hline)
+
+        # Output the sensors if necessary
+        if (self.issensing):
+            fname = self.format_fnames(nout,['sensor'])
+            
+            # Concatenate sensor with element centroids
+            xc_sen = np.c_[ self.xc, self.sensors.sensors[1:-1]]
+
+            # Quick diagnostic of how many sensors are on
+            print("\tsensors on in {0:6.2f}% of the domain".format(np.count_nonzero(xc_sen[:,1])/xc_sen.shape[1]))
+            
+            # Save the data to a file
+            np.savetxt(fname[0], xc_sen, fmt='%.18e, %.0d', delimiter=',', header=hline)
 
 
     #================================================================================
@@ -139,7 +157,7 @@ class Solution:
         print("Loading solution at step",step);
 
         # File names
-        fnames = self.format_fnames(step)
+        fnames = self.format_fnames(step,self.keywords['fields'])
 
         #
         # Read data from one file
@@ -189,9 +207,9 @@ class Solution:
 
 
     #================================================================================
-    def format_fnames(self,step):
+    def format_fnames(self,step,fields):
         """Returns a list of file names for a given step"""
-        return [field+'{0:010d}.dat'.format(step) for field in self.keywords['fields']]
+        return [field+'{0:010d}.dat'.format(step) for field in fields]
             
     #================================================================================
     def sinewave(self):

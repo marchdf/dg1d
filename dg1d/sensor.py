@@ -5,8 +5,6 @@
 #================================================================================
 import numpy as np
 
-import solution
-
 #================================================================================
 #
 # Class definitions
@@ -16,15 +14,16 @@ class Sensor:
     'Determines the sensors for limiting'
 
     #================================================================================
-    def __init__(self,thresholds,solution):
+    def __init__(self,thresholds,length):
         
         print("Setting up the sensors.")
 
-        # the sensors
-        self.sensors = np.zeros((solution.N_E+2),dtype = int)
-
         # the criteria
         self.thresholds = thresholds
+        
+        # the sensors
+        self.sensors = np.zeros((length),dtype = int)
+
 
     #================================================================================
     def sensing(self,solution):

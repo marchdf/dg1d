@@ -24,7 +24,7 @@ class SensorTestCase(unittest.TestCase):
 
                 # Initialize
                 sol = solution.Solution('sinewave 10', 'advection', 3)
-                sen = sensor.Sensor([0.46],sol)
+                sen = sensor.Sensor([0.46],sol.N_E+2)
 
                 # Try the sensors
                 sen.sensing(sol)
@@ -69,7 +69,7 @@ class SensorTestCase(unittest.TestCase):
                 sol.u[0,2::3] = 0.5*rho*u*u + p/(gamma-1) 
 
                 # Initialize the sensors
-                sen = sensor.Sensor([0.1,0.4],sol)
+                sen = sensor.Sensor([0.1,0.4],sol.N_E+2)
 
                 # Try the sensors
                 sen.sensing(sol)
