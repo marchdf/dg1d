@@ -49,6 +49,24 @@ class EulerPhysicsTestCase(unittest.TestCase):
                                               decimal = 7)
             
         #================================================================================
+        # riemann_roe
+        def test_riemann_roe(self):
+                """Is the Roe Riemann solver correct?"""
+
+                # Left/right toy data
+                ul = np.arange(1,13)
+                ur = np.arange(1,13)[::-1]
+            
+                # Get the flux
+                F = euler_physics.riemann_roe(ul,ur)
+
+                # test
+                npt.assert_array_almost_equal(F,
+                                              np.array([  2., 4.4, 6.8, 5., 7.4, 8.9375, 8., 10.9142857, 12.3102041, 11., 14.48, 15.818]),
+                                              decimal = 7)
+
+
+        #================================================================================
         # interior_flux
         def test_interior_flux(self):
                 """Is the interior flux correct?"""

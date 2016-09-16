@@ -66,6 +66,92 @@ def riemann_rusanov(ul,ur):
 
     return F
 
+
+
+
+#================================================================================
+def riemann_roe(ul,ur):
+    """Returns the Roe interface flux for the Euler equations
+
+    P. L. Roe, Approximate Riemann Solvers, Parameter Vectors and Difference Schemes, Journal of Computational Physics, 43, pp. 357-372.
+
+    """
+
+    # Initialize
+    F = np.zeros(ul.shape)
+
+    # Primitive variables and sound speeds
+    rhoL = ul[0::3]
+    vL   = ul[1::3]/rhoL
+    EL   = ul[2::3]
+    pL   = (constants.gamma-1)*(EL-0.5*rhoL*vL*vL)    
+    aL   = np.sqrt(constants.gamma*pL/rhoL)
+    HL   = (EL + pL)/rhoL
+    
+    rhoR = ur[0::3]
+    vR   = ur[1::3]/rhoR
+    ER   = ur[2::3]
+    pR   = (constants.gamma-1)*(ER - 0.5*rhoR*vR*vR)
+    aR   = np.sqrt(constants.gamma*pR/rhoR)
+    HR   = (ER + pR)/rhoR
+    
+    # Compute Roe averages
+    RT  = np.sqrt(rhoR/rhoL)
+    rho = RT*rhoL
+    v   = (vL+RT*vR)/(1+RT)
+    H   = (HL+RT*HR)/(1+RT)
+    a   = np.sqrt((constants.gamma-1)*(H-0.5*v*v))
+    dp  = pR - pL
+
+    # Roe waves strengths
+    dV0 = (dp - rho*a*(vR-vL))/(2*a*a)
+    dV1 = (rhoR-rhoL) - dp/(a*a)
+    dV2 = (dp + rho*a*(vR-vL))/(2*a*a)
+   
+    # Absolute value of Roe eigenvalues
+    ws0 = np.fabs(v-a)
+    ws1 = np.fabs(v)
+    ws2 = np.fabs(v+a)
+   
+    # Absolute value of Roe eigenvalues * Roe waves strengths
+    ws0_dV0 = np.fabs(v-a) * (dp - rho*a*(vR-vL))/(2*a*a)
+    ws1_dV1 = np.fabs(v)   * (rhoR-rhoL) - dp/(a*a)
+    ws2_dV2 = np.fabs(v+a) * (dp + rho*a*(vR-vL))/(2*a*a)
+
+    # Roe Right eigenvectors
+    R00 = 1
+    R01 = v-a
+    R02 = H-v*a
+    
+    R10 = 1
+    R11 = v
+    R12 = 0.5*v*v
+
+    R20 = 1
+    R21 = v+a
+    R22 = H+v*a
+
+    # first: fx = rho*u
+    F[0::3] = 0.5*(rhoL*vL + rhoR*vR) \
+              -0.5*(ws0*dV0*R00+ 
+                    ws1*dV1*R10+ 
+                    ws2*dV2*R20)
+
+    # second: fx = rho*u*u+p
+    F[1::3] = 0.5*(rhoL*vL*vL+pL  + rhoR*vR*vR+pR) \
+              -0.5*(ws0*dV0*R01+ 
+                    ws1*dV1*R11+ 
+                    ws2*dV2*R21)
+
+    # third: fx = (E+p)*u
+    F[2::3] =  0.5*((EL+pL)*vL + (ER+pR)*vR) \
+               -0.5*(ws0*dV0*R02+  
+                     ws1*dV1*R12+ 
+                     ws2*dV2*R22)
+
+    return F
+
+
 #================================================================================
 def interior_flux(ug):
     """Returns the interior flux for the Euler equations"""
@@ -113,19 +199,19 @@ def sensing(sensors,thresholds,solution):
     HR   = (ER + pR)/rhoR
     
     # Roe averages
-    RT  = np.sqrt(rhoR/rhoL);
-    v   = (vL+RT*vR)/(1+RT);
-    H   = (HL+RT*HR)/(1+RT);
-    a   = np.sqrt((constants.gamma-1)*(H-0.5*v*v));
+    RT  = np.sqrt(rhoR/rhoL)
+    v   = (vL+RT*vR)/(1+RT)
+    H   = (HL+RT*HR)/(1+RT)
+    a   = np.sqrt((constants.gamma-1)*(H-0.5*v*v))
 
     # contact wave strength
-    drho = rhoR - rhoL;
+    drho = rhoR - rhoL
     dp   = pR - pL
-    dV2  = drho - dp/(a*a);
+    dV2  = drho - dp/(a*a)
 
     # Discontinuity sensor
-    xsi = np.fabs(dV2)/(rhoL+rhoR);
-    XSI = 2*xsi/((1+xsi)*(1+xsi));
+    xsi = np.fabs(dV2)/(rhoL+rhoR)
+    XSI = 2*xsi/((1+xsi)*(1+xsi))
     idx = np.array(np.where(XSI > thresholds[0]))
     sensors[idx] = 1
     sensors[idx+1] = 1

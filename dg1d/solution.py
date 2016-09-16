@@ -100,7 +100,7 @@ class Solution:
         # Modify some of these if solving Euler PDEs
         if system == 'euler':
             self.keywords['fields'] = ['rho','rhou','E']
-            self.keywords['riemann'] = euler_physics.riemann_rusanov
+            self.keywords['riemann'] = euler_physics.riemann_roe
             self.keywords['interior_flux'] = euler_physics.interior_flux
             self.keywords['max_wave_speed'] = euler_physics.max_wave_speed
             self.keywords['sensing'] =  euler_physics.sensing
@@ -504,7 +504,7 @@ class Solution:
     #================================================================================
     def apply_bc(self):
         """Populates the ghost cells with the correct data depending on the BC"""
-        
+
         # On the left side of the domain
         if self.bc_l is 'periodic':
             self.u[:,0:self.N_F]  = self.u[:,-2*self.N_F:-self.N_F]
