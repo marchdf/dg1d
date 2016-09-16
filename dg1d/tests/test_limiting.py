@@ -27,7 +27,7 @@ class LimitingTestCase(unittest.TestCase):
                                     [0,0,0,1,1,1,4,4,4,3,3,3,0,0,0],
                                     [0,0,0,1,1,1,2,2,2,3,3,3,0,0,0]],dtype=float)
         self.solution.apply_bc()
-        self.limiter  = limiting.Limiter('full',self.solution)
+        self.limiter  = limiting.Limiter('full_biswas',self.solution)
         
     #================================================================================
     # test_limiting_procedure

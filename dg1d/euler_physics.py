@@ -67,8 +67,6 @@ def riemann_rusanov(ul,ur):
     return F
 
 
-
-
 #================================================================================
 def riemann_roe(ul,ur):
     """Returns the Roe interface flux for the Euler equations
