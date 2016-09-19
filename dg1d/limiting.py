@@ -83,9 +83,6 @@ class Limiter:
         # Total number of elements in the solution (including ghosts)
         total_num_element = solution.u.shape[1]
 
-        #e = np.array([1,3,7,10])
-        #idx = ((e*N_F).reshape((len(e),1)) +np.arange(solution.N_F)).flatten() 
-
         # Index of all elements to be limited
         idx = np.arange(solution.N_F,total_num_element-solution.N_F)
 
@@ -152,3 +149,110 @@ class Limiter:
 
         # Reshape the matrix and return the results
         return M.reshape(A.shape)
+
+
+    #================================================================================
+    def adaptive_hr(self,solution):
+        """Limit a solution in the domain using adaptive hierarchical reconstruction"""
+        
+        # loop over all the interior elements
+        for e in range(1,solution.N_E+1):
+
+            # test if we need to do limiting (sensors are on)
+            if solution.sensors.sensors[e] != 0:
+                print(solution.sensors.sensors[e])
+
+                # loop over the fields and call HR
+                for f in range(0,solution.N_F):
+                    solution.u[:,e*solution.N_F+f] = self.hr(solution.u[:,e*solution.N_F+f],
+                                                             solution.u[:,(e-1)*solution.N_F+f],
+                                                             solution.u[:,(e+1)*solution.N_F+f])
+
+
+    #================================================================================
+    def hr(self,uc,ul,ur):
+        """Limit a cell solution with hierarchical reconstruction"""
+
+        # Legendre -> monomial transform
+        uc = self.legendre_to_monomial(uc)
+        ul = self.legendre_to_monomial(ul)
+        ur = self.legendre_to_monomial(ur)
+
+        # Limit a monomial solution
+        uc_lim = self.limit_monomial(uc,ul,ur)
+        
+        # monomial -> Legendre transform
+        uc_lim = self.monomial_to_legendre(uc_lim)
+
+        return uc_lim
+
+
+    #================================================================================
+    def legendre_to_monomial(self,u):
+        """Transform a Legendre solution to a monomial representation"""
+
+        print("L2M")
+        return u
+                                                            
+
+    #================================================================================
+    def monomial_to_legendre(self,u):
+        """Transform a monomial solution to a Legendre representation"""
+
+        print("M2L")
+        return u
+        
+    #================================================================================
+    def limit_monomial(self,uc,ul,ur):
+        """Limit a cell solution with hierarchical reconstruction"""
+
+        print("limit monomial")
+
+        uc_lim = uc
+        
+        return uc_lim
+
+        # limit monomial function:
+        # scalar avgdUL = 0, avgdUC=0, avgdUR=0; scalar integral = 0;
+        #   scalar avgRL = 0, avgRC=0, avgRR=0; scalar alim = 0;
+        #   scalar avgLL = 0, avgLC=0, avgLR=0;
+        #   scalar c1,c2;
+
+        #   // Loop on derivatives
+        #   for(int m = N; m > 0; m--){
+        #           avgdUL = 0; avgdUC=0; avgdUR=0;
+        #           avgRL = 0; avgRC = 0; avgRR = 0;
+
+        #           // Calculate the derivative average in the cells: left,
+        #           // center, right. Calculate the remainder polynomial in our
+        #           // cells and its two neighbors
+        #           for(int n=m-1; n<=N; n++){
+        #                   integral = integrate_monomial_derivative(m-1,n);
+        #                   avgdUL += AL[n]*integral;
+        #                   avgdUC += AC[n]*integral;
+        #                   avgdUR += AR[n]*integral;
+        #                   if(n>=m+1){
+        #                           alim = Alim[n];
+        #                           avgRL += alim*integrate_monomial_derivative_bounds(m-1,n,-3,-1);
+        #                           avgRC += alim*integral;
+        #                           avgRR += alim*integrate_monomial_derivative_bounds(m-1,n,1,3);
+        #                         }
+        #               }
+
+        #           // Approximate the average of the linear part
+        #           avgLL = 0.5*(avgdUL - avgRL); // avg = \frac{1}{2} \int_{-1}^1 U \ud x
+        #           avgLC = 0.5*(avgdUC - avgRC);
+        #           avgLR = 0.5*(avgdUR - avgRR);
+
+        #           // MUSCL approach to get candidate coefficients
+        #           c1 = 0.5*(avgLC - avgLL);  // 1/dx = 1/2 = 0.5
+        #           c2 = 0.5*(avgLR - avgLC);
+
+        #           // Limited value
+        #           Alim[m] = minmod(c1,c2);
+        #     }// end loop on m
+        #   Alim[0] = avgLC;
+
+        
+
+

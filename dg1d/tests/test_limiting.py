@@ -21,21 +21,22 @@ class LimitingTestCase(unittest.TestCase):
     #================================================================================
     # Set up
     def setUp(self):
-        self.solution = solution.Solution('entrpyw 3', 'euler', 3)
+        self.solution = solution.Solution('entrpyw 3', 'euler', 3, '', [-1,-1])
         self.solution.u = np.array([[0,0,0,1,1,1,2,2,2,3,3,3,0,0,0],
                                     [0,0,0,2,2,2,2,2,2,3,3,3,0,0,0],
                                     [0,0,0,1,1,1,4,4,4,3,3,3,0,0,0],
                                     [0,0,0,1,1,1,2,2,2,3,3,3,0,0,0]],dtype=float)
         self.solution.apply_bc()
-        self.limiter  = limiting.Limiter('full_biswas',self.solution)
+        self.biswas_limiter  = limiting.Limiter('full_biswas',self.solution)
+        self.hr_limiter      = limiting.Limiter('adaptive_hr',self.solution)
         
     #================================================================================
-    # test_limiting_procedure
-    def test_limiting_procedure(self):
-        """Is the limiting procedure correct?"""
+    # test_biswas_limiting_procedure
+    def test_biswas_limiting_procedure(self):
+        """Is the Biswas limiting procedure correct?"""
 
         # Test limiting
-        self.limiter.limit(self.solution)
+        self.biswas_limiter.limit(self.solution)
         npt.assert_array_almost_equal(self.solution.u, np.array([[ 3.,  3.,  3.,  1.,  1.,  1.,  2.,  2.,  2.,  3.,  3.,  3.,  1.,  1.,  1.,],
                                                                  [ 3.,  3.,  3.,  0.,  0.,  0.,  1.,  1.,  1.,  0.,  0.,  0.,  2.,  2.,  2.,],
                                                                  [ 3.,  3.,  3.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  1.,  1.,  1.,],
@@ -47,7 +48,7 @@ class LimitingTestCase(unittest.TestCase):
     def test_deltas(self):
         """Is the calculation for the deltas is correct?"""
 
-        dm, dp = self.limiter.deltas(self.solution)
+        dm, dp = self.biswas_limiter.deltas(self.solution)
 
 
         # Make sure they are correct
@@ -81,7 +82,22 @@ class LimitingTestCase(unittest.TestCase):
         npt.assert_array_almost_equal(M, np.array([[0,0,0],
                                                    [0,-1,6]]),decimal=7)
 
+
+    #================================================================================
+    # test_hr_limiting_procedure
+    def test_hr_limiting_procedure(self):
+        """Is the adaptive HR limiting procedure correct?"""
+
+        # Do the sensors. In this case we are limiting everywhere
+        self.solution.sensors.sensing(self.solution)
         
+        # Test limiting
+        self.hr_limiter.limit(self.solution)
+        # npt.assert_array_almost_equal(self.solution.u, np.array([[ 3.,  3.,  3.,  1.,  1.,  1.,  2.,  2.,  2.,  3.,  3.,  3.,  1.,  1.,  1.,],
+        #                                                          [ 3.,  3.,  3.,  0.,  0.,  0.,  1.,  1.,  1.,  0.,  0.,  0.,  2.,  2.,  2.,],
+        #                                                          [ 3.,  3.,  3.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  1.,  1.,  1.,],
+        #                                                          [ 3.,  3.,  3.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  1.,  1.,  1.,]]))
+
 
 
 if __name__ == '__main__':
