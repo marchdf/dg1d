@@ -5,6 +5,8 @@
 #================================================================================
 import sys
 import numpy as np
+from numpy.polynomial import legendre as leg # import the Legendre functions
+import scipy.misc as spm
 
 import solution
 
@@ -189,70 +191,101 @@ class Limiter:
 
     #================================================================================
     def legendre_to_monomial(self,u):
-        """Transform a Legendre solution to a monomial representation"""
+        """Transform a Legendre solution to a monomial (Taylor series) representation
+        
+        $l(x) = \sum l_i L_i(x)$ where $L_i(x)$ are the Legendre polynomials
+        $p(x) = \sum p_i x^i(x) = \sum t_i \frac{x^i}{i!}$
+        
+        We know: $p_i = \frac{t_i}{i!} = leg2poly(l)_i $
+        Therefore: $t_i = i! leg2poly(l)_i$
+        """
+        return leg.leg2poly(u)*spm.factorial(np.arange(len(u)))
 
-        print("L2M")
-        return u
-                                                            
-
+   
     #================================================================================
-    def monomial_to_legendre(self,u):
-        """Transform a monomial solution to a Legendre representation"""
-
-        print("M2L")
-        return u
+    def monomial_to_legendre(self,t):
+        """Transform a monomial (Taylor series) solution to a Legendre representation"""
+        return leg.poly2leg(t/spm.factorial(np.arange(len(t))))
+    
         
     #================================================================================
-    def limit_monomial(self,uc,ul,ur):
-        """Limit a cell solution with hierarchical reconstruction"""
+    def limit_monomial(self,ac,al,ar):
+        """Limit a monomial cell solution with hierarchical reconstruction"""
 
         print("limit monomial")
 
-        uc_lim = uc
+        alim = np.zeros(np.shape(ac))
         
-        return uc_lim
+        # loop on derivatives
+        N = len(ac) - 1
+        for m in range(N,0,-1):
 
-        # limit monomial function:
-        # scalar avgdUL = 0, avgdUC=0, avgdUR=0; scalar integral = 0;
-        #   scalar avgRL = 0, avgRC=0, avgRR=0; scalar alim = 0;
-        #   scalar avgLL = 0, avgLC=0, avgLR=0;
-        #   scalar c1,c2;
+            # Initialize
+            avgdUL = 0; avgdUC=0; avgdUR=0;
+            avgRL = 0; avgRC = 0; avgRR = 0;
 
-        #   // Loop on derivatives
-        #   for(int m = N; m > 0; m--){
-        #           avgdUL = 0; avgdUC=0; avgdUR=0;
-        #           avgRL = 0; avgRC = 0; avgRR = 0;
+            # Calculate the derivative average in the cells: left,
+            # center, right. Calculate the remainder polynomial in our
+            # cells and its two neighbors
+            for n in range(m-1,N+1):
+                integral = self.integrate_monomial_derivative(m-1,n)
+                avgdUL += al[n]*integral
+                avgdUC += ac[n]*integral
+                avgdUR += ar[n]*integral
+                if(n>=m+1):
+                    avgRL += alim[n]*self.integrate_monomial_derivative_bounds(m-1,n,-3,-1)
+                    avgRC += alim[n]*integral
+                    avgRR += alim[n]*self.integrate_monomial_derivative_bounds(m-1,n,1,3)
 
-        #           // Calculate the derivative average in the cells: left,
-        #           // center, right. Calculate the remainder polynomial in our
-        #           // cells and its two neighbors
-        #           for(int n=m-1; n<=N; n++){
-        #                   integral = integrate_monomial_derivative(m-1,n);
-        #                   avgdUL += AL[n]*integral;
-        #                   avgdUC += AC[n]*integral;
-        #                   avgdUR += AR[n]*integral;
-        #                   if(n>=m+1){
-        #                           alim = Alim[n];
-        #                           avgRL += alim*integrate_monomial_derivative_bounds(m-1,n,-3,-1);
-        #                           avgRC += alim*integral;
-        #                           avgRR += alim*integrate_monomial_derivative_bounds(m-1,n,1,3);
-        #                         }
-        #               }
+            # Approximate the average of the linear part
+            avgLL = 0.5*(avgdUL - avgRL) # avg = \frac{1}{2} \int_{-1}^1 U \ud x
+            avgLC = 0.5*(avgdUC - avgRC)
+            avgLR = 0.5*(avgdUR - avgRR)
 
-        #           // Approximate the average of the linear part
-        #           avgLL = 0.5*(avgdUL - avgRL); // avg = \frac{1}{2} \int_{-1}^1 U \ud x
-        #           avgLC = 0.5*(avgdUC - avgRC);
-        #           avgLR = 0.5*(avgdUR - avgRR);
+            # MUSCL approach to get candidate coefficients
+            c1 = 0.5*(avgLC - avgLL)  # 1/dx = 1/2 = 0.5
+            c2 = 0.5*(avgLR - avgLC)
 
-        #           // MUSCL approach to get candidate coefficients
-        #           c1 = 0.5*(avgLC - avgLL);  // 1/dx = 1/2 = 0.5
-        #           c2 = 0.5*(avgLR - avgLC);
+            # Limited value
+            alim[m] = self.scalar_minmod(c1,c2)
 
-        #           // Limited value
-        #           Alim[m] = minmod(c1,c2);
-        #     }// end loop on m
-        #   Alim[0] = avgLC;
+        # preserve cell average
+        alim[0] = avgLC
+        return ac
 
-        
+    #================================================================================
+    def integrate_monomial_derivative(self,k,n):
+        """The integral of the kth derivative of nth order monomial (from -1 to 1)
+
+        Returns $\frac{2}{(n-k+1)!}$ if n-k+1 is odd, 0 otherwise
+        Basically, calculates $\int_{-1}^1 \frac{\partial^k}{\partial x^k} \frac{x^n}{n!} \mathrm{d} x$
+        """
+        num = n-k+1
+        if (num%2): return 2.0/np.math.factorial(num)
+        else: return 0.0
 
 
+    #================================================================================
+    def integrate_monomial_derivative_bounds(self,k,n,a,b):
+        """The integral of the kth derivative of nth order monomial (from a to b)
+
+        Returns $\int_{a}^{b} \frac{\partial^k}{\partialx^k} \frac{x^n}{n!} \mathrm{d} x$
+        """
+        num = n-k+1
+        return (b**num - a**num)/np.math.factorial(num)
+
+
+    #================================================================================
+    def scalar_minmod(self,a,b):
+        """Minmod function for two scalars"""
+
+        signa = np.sign(a);
+        if (signa != np.sign(b)):
+            return 0
+
+        fabsa = np.fabs(a);
+        fabsb = np.fabs(b);
+        if (fabsa<fabsb):
+            return signa*fabsa;
+        else:
+            return signa*fabsb;
