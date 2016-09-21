@@ -144,7 +144,7 @@ class Solution:
             xc_sen = np.c_[ self.xc, self.sensors.sensors[1:-1]]
 
             # Quick diagnostic of how many sensors are on
-            print("\tsensors on in {0:6.2f}% of the domain".format(np.count_nonzero(xc_sen[:,1])/xc_sen.shape[1]))
+            print("\tsensors on in {0:6.2f}% of the domain".format(np.count_nonzero(xc_sen[:,1])/xc_sen.shape[0]*100))
             
             # Save the data to a file
             np.savetxt(fname[0], xc_sen, fmt='%.18e, %.0d', delimiter=',', header=hline)

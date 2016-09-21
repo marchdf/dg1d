@@ -22,26 +22,36 @@ class LimitingTestCase(unittest.TestCase):
     #================================================================================
     # Set up
     def setUp(self):
-        self.solution = solution.Solution('entrpyw 3', 'euler', 3, '', [-1,-1])
-        self.solution.u = np.array([[0,0,0,1,1,1,2,2,2,3,3,3,0,0,0],
-                                    [0,0,0,2,2,2,2,2,2,3,3,3,0,0,0],
-                                    [0,0,0,1,1,1,4,4,4,3,3,3,0,0,0],
-                                    [0,0,0,1,1,1,2,2,2,3,3,3,0,0,0]],dtype=float)
-        self.solution.apply_bc()
-        self.biswas_limiter  = limiting.Limiter('full_biswas',self.solution)
-        self.hr_limiter      = limiting.Limiter('adaptive_hr',self.solution)
+        self.solution_biswas = solution.Solution('entrpyw 3', 'euler', 3, '', [-1,-1])
+        self.solution_biswas.u = np.array([[0,0,0,1,1,1,2,2,2,3,3,3,0,0,0],
+                                           [0,0,0,2,2,2,2,2,2,3,3,3,0,0,0],
+                                           [0,0,0,1,1,1,4,4,4,3,3,3,0,0,0],
+                                           [0,0,0,1,1,1,2,2,2,3,3,3,0,0,0]],dtype=float)
+        self.solution_biswas.apply_bc()
+        self.biswas_limiter  = limiting.Limiter('full_biswas',self.solution_biswas)
+
+
+
+        self.solution_hr = solution.Solution('entrpyw 3', 'euler', 3, '', [-1,-1])
+        self.solution_hr.u = np.array([[0,0,0,1,1,1,2,2,2,3,3,3,0,0,0],
+                                       [0,0,0,2,2,2,2,4,2,9,8,3,0,0,0],
+                                       [0,0,0,3,1,4,6,3,4,1,6,3,0,0,0],
+                                       [0,0,0,4,1,5,7,2,2,2,4,3,0,0,0]],dtype=float)
+        self.solution_hr.apply_bc()
+        self.hr_limiter      = limiting.Limiter('adaptive_hr',self.solution_hr)
         
+
     #================================================================================
     # test_biswas_limiting_procedure
     def test_biswas_limiting_procedure(self):
         """Is the Biswas limiting procedure correct?"""
 
         # Test limiting
-        self.biswas_limiter.limit(self.solution)
-        npt.assert_array_almost_equal(self.solution.u, np.array([[ 3.,  3.,  3.,  1.,  1.,  1.,  2.,  2.,  2.,  3.,  3.,  3.,  1.,  1.,  1.,],
-                                                                 [ 3.,  3.,  3.,  0.,  0.,  0.,  1.,  1.,  1.,  0.,  0.,  0.,  2.,  2.,  2.,],
-                                                                 [ 3.,  3.,  3.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  1.,  1.,  1.,],
-                                                                 [ 3.,  3.,  3.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  1.,  1.,  1.,]]))
+        self.biswas_limiter.limit(self.solution_biswas)
+        npt.assert_array_almost_equal(self.solution_biswas.u, np.array([[ 3.,  3.,  3.,  1.,  1.,  1.,  2.,  2.,  2.,  3.,  3.,  3.,  1.,  1.,  1.,],
+                                                                        [ 3.,  3.,  3.,  0.,  0.,  0.,  1.,  1.,  1.,  0.,  0.,  0.,  2.,  2.,  2.,],
+                                                                        [ 3.,  3.,  3.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  1.,  1.,  1.,],
+                                                                        [ 3.,  3.,  3.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  1.,  1.,  1.,]]))
         
 
     #================================================================================
@@ -49,8 +59,7 @@ class LimitingTestCase(unittest.TestCase):
     def test_deltas(self):
         """Is the calculation for the deltas is correct?"""
 
-        dm, dp = self.biswas_limiter.deltas(self.solution)
-
+        dm, dp = self.biswas_limiter.deltas(self.solution_biswas)
 
         # Make sure they are correct
         npt.assert_array_almost_equal(dm, np.array([[-2.,         -2.,         -2.,          1.,  1.,  1.,  1.,          1.,          1.        ],
@@ -90,14 +99,14 @@ class LimitingTestCase(unittest.TestCase):
         """Is the adaptive HR limiting procedure correct?"""
 
         # Do the sensors. In this case we are limiting everywhere
-        self.solution.sensors.sensing(self.solution)
-        
+        self.solution_hr.sensors.sensing(self.solution_hr)
+
         # Test limiting
-        self.hr_limiter.limit(self.solution)
-        # npt.assert_array_almost_equal(self.solution.u, np.array([[ 3.,  3.,  3.,  1.,  1.,  1.,  2.,  2.,  2.,  3.,  3.,  3.,  1.,  1.,  1.,],
-        #                                                          [ 3.,  3.,  3.,  0.,  0.,  0.,  1.,  1.,  1.,  0.,  0.,  0.,  2.,  2.,  2.,],
-        #                                                          [ 3.,  3.,  3.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  1.,  1.,  1.,],
-        #                                                          [ 3.,  3.,  3.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  1.,  1.,  1.,]]))
+        self.hr_limiter.limit(self.solution_hr)
+        npt.assert_array_almost_equal(self.solution_hr.u, np.array([[ 3., 3., 3.,  1.,  1., 1., 2.,          2.,  2.,          3.,          3.,  3.,  1., 1., 1.],
+                                                                    [ 9., 8., 3., -1.7, 0., 0., 0.,         -2.8, 0.,         -0.23333333,  0., -0.6, 2., 2., 2.],
+                                                                    [ 1., 6., 3.,  0.,  0., 0., 0.33333333,  0.,  0.33333333,  0.,          0.,  0.,  3., 1., 4.],
+                                                                    [ 2., 4., 3.,  0.2, 0., 0., 0.,          0.3, 0.,          0.06666667,  0.,  0.1, 4., 1., 5.]]))
 
     #================================================================================
     # test_legendre_to_monomial
@@ -122,6 +131,50 @@ class LimitingTestCase(unittest.TestCase):
         # Test
         npt.assert_array_almost_equal(u,np.array([0.,1.,2.,3.]))
 
+    #================================================================================
+    # test_limit_monomial_linear
+    def test_limit_monomial_linear(self):
+        """Is the monomial limiting procedure correct for a linear polynomial?
+
+        The only coefficient that matters here is the zeroth order
+        one. Its really a test of the minmod procedure.
+        """
+
+        # Linear polynomial
+        alim = self.hr_limiter.limit_monomial(np.array([3.,4]), # center
+                                              np.array([1.,2]), # left
+                                              np.array([5.,6])) # right
+        npt.assert_array_almost_equal(alim,np.array([3.,1]))
+
+        # Another linear polynomial
+        alim = self.hr_limiter.limit_monomial(np.array([-1.,3]), # center
+                                              np.array([0.,-3]), # left
+                                              np.array([2.,1]))  # right
+        npt.assert_array_almost_equal(alim,np.array([-1.,0]))
+
+        # Another linear polynomial
+        alim = self.hr_limiter.limit_monomial(np.array([-3.,3]),  # center
+                                              np.array([-1.,-3]), # left
+                                              np.array([-4.,1]))  # right
+        npt.assert_array_almost_equal(alim,np.array([-3.,-0.5]))
+
+    #================================================================================
+    # test_limit_monomial
+    def test_limit_monomial(self):
+        """Is the monomial limiting procedure correct for a general polynomial?
+        """
+
+        # Quadratic polynomial
+        alim = self.hr_limiter.limit_monomial(np.array([-1.,5,2]), # center
+                                              np.array([1.,2,3]),  # left
+                                              np.array([0.,6,3]))  # right
+        npt.assert_array_almost_equal(alim,np.array([-0.75,0,0.5]))
+
+        # Cubic polynomial
+        alim = self.hr_limiter.limit_monomial(np.array([-1.,5,2,7]), # center
+                                              np.array([1.,2,3,1]),  # left
+                                              np.array([0.,6,1,2]))  # right
+        npt.assert_array_almost_equal(alim,np.array([-0.76388889,0.,0.58333333, -0.5]))
         
     #================================================================================
     # test_integrate_monomial_derivative

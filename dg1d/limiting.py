@@ -21,13 +21,13 @@ class Limiter:
     #================================================================================
     def __init__(self,limiting_type,solution):
 
-        print("Setting up the limiter.")
+        print("Setting up the limiter:")
 
         # Pre-allocate depending on limiting type
         self.keywords = {'type' : None}
 
         if limiting_type == 'full_biswas':
-            print('Limiting everywhere with Biswas limiter')
+            print('\tLimiting everywhere with Biswas limiter')
             self.keywords = {'type' : self.full_biswas}
 
             # Pre-allocate vector holding 1/(2*k+1). The little None
@@ -37,12 +37,12 @@ class Limiter:
             self.c = 1.0/(2*np.arange(0,solution.basis.p) + 1)[:, None]
             
         elif limiting_type == 'adaptive_hr':
-            print('Adaptive limiting with hierarchical reconstruction')
+            print('\tAdaptive limiting with hierarchical reconstruction')
             self.keywords = {'type' : self.adaptive_hr}
 
         # By default, do not limit
         else:
-            print('No limiting.')
+            print('\tNo limiting.')
 
             
     #================================================================================
@@ -156,13 +156,15 @@ class Limiter:
     #================================================================================
     def adaptive_hr(self,solution):
         """Limit a solution in the domain using adaptive hierarchical reconstruction"""
+
+        # Decide where to do limiting
+        solution.sensors.sensing(solution)
         
         # loop over all the interior elements
         for e in range(1,solution.N_E+1):
 
             # test if we need to do limiting (sensors are on)
             if solution.sensors.sensors[e] != 0:
-                print(solution.sensors.sensors[e])
 
                 # loop over the fields and call HR
                 for f in range(0,solution.N_F):
@@ -188,9 +190,9 @@ class Limiter:
 
         return uc_lim
 
-
+    
     #================================================================================
-    def legendre_to_monomial(self,u):
+    def legendre_to_monomial(self,l):
         """Transform a Legendre solution to a monomial (Taylor series) representation
         
         $l(x) = \sum l_i L_i(x)$ where $L_i(x)$ are the Legendre polynomials
@@ -198,21 +200,25 @@ class Limiter:
         
         We know: $p_i = \frac{t_i}{i!} = leg2poly(l)_i $
         Therefore: $t_i = i! leg2poly(l)_i$
+
+        The zero padding is necessary because higher order
+        coefficients are deleted from the polynomial representation.
+
         """
-        return leg.leg2poly(u)*spm.factorial(np.arange(len(u)))
+        t = leg.leg2poly(l)
+        return np.concatenate([t*spm.factorial(np.arange(len(t))),np.zeros(len(l)-len(t))])
 
    
     #================================================================================
     def monomial_to_legendre(self,t):
         """Transform a monomial (Taylor series) solution to a Legendre representation"""
-        return leg.poly2leg(t/spm.factorial(np.arange(len(t))))
+        l = leg.poly2leg(t/spm.factorial(np.arange(len(t))))
+        return np.concatenate([l,np.zeros(len(t)-len(l))])
+
     
-        
     #================================================================================
     def limit_monomial(self,ac,al,ar):
         """Limit a monomial cell solution with hierarchical reconstruction"""
-
-        print("limit monomial")
 
         alim = np.zeros(np.shape(ac))
         
@@ -251,7 +257,7 @@ class Limiter:
 
         # preserve cell average
         alim[0] = avgLC
-        return ac
+        return alim
 
     #================================================================================
     def integrate_monomial_derivative(self,k,n):
