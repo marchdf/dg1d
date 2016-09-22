@@ -413,7 +413,7 @@ class Solution:
             if x <= 1:
                 rho = 3.857143
                 u   = 2.629369
-                p   = 10.3333
+                p   = 10.33333
                 return [rho, rho*u, 1.0/(constants.gamma-1.0)*p + 0.5*rho*u*u]
 
             # Right state

@@ -108,5 +108,15 @@ for field in range(solution.N_F):
         fe = np.sin(2*np.pi*xe)
         plt.plot(xe,fe,'k')
 
+
+# Plot the sensors if they exist
+if os.path.isfile('sensor0000000000.dat'):
+    plt.figure(solution.N_F)
+    dat = np.loadtxt('sensor{0:010d}.dat'.format(args.step),delimiter=',')
+
+    # plot sensors at cell centers
+    plt.plot(dat[:,0],dat[:,1],'o',mfc=cmap[0],mec=cmap[0])
+    plt.ylim([-0.1,2.1])
+        
 if args.show:
     plt.show()
