@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #
 #
 """@package rk_stability
@@ -31,7 +31,7 @@ import scipy.optimize
 
 sys.path.insert(0, '../dg1d')
 import rk_coeffs as rkc
-
+import aux_functions as auxf
 
 #================================================================================
 #
@@ -59,29 +59,6 @@ markertype = ['s','d','o','p','h']
 #
 # Function definitions
 #
-#================================================================================
-def sort_roots_angle(roots):
-    """Radial sort of the roots
-
-    Inspired from:
-    http://stackoverflow.com/questions/35606712/numpy-way-to-sort-out-a-messy-array-for-plotting
-
-    """
-    # Get one long array with all the roots
-    reshaped = roots.reshape((roots.size,),order='F')
-    
-    # Separate the real and imaginary parts
-    x, y = np.real(reshaped), np.imag(reshaped)
-
-    # Get the angle wrt the mean of the cloud of points
-    x0, y0 = x.mean(), y.mean()
-    angle = np.arctan2(y - y0, x - x0)
-
-    # Sort based on this angle
-    idx = angle.argsort()
-
-    return x[idx], y[idx]
-
 #================================================================================
 def exact_stability_boundary(coeffs,B,fignum=0,coloridx=0):
     """Returns points on the stability boundary of an explicit RK scheme
@@ -125,7 +102,7 @@ def exact_stability_boundary(coeffs,B,fignum=0,coloridx=0):
         
         
     # Sort the roots
-    x,y = sort_roots_angle(roots)  
+    x,y = auxf.sort_roots_angle(roots)  
 
     # Plot
     plt.figure(fignum)
