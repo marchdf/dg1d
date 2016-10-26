@@ -10,6 +10,28 @@ There are a lot of assumptions that go into making this code as simple
 as possible, including the assumption that the grid is
 one-dimensional, structured, and the elements are of constant size.
 
+# Development process
+
+1. Create a branch for the new feature (locally):
+```{bash}
+git checkout -b feature-branch
+```
+
+2. Develop the feature, merging changes often from the develop branch into your feature branch:
+```{bash}
+git commit -m "Developed feature"
+git checkout develop
+git pull                     [fix any identified conflicts between local and remote branches of "develop"]
+git checkout feature-branch
+git merge develop        [fix any identified conflicts between "develop" and "feature-branch"]
+```
+
+3. Push feature branch to dg1d repository:
+```{bash}
+git push -u origin feature
+```
+
+4. 
 
 # Licensing
 
