@@ -29,10 +29,10 @@ one-dimensional, structured, and the elements are of constant size.
 
 3. Push feature branch to dg1d repository:
 	```{bash}
-	git push -u origin feature
+	git push -u origin feature-branch
 	```
 
-4. 
+4. Create a pull request on GitHub. Make sure you ask to merge with develop
 
 # Licensing
 
