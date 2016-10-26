@@ -37,7 +37,7 @@ class DGTestCase(unittest.TestCase):
         # Call the function that we are testing
         self.dgsolver.add_interior_face_fluxes(1)
 	
-        npt.assert_array_almost_equal(self.dgsolver.F, np.array([[0.,   0.,   1.,   2.,   3.,   5.],
+        npt.assert_array_almost_equal(self.dgsolver.F, np.array([[0.,   0.,   1.,   2.,   3.,   8.],
                                                                  [6.,   6.,   5.,   4.,   3.,  11.],
                                                                  [ 12.,  12.,  13.,  14.,  15.,  17.],
                                                                  [ 18.,  18.,  17.,  16.,  15.,  23.]]),decimal=7)
