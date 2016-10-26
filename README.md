@@ -16,7 +16,6 @@ one-dimensional, structured, and the elements are of constant size.
 ```{bash}
 git checkout -b feature-branch
 ```
-
 2. Develop the feature, merging changes often from the develop branch into your feature branch:
 ```{bash}
 git commit -m "Developed feature"
@@ -25,12 +24,10 @@ git pull                     [fix any identified conflicts between local and rem
 git checkout feature-branch
 git merge develop        [fix any identified conflicts between "develop" and "feature-branch"]
 ```
-
 3. Push feature branch to dg1d repository:
 ```{bash}
 git push -u origin feature
 ```
-
 4. 
 
 # Licensing
