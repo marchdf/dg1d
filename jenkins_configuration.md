@@ -1,8 +1,8 @@
-# Configuring the dg1d project to work with Jenkins
+# Continuous integration with Jenkins on Arch Linux
 
 I am going to try to get Jenkins to do my automatic testing for this
-project. I will be doing this on my umich machine.
-
+project. I will be doing this on my UM machine that is running Arch
+Linux.
 
 ## Sources 
 
