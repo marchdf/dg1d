@@ -36,8 +36,12 @@ one-dimensional, structured, and the elements are of constant size.
 
 # Licensing
 
-See LICENSE.md
+See [LICENSE.md](LICENSE.md)
 
 # Author contact
 
 Marc T. Henry de Frahan (marchdf@umich.edu)
+
+# Jenkins configuration
+
+See [instructions](jenkins_configuration.md)
