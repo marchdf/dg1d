@@ -33,7 +33,7 @@ class EnhanceTestCase(unittest.TestCase):
         Al,Alinv,Ar,Arinv = enhance.enhancement_matrices(solution_order,modes)
 
         # Make sure both left and right enhancements are correct
-        npt.assert_array_almost_equal(Al, np.array([[ 1. ,  0. ,  1. ],
+        npt.assert_array_almost_equal(Al, np.array([[ 1. ,  0. ,  0. ],
                                                     [ 0. ,  1. ,  0. ],
                                                     [ 0. ,  1. ,  6. ]]), decimal = 9)
 
