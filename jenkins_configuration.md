@@ -73,25 +73,41 @@ Follow these references (all pretty equivalent):
 - [another backup](https://learning-continuous-deployment.github.io/jenkins/github/2015/04/17/github-jenkins/)
 
 Inside the Jenkins browser thing:
+
 1. Click the New Item button. Select Build a free-style software project, and click the button labeled OK.
+
 2. Add our project's GitHub URL to the GitHub project box
+
 3. Select the Git option under Source Code Management.
+
 4. Add the URL to our GitHub project repo to the Repository URL
+
 5. Enable Build when a change is pushed to GitHub
+
 6. Click the Add build step drop-down, and select Execute shell
+
 7. I added the build step: `nosetests dg1d`
+
 8. Click Save
 
 Next go to the Github repo:
+
 1. Setting > Click the Services tab, and then the Add service drop-down. Select the Jenkins (GitHub plugin) service.
+
 2. Add the following as the Jenkins hook url: http://JENKINS.SERVER.IP.ADDRESS:8080/github-webhook/
+
 3. Add Service
 
 Test the setup:
+
 1. make a small commit (maybe something that breaks the tests)
+
 2. push 
+
 3. look at the jenkins page (you should see a failed build)
+
 4. revert your commit and push again
+
 5. you should see a successful build
 
 ### Configuring for python nosetest
@@ -100,8 +116,11 @@ Reference:
 - [or this](http://nose.readthedocs.io/en/latest/plugins/xunit.html)
 
 Follow these steps:
+
 1. Navigate to the project > Configure > Build 
+
 2. Modify the nosetest build command to contain `--with-xunit`
+
 3. In post-build actions, add the "Publish JUnit test result report" and add the `nosetests.xml` file to the line
 
 
@@ -115,16 +134,22 @@ tests. References:
 - [and this is more like a man page](https://wiki.jenkins-ci.org/display/JENKINS/Git+Plugin#GitPlugin-AdvancedFeatures)
 
 Follow these steps:
+
 1. Navigate to the project > Configure > Source Code Management
+
 2. Branches to build should be `develop`
+
 3. Add an "Additional Behavior" called "Merge before build" and fill out 
    - name of repository: `origin`
    - branch to merge to: `master`
+
 4. Now create a new post-build action to push the merge back to Github:
    - Git Publisher
    - check "Push Only If Build Succeeds" and "Merge Results"
 	
 ### Add an email notification
+
 1. Navigate to the project > Configure > Post-build action
+
 2. Add the email notification action
 
