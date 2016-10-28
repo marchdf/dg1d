@@ -153,3 +153,15 @@ Follow these steps:
 
 2. Add the email notification action
 
+
+### Status checks
+
+1. Navigate to the project > Configure > Post-build action
+
+2. Add the "Set GitHub commit status (universal)"
+
+Note: things seem to have changed since some posts
+([like this one](http://stackoverflow.com/questions/14274293/show-current-state-of-jenkins-build-on-github-repo))
+were written.
+
+
