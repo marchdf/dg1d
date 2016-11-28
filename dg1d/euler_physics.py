@@ -34,6 +34,8 @@ def riemann_rusanov(ul,ur):
 
     V. V. Rusanov, Calculation of Interaction of Non-Steady Shock Waves with Obstacles, J. Comput. Math. Phys. USSR, 1, pp. 267-279, 1961.
 
+    Heavily inspired/taken from "I Do Like CFD" website: http://ossanworld.com/cfdbooks/cfdcodes/oned_euler_fluxes_v5.f90
+
     """
 
     # Initialize
@@ -68,10 +70,63 @@ def riemann_rusanov(ul,ur):
 
 
 #================================================================================
+def riemann_godunov(ul,ur):
+    """Returns the Godunov interface flux for the Euler equations
+
+    S. K. Godunov, A Difference Scheme for Numerical Computation of Discontinuous Solution of Hydrodynamic Equations, Math. Sbornik, 47, pp. 271-306, 1959 (in Russian). Translated US Joint Publ. Res. Service, JPRS 7226 (1969)
+
+    Heavily inspired/taken from "I Do Like CFD" website: http://ossanworld.com/cfdbooks/cfdcodes/oned_euler_fluxes_v5.f90
+
+    """
+
+    # Initialize
+    F = np.zeros(ul.shape)
+
+    # Primitive variables and sound speeds
+    rhoL = ul[0::3]
+    vL   = ul[1::3]/rhoL
+    EL   = ul[2::3]
+    pL   = (constants.gamma-1)*(EL-0.5*rhoL*vL*vL)    
+    aL   = np.sqrt(constants.gamma*pL/rhoL)
+    HL   = (EL + pL)/rhoL
+    
+    rhoR = ur[0::3]
+    vR   = ur[1::3]/rhoR
+    ER   = ur[2::3]
+    pR   = (constants.gamma-1)*(ER - 0.5*rhoR*vR*vR)
+    aR   = np.sqrt(constants.gamma*pR/rhoR)
+    HR   = (ER + pR)/rhoR
+
+    # Fixed point iteration tolerance
+    tol = 1e-5
+
+    # Loop over each interface
+    for i in range(len(rhoL)):
+    
+        # Supersonic flow to the right
+        if (vL[i]/aL[i] >= 1.0):
+            F[i+0] = rhoL[i]*vL[i]                 # first: fx = rho*u
+            F[i+1] = rhoL[i]*vL[i]*vL[i]+pL[i]     # second: fx = rho*u*u+p
+            F[i+2] = (EL[i]+pL[i])*vL[i]           # third: fx = (E+p)*u
+
+        # Supersonic flow to the left
+        elif (vR[i]/aR[i] <= -1.0):
+            F[i+0] = rhoR[i]*vR[i]                 # first: fx = rho*u
+            F[i+1] = rhoR[i]*vR[i]*vR[i]+pR[i]     # second: fx = rho*u*u+p
+            F[i+2] = (ER[i]+pR[i])*vR[i]           # third: fx = (E+p)*u
+
+    return F
+        
+    
+    
+
+#================================================================================
 def riemann_roe(ul,ur):
     """Returns the Roe interface flux for the Euler equations
 
     P. L. Roe, Approximate Riemann Solvers, Parameter Vectors and Difference Schemes, Journal of Computational Physics, 43, pp. 357-372.
+
+    Heavily inspired/taken from "I Do Like CFD" website: http://ossanworld.com/cfdbooks/cfdcodes/oned_euler_fluxes_v5.f90
 
     """
 

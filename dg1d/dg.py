@@ -18,9 +18,6 @@ class DG:
 
         print("Initializing the DG solver.")
         
-        # Type of Riemann solver to use
-        self.riemann = 'upw'
-
         # Initialize variables
         self.ug = np.zeros((solution.u.shape))
         self.uf = np.zeros((2,solution.u.shape[1]))
