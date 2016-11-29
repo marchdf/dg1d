@@ -75,7 +75,7 @@ def riemann_godunov(ul,ur):
 
     S. K. Godunov, A Difference Scheme for Numerical Computation of Discontinuous Solution of Hydrodynamic Equations, Math. Sbornik, 47, pp. 271-306, 1959 (in Russian). Translated US Joint Publ. Res. Service, JPRS 7226 (1969)
 
-    Heavily inspired/taken from "I Do Like CFD" website: http://ossanworld.com/cfdbooks/cfdcodes/oned_euler_fluxes_v5.f90
+    Basically taken from "I Do Like CFD" website: http://ossanworld.com/cfdbooks/cfdcodes/oned_euler_fluxes_v5.f90
 
     """
 
@@ -88,37 +88,152 @@ def riemann_godunov(ul,ur):
     EL   = ul[2::3]
     pL   = (constants.gamma-1)*(EL-0.5*rhoL*vL*vL)    
     aL   = np.sqrt(constants.gamma*pL/rhoL)
-    HL   = (EL + pL)/rhoL
     
     rhoR = ur[0::3]
     vR   = ur[1::3]/rhoR
     ER   = ur[2::3]
     pR   = (constants.gamma-1)*(ER - 0.5*rhoR*vR*vR)
     aR   = np.sqrt(constants.gamma*pR/rhoR)
-    HR   = (ER + pR)/rhoR
 
     # Fixed point iteration tolerance
     tol = 1e-5
-
+    
     # Loop over each interface
     for i in range(len(rhoL)):
-    
+
         # Supersonic flow to the right
         if (vL[i]/aL[i] >= 1.0):
-            F[i+0] = rhoL[i]*vL[i]                 # first: fx = rho*u
-            F[i+1] = rhoL[i]*vL[i]*vL[i]+pL[i]     # second: fx = rho*u*u+p
-            F[i+2] = (EL[i]+pL[i])*vL[i]           # third: fx = (E+p)*u
+            F[i*3+0] = rhoL[i]*vL[i]                 # first: fx = rho*u
+            F[i*3+1] = rhoL[i]*vL[i]*vL[i]+pL[i]     # second: fx = rho*u*u+p
+            F[i*3+2] = (EL[i]+pL[i])*vL[i]           # third: fx = (E+p)*u
 
         # Supersonic flow to the left
         elif (vR[i]/aR[i] <= -1.0):
-            F[i+0] = rhoR[i]*vR[i]                 # first: fx = rho*u
-            F[i+1] = rhoR[i]*vR[i]*vR[i]+pR[i]     # second: fx = rho*u*u+p
-            F[i+2] = (ER[i]+pR[i])*vR[i]           # third: fx = (E+p)*u
+            F[i*3+0] = rhoR[i]*vR[i]                 # first: fx = rho*u
+            F[i*3+1] = rhoR[i]*vR[i]*vR[i]+pR[i]     # second: fx = rho*u*u+p
+            F[i*3+2] = (ER[i]+pR[i])*vR[i]           # third: fx = (E+p)*u
+            
+
+        # for the other cases
+        else:
+            # Initial solution: (intersection of two linearized integral curves,
+            #                    which is actually the upper bound of the solution.)
+            pm1 = ( (0.5*(vL-vR)*(constants.gamma-1)+aL+aR)/
+                    (aL*pL**((1-constants.gamma)/constants.gamma*0.5)
+                     + aR*pR**((1-constants.gamma)/constants.gamma*0.5)) )**(2*constants.gamma/(constants.gamma-1))
+
+            # Fixed-point iteration to find the pressure and velocity in the middle.
+            # (i.e., find the intersection of two nonlinear integral curves.)
+
+            k = 0
+            kmax = 100
+            
+            for k in range(kmax+2):
+
+                mL = massflux(rhoL,aL,pL,pm1)
+                mR = massflux(rhoR,aR,pR,pm1)
+                pm2 = (mL*pR+mR*pL-mL*mR*(vR-vL))/(mL+mR)
+
+                # Test for fixed point convergence
+                if (abs(pm2-pm1) < tol):
+                    break
+
+                # Test for max iterations
+                k = k + 1
+                if (k > kmax):
+                    print("Fixed-point iteration did not converge. Exiting.")
+                    sys.exit(1)
+
+                # Set old value to new value
+                pm1 = pm2
+
+            # Calculate the new fluxes
+            mL = massflux(rhoL,aL,pL,pm2)
+            mR = massflux(rhoR,aR,pR,pm2)
+            vm = (mL*vL+mR*vR-(pR-pL))/(mL+mR)
+
+            # Density in the middle
+            r = [rhoL,rhoR]
+            P = [pL,pR]
+            gam = (constants.gamma+1)/(constants.gamma-1)
+            rm = [None]*2
+            for k in range(2):
+                if (pm2/p(k) >= 1):
+                    rm[k] = r[k]*(1+gam*pm2/p[k]) / (gam+pm2/p[k])
+                else:
+                    rm[k] = r[k]*( pm2/p(k) )**(1.0/constants.gamma)
+                    
+            # Contact wave to the right or left?
+            if vm >= 0:
+                rmI = rm[1]
+            else:
+                rmI = rm[2]
+                
+            # Wave speeds at the interface, x/t = 0
+            amL = sqrt(constants.gamma*pm2/rm[1])
+            amR = sqrt(constants.gamma*pm2/rm[2])
+            SmL = vm - amL
+            SmR = vm + amR
+
+            # Sonic case
+            if (SmL <= 0) and (SmR >= 0):
+                Um2 = rmI*vm
+                Um3 = pm2/(constants.gamma-1)+0.5*rmI*vm*vm
+            elif (SmL > 0) and ( vL - aL < 0):
+                rmI,Um2,Um3 = sonic(vL,aL,PL,vm,amL,vL-aL,SmL)
+            elif (SmR < 0) and ( vR + aR > 0): 
+                rmI,Um2,Um3 = sonic(vR,aR,PR,vm,amR,vR+aR,SmR)
+
+            # Compute the flux: evaluate the physical flux at the interface (middle)
+            pm   = (constants.gamma-1)*(Um3 - 0.5*Um2*Um2/rmI)
+            F[i*3+0] = Um2                  # first: fx = rho*u
+            F[i*3+1] = Um2*Um2/rmI + pm     # second: fx = rho*u*u+p
+            F[i*3+2] = (Um3 + pm) * Um2/rmI # third: fx = (E+p)*u
 
     return F
-        
+
+
+#================================================================================
+def massflux(r,c,pQ,pm):
+    """ Returns the mass flux used for Godunov's Flux Function
+
+    Katate Masatsuka, February 2009. http://www.cfdbooks.com
+    """
+
+    # Smallness
+    eps = 1.0e-15
+
+    gam1 = 0.5*(constants.gamma+1)/constants.gamma
+    gam2 = 0.5*(constants.gamma-1)/constants.gamma
+
+    if pm/pQ >= 1-eps: # eps to avoid zero-division
+        massflux = r*c*sqrt(1+gam1*(pm/pQ - 1))
+    else:
+        massflux = r*c*gam2*(1-pm/pQ) / (1- (pm/pQ)**gam2)
+
+    return massflux
+
+
+#================================================================================
+def sonic(u1,c1,P1,u2,c2,a1,a2):
+    """ Returns solutions at Sonic points --- used in Godunov's flux
     
+    Katate Masatsuka, February 2009. http://www.cfdbooks.com
+    """
+ 
+    R1 =  a2/(a2-a1)
+    R2 = -a1/(a2-a1)
+    us = R1*u1+R2*u2
+    cs = R1*c1+R2*c2
+    Ps = (cs/c1)**(2.0*gamma/(gamma-1))*P1
+    rs = constants.gamma*Ps/(cs*cs)
     
+    US1 = rs
+    US2 = rs*us
+    US3 = Ps/(constants.gamma-1) + 0.5*rs*us*us
+
+    return US1, US2, US3
+
 
 #================================================================================
 def riemann_roe(ul,ur):
