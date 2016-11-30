@@ -69,7 +69,7 @@ deck = deck.Deck()
 deck.parser(args.deck)
 
 # Generate the solution and apply the boundary conditions
-sol = solution.Solution(deck.ic,deck.system,deck.order,deck.enhance,deck.sensor_thresholds)
+sol = solution.Solution(deck.ic,deck.system,deck.order,deck.riemann,deck.enhance,deck.sensor_thresholds)
 sol.apply_bc()
 
 # Initialize the DG solver

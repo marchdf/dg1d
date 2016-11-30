@@ -22,7 +22,7 @@ class LimitingTestCase(unittest.TestCase):
     #================================================================================
     # Set up
     def setUp(self):
-        self.solution_biswas = solution.Solution('entrpyw 3', 'euler', 3, '', [-1,-1])
+        self.solution_biswas = solution.Solution('entrpyw 3', 'euler', 3, '', '', [-1,-1])
         self.solution_biswas.u = np.array([[0,0,0,1,1,1,2,2,2,3,3,3,0,0,0],
                                            [0,0,0,2,2,2,2,2,2,3,3,3,0,0,0],
                                            [0,0,0,1,1,1,4,4,4,3,3,3,0,0,0],
@@ -32,7 +32,7 @@ class LimitingTestCase(unittest.TestCase):
 
 
 
-        self.solution_hr = solution.Solution('entrpyw 3', 'euler', 3, '', [-1,-1])
+        self.solution_hr = solution.Solution('entrpyw 3', 'euler', 3, '', '', [-1,-1])
         self.solution_hr.u = np.array([[0,0,0,1,1,1,2,2,2,3,3,3,0,0,0],
                                        [0,0,0,2,2,2,2,4,2,9,8,3,0,0,0],
                                        [0,0,0,3,1,4,6,3,4,1,6,3,0,0,0],

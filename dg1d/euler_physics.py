@@ -158,20 +158,20 @@ def riemann_godunov(ul,ur):
             gam = (constants.gamma+1)/(constants.gamma-1)
             rm = [None]*2
             for k in range(2):
-                if (pm2/p(k) >= 1):
-                    rm[k] = r[k]*(1+gam*pm2/p[k]) / (gam+pm2/p[k])
+                if (pm2/P[k] >= 1):
+                    rm[k] = r[k]*(1+gam*pm2/P[k]) / (gam+pm2/P[k])
                 else:
-                    rm[k] = r[k]*( pm2/p(k) )**(1.0/constants.gamma)
+                    rm[k] = r[k]*( pm2/P[k] )**(1.0/constants.gamma)
                     
             # Contact wave to the right or left?
             if vm >= 0:
-                rmI = rm[1]
+                rmI = rm[0]
             else:
-                rmI = rm[2]
+                rmI = rm[1]
                 
             # Wave speeds at the interface, x/t = 0
-            amL = sqrt(constants.gamma*pm2/rm[1])
-            amR = sqrt(constants.gamma*pm2/rm[2])
+            amL = np.sqrt(constants.gamma*pm2/rm[0])
+            amR = np.sqrt(constants.gamma*pm2/rm[1])
             SmL = vm - amL
             SmR = vm + amR
 
@@ -207,7 +207,7 @@ def massflux(r,c,pQ,pm):
     gam2 = 0.5*(constants.gamma-1)/constants.gamma
 
     if pm/pQ >= 1-eps: # eps to avoid zero-division
-        massflux = r*c*sqrt(1+gam1*(pm/pQ - 1))
+        massflux = r*c*np.sqrt(1+gam1*(pm/pQ - 1))
     else:
         massflux = r*c*gam2*(1-pm/pQ) / (1- (pm/pQ)**gam2)
 

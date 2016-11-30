@@ -25,7 +25,7 @@ class Solution:
     'Generate the solution (initialize, ic, mesh, etc)'
 
     #================================================================================
-    def __init__(self,icline,system,order,enhancement_type='',sensor_thresholds=[]):
+    def __init__(self,icline,system,order,riemann_solver='',enhancement_type='',sensor_thresholds=[]):
         
         print("Generating the solution.")
 
@@ -52,9 +52,10 @@ class Solution:
         constants.init()
         
         # Manipulation functions
-        self.set_manipulation_functions(system)
-
+        self.set_manipulation_functions(system,riemann_solver)
+        
         # Boundary condition type (left/right)
+        # set in initial condition function
         self.bc_l = ''
         self.bc_r = ''
                    
@@ -76,7 +77,7 @@ class Solution:
             self.sensors = sensor.Sensor(sensor_thresholds,self.N_E+2)
 
     #================================================================================
-    def set_manipulation_functions(self,system):
+    def set_manipulation_functions(self,system,riemann_solver):
         """Define a dictionary containing the necessary functions"""        
 
         # Default
@@ -100,11 +101,18 @@ class Solution:
         # Modify some of these if solving Euler PDEs
         if system == 'euler':
             self.keywords['fields'] = ['rho','rhou','E']
-            self.keywords['riemann'] = euler_physics.riemann_roe
             self.keywords['interior_flux'] = euler_physics.interior_flux
             self.keywords['max_wave_speed'] = euler_physics.max_wave_speed
             self.keywords['sensing'] =  euler_physics.sensing
             self.N_F = 3
+
+            # Set the Riemann solver
+            if riemann_solver == 'rusanov':
+                self.keywords['riemann'] = euler_physics.riemann_rusanov
+            elif riemann_solver == 'godunov':
+                self.keywords['riemann'] = euler_physics.riemann_godunov
+            else:
+                self.keywords['riemann'] = euler_physics.riemann_roe
 
 
     #================================================================================

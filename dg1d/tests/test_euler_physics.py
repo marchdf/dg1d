@@ -54,8 +54,11 @@ class EulerPhysicsTestCase(unittest.TestCase):
                 """Is the Godunov Riemann solver correct?"""
 
                 # Left/right toy data
-                ul = np.arange(1,13)
-                ur = np.arange(1,13)[::-1]
+                #ul = np.arange(1,13)
+                #ur = np.arange(1,13)[::-1]
+                gamma = 1.4
+                ul = np.array([1,    0, 1  /(gamma-1)])
+                ur = np.array([0.125,0, 0.1/(gamma-1)])
             
                 # Get the flux
                 F = euler_physics.riemann_godunov(ul,ur)
