@@ -118,9 +118,9 @@ def riemann_godunov(ul,ur):
         else:
             # Initial solution: (intersection of two linearized integral curves,
             #                    which is actually the upper bound of the solution.)
-            pm1 = ( (0.5*(vL-vR)*(constants.gamma-1)+aL+aR)/
-                    (aL*pL**((1-constants.gamma)/constants.gamma*0.5)
-                     + aR*pR**((1-constants.gamma)/constants.gamma*0.5)) )**(2*constants.gamma/(constants.gamma-1))
+            pm1 = ( (0.5*(vL[i]-vR[i])*(constants.gamma-1)+aL[i]+aR[i])/
+                    (aL[i]*pL[i]**((1-constants.gamma)/constants.gamma*0.5)
+                     + aR[i]*pR[i]**((1-constants.gamma)/constants.gamma*0.5)) )**(2*constants.gamma/(constants.gamma-1))
 
             # Fixed-point iteration to find the pressure and velocity in the middle.
             # (i.e., find the intersection of two nonlinear integral curves.)
@@ -130,9 +130,9 @@ def riemann_godunov(ul,ur):
             
             for k in range(kmax+2):
 
-                mL = massflux(rhoL,aL,pL,pm1)
-                mR = massflux(rhoR,aR,pR,pm1)
-                pm2 = (mL*pR+mR*pL-mL*mR*(vR-vL))/(mL+mR)
+                mL = massflux(rhoL[i],aL[i],pL[i],pm1)
+                mR = massflux(rhoR[i],aR[i],pR[i],pm1)
+                pm2 = (mL*pR[i]+mR*pL[i]-mL*mR*(vR[i]-vL[i]))/(mL+mR)
 
                 # Test for fixed point convergence
                 if (abs(pm2-pm1) < tol):
@@ -148,13 +148,13 @@ def riemann_godunov(ul,ur):
                 pm1 = pm2
 
             # Calculate the new fluxes
-            mL = massflux(rhoL,aL,pL,pm2)
-            mR = massflux(rhoR,aR,pR,pm2)
-            vm = (mL*vL+mR*vR-(pR-pL))/(mL+mR)
+            mL = massflux(rhoL[i],aL[i],pL[i],pm2)
+            mR = massflux(rhoR[i],aR[i],pR[i],pm2)
+            vm = (mL*vL[i]+mR*vR[i]-(pR[i]-pL[i]))/(mL+mR)
 
             # Density in the middle
-            r = [rhoL,rhoR]
-            P = [pL,pR]
+            r = [rhoL[i],rhoR[i]]
+            P = [pL[i],pR[i]]
             gam = (constants.gamma+1)/(constants.gamma-1)
             rm = [None]*2
             for k in range(2):
@@ -179,10 +179,10 @@ def riemann_godunov(ul,ur):
             if (SmL <= 0) and (SmR >= 0):
                 Um2 = rmI*vm
                 Um3 = pm2/(constants.gamma-1)+0.5*rmI*vm*vm
-            elif (SmL > 0) and ( vL - aL < 0):
-                rmI,Um2,Um3 = sonic(vL,aL,PL,vm,amL,vL-aL,SmL)
-            elif (SmR < 0) and ( vR + aR > 0): 
-                rmI,Um2,Um3 = sonic(vR,aR,PR,vm,amR,vR+aR,SmR)
+            elif (SmL > 0) and ( vL[i] - aL[i] < 0):
+                rmI,Um2,Um3 = sonic(vL[i],aL[i],pL[i],vm,amL,vL[i]-aL[i],SmL)
+            elif (SmR < 0) and ( vR[i] + aR[i] > 0): 
+                rmI,Um2,Um3 = sonic(vR[i],aR[i],pR[i],vm,amR,vR[i]+aR[i],SmR)
 
             # Compute the flux: evaluate the physical flux at the interface (middle)
             pm   = (constants.gamma-1)*(Um3 - 0.5*Um2*Um2/rmI)
@@ -225,7 +225,7 @@ def sonic(u1,c1,P1,u2,c2,a1,a2):
     R2 = -a1/(a2-a1)
     us = R1*u1+R2*u2
     cs = R1*c1+R2*c2
-    Ps = (cs/c1)**(2.0*gamma/(gamma-1))*P1
+    Ps = (cs/c1)**(2.0*constants.gamma/(constants.gamma-1))*P1
     rs = constants.gamma*Ps/(cs*cs)
     
     US1 = rs

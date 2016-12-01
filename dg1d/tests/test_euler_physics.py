@@ -53,12 +53,48 @@ class EulerPhysicsTestCase(unittest.TestCase):
         def test_riemann_godunov(self):
                 """Is the Godunov Riemann solver correct?"""
 
-                # Left/right toy data
-                #ul = np.arange(1,13)
-                #ur = np.arange(1,13)[::-1]
-                gamma = 1.4
-                ul = np.array([1,    0, 1  /(gamma-1)])
-                ur = np.array([0.125,0, 0.1/(gamma-1)])
+                # Left/right toy data taken from shock tube problems found here:
+                # http://num3sis.inria.fr/blog/eulerian-flows-approximate-riemann-solvers-validation-on-1d-test-cases/
+                # or: C. Kong MS thesis at U. of Reading http://www.readingconnect.net/web/FILES/maths/CKong-riemann.pdf
+
+                # For each test: rhoL, uL, pL, rhoR, uR, pR
+                t1 = np.array([      1,         0,       1,   0.125,     0.0,     0.1])    # Sod shock tube
+                t2 = np.array([      1,      0.75,     1.0,   0.125,     0.0,     0.1])    # Modified Sod shock tube
+                t3 = np.array([      1,      -2.0,     0.4,     1.0,     2.0,     0.4])    # 123 problem
+                t4 = np.array([      1,       0.0,  1000.0,     1.0,     0.0,    0.01])    # Left Woodward and Colella (blast wave)
+                t5 = np.array([5.99924,   19.5975, 460.894, 5.99242,-6.19633, 46.0950])    # collision of two strong shocks
+                t6 = np.array([    1.4,       0.0,     1.0,     1.0,     0.0,     1.0])    # stationary contact discontinuity
+
+                # Transform to conserved variables
+                def ptoc(t):
+                        """Take a test case containing rhoL, uL, pL, rhoR, uR, pR and turn them into conservative variables"""
+                        gamma = 1.4
+                        t[1] = t[0]*t[1]
+                        t[2] = t[2]/(gamma-1) + 0.5*t[0]*t[1]*t[1]
+                        t[4] = t[3]*t[4]
+                        t[5] = t[5]/(gamma-1) + 0.5*t[3]*t[4]*t[4]
+                        return t
+
+                t1 = ptoc(t1)
+                t2 = ptoc(t2)
+                t3 = ptoc(t3)
+                t4 = ptoc(t4)
+                t5 = ptoc(t5)
+                t6 = ptoc(t6)
+                
+                # Put them into a long vector
+                ul = np.array([t1[0:3],
+                               t2[0:3],
+                               t3[0:3],
+                               t4[0:3],
+                               t5[0:3],
+                               t6[0:3]]).flatten()
+                ur = np.array([t1[3::],
+                               t2[3::],
+                               t3[3::],
+                               t4[3::],
+                               t5[3::],
+                               t6[3::]]).flatten()
             
                 # Get the flux
                 F = euler_physics.riemann_godunov(ul,ur)
