@@ -96,11 +96,11 @@ def riemann_godunov(ul,ur):
     aR   = np.sqrt(constants.gamma*pR/rhoR)
 
     # Fixed point iteration tolerance
-    tol = 1e-5
+    tol = 1e-6
     
     # Loop over each interface
     for i in range(len(rhoL)):
-
+        
         # Supersonic flow to the right
         if (vL[i]/aL[i] >= 1.0):
             F[i*3+0] = rhoL[i]*vL[i]                 # first: fx = rho*u
