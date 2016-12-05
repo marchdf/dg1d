@@ -75,7 +75,7 @@ def riemann_godunov(ul,ur):
 
     S. K. Godunov, A Difference Scheme for Numerical Computation of Discontinuous Solution of Hydrodynamic Equations, Math. Sbornik, 47, pp. 271-306, 1959 (in Russian). Translated US Joint Publ. Res. Service, JPRS 7226 (1969)
 
-    Basically taken from "I Do Like CFD" website: http://ossanworld.com/cfdbooks/cfdcodes/oned_euler_fluxes_v5.f90
+    Taken from "I Do Like CFD" website: http://ossanworld.com/cfdbooks/cfdcodes/oned_euler_fluxes_v5.f90
 
     """
 
@@ -119,8 +119,8 @@ def riemann_godunov(ul,ur):
             # Initial solution: (intersection of two linearized integral curves,
             #                    which is actually the upper bound of the solution.)
             pm1 = ( (0.5*(vL[i]-vR[i])*(constants.gamma-1)+aL[i]+aR[i])/
-                    (aL[i]*pL[i]**((1-constants.gamma)/constants.gamma*0.5)
-                     + aR[i]*pR[i]**((1-constants.gamma)/constants.gamma*0.5)) )**(2*constants.gamma/(constants.gamma-1))
+                    (aL[i]*pL[i]**((1-constants.gamma)/constants.gamma*0.5) +
+                     aR[i]*pR[i]**((1-constants.gamma)/constants.gamma*0.5)) )**(2*constants.gamma/(constants.gamma-1))
 
             # Fixed-point iteration to find the pressure and velocity in the middle.
             # (i.e., find the intersection of two nonlinear integral curves.)
@@ -141,7 +141,7 @@ def riemann_godunov(ul,ur):
                 # Test for max iterations
                 k = k + 1
                 if (k > kmax):
-                    print("Fixed-point iteration did not converge. Exiting.")
+                    print("Godunov fixed-point iteration did not converge. Exiting.")
                     sys.exit(1)
 
                 # Set old value to new value
@@ -216,7 +216,7 @@ def massflux(r,c,pQ,pm):
 
 #================================================================================
 def sonic(u1,c1,P1,u2,c2,a1,a2):
-    """ Returns solutions at Sonic points --- used in Godunov's flux
+    """ Returns solutions at sonic points --- used in Godunov's flux
     
     Katate Masatsuka, February 2009. http://www.cfdbooks.com
     """
