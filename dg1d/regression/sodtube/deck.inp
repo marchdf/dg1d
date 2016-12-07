@@ -1,0 +1,18 @@
+#PDE system
+euler
+#RK scheme
+rk8
+#initial condition
+scktube 100 0.0 1.0 0.0	1.0 0.125 0.0 0.1 
+#number of outputs
+2
+#final time
+0.2
+#Courant-Friedrichs-Lewy condition
+0.5
+#order
+1
+#limiting
+adaptive_hr
+#sensor thresholds
+0.01 0.01

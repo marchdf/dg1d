@@ -92,7 +92,7 @@ class Solution:
             'simplew' : self.simplew,
             'entrpyw' : self.entrpyw,
             'acsticw' : self.acsticw,
-            'sodtube' : self.sodtube,
+            'scktube' : self.scktube,
             'shuoshe' : self.shuoshe,
             'ictest'  : self.ictest,
             'evaluate_face_solution' : self.collocate_faces,
@@ -364,8 +364,10 @@ class Solution:
 
 
     #================================================================================
-    def sodtube(self):
-        """Initial condition for the Sod shock tube problem.
+    def scktube(self):
+        """Initial condition for a shock tube problem.
+
+        You need to specify the left and right primitive state in the deck.
         
         """
         
@@ -373,25 +375,39 @@ class Solution:
         A = -1
         B =  1
 
+        # check parameter length to make sure
+        if (len(self.params) != 8):
+            print("Not enough input conditions in the deck. Exiting")
+            sys.exit(1)
+
+        # parse the parameters
+        xdiaph = float(self.params[1])
+        rhoL   = float(self.params[2])
+        uL     = float(self.params[3])
+        pL     = float(self.params[4])
+        rhoR   = float(self.params[5])
+        uR     = float(self.params[6])
+        pR     = float(self.params[7])
+
+        # define some constants
+        constants.gamma = 1.4
+
         # Initial condition function
         def f(x):
 
-            # define some constants
-            constants.gamma = 1.4
-
             # left state
-            if x < 0:
-                rho = 1
-                u   = 0
-                p   = 1.0
-                return [rho, rho*u, 1.0/(constants.gamma-1.0)*p + 0.5*rho*u*u]
+            if x < xdiaph:
+                rho = rhoL
+                u   = uL
+                p   = pL
 
             # Right state
-            elif x >= 0:
-                rho = 0.125
-                u   = 0
-                p   = 0.1
-                return [rho, rho*u, 1.0/(constants.gamma-1.0)*p + 0.5*rho*u*u]
+            elif x >= xdiaph:
+                rho = rhoR
+                u   = uR
+                p   = pR
+                
+            return [rho, rho*u, 1.0/(constants.gamma-1.0)*p + 0.5*rho*u*u]
 
         # Set the boundary condition
         self.bc_l = 'zerograd'
