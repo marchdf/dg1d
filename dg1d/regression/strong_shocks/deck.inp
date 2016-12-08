@@ -3,15 +3,15 @@ euler
 #RK scheme
 rk4
 #riemann solver
-rusanov
+godunov
 #initial condition
-scktube 100 0.0 1.0 0.0	1.0 0.125 0.0 0.1 
+scktube 100 -0.2 5.99924 19.5975 460.894 5.99242 -6.19633 46.0950
 #number of outputs
 2
 #final time
 0.2
 #Courant-Friedrichs-Lewy condition
-0.5
+0.035
 #order
 2
 #limiting

@@ -3,13 +3,13 @@ euler
 #RK scheme
 rk4
 #riemann solver
-rusanov
+roe
 #initial condition
-scktube 100 0.0 1.0 0.0	1.0 0.125 0.0 0.1 
+scktube 100 0.0 1 -2.0 0.4 1.0 2.0 0.4
 #number of outputs
 2
 #final time
-0.2
+0.15
 #Courant-Friedrichs-Lewy condition
 0.5
 #order

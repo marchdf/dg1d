@@ -1,11 +1,11 @@
 #PDE system
 euler
 #RK scheme
-rk4
+rk8
 #riemann solver
-rusanov
+roe
 #initial condition
-scktube 100 0.0 1.0 0.0	1.0 0.125 0.0 0.1 
+scktube 100 -0.4 1 0.75 1.0 0.125 0.0 0.1
 #number of outputs
 2
 #final time
@@ -13,8 +13,6 @@ scktube 100 0.0 1.0 0.0	1.0 0.125 0.0 0.1
 #Courant-Friedrichs-Lewy condition
 0.5
 #order
-2
+1
 #limiting
-adaptive_hr
-#sensor thresholds
-0.01 0.01
+full_biswas

@@ -1,15 +1,15 @@
 #PDE system
 euler
 #RK scheme
-rk4
+rk8
 #riemann solver
 rusanov
 #initial condition
-scktube 100 0.0 1.0 0.0	1.0 0.125 0.0 0.1 
+scktube 100 0.0 1 0.0 1000.0 1.0 0.0 0.01
 #number of outputs
 2
 #final time
-0.2
+0.012
 #Courant-Friedrichs-Lewy condition
 0.5
 #order
