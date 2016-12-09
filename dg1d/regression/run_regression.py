@@ -39,6 +39,24 @@ def runcode(deck,codedir,background=True):
 
     return retcode
 
+#================================================================================
+def runplot(workdir,background=True):
+    """Run the plot tool on a problem directory
+
+    If background is False, then wait for the process to finish and
+    give me a return code.
+    """
+
+    # Launch the plot
+    proc = sp.Popen('./plot.py -f 1 -d '+workdir, shell=True, stdout=sp.PIPE,stderr=sp.PIPE)
+    retcode = 0
+
+    # If you don't want to send the process to the background
+    if (not background):
+        retcode = proc.wait()
+
+    return retcode
+
     
 #================================================================================
 #
@@ -53,9 +71,10 @@ datadir = basedir
 # Sod shock tube
 workdir = datadir+'/sodtube'
 os.chdir(workdir)
-map(os.remove, glob.glob("*.dat"))
-runcode('deck.inp',codedir,False)
+#map(os.remove, glob.glob("*.dat"))
+#runcode('deck.inp',codedir,False)
 os.chdir(basedir)
+runplot(workdir,False)
 
 #================================================================================
 # modified Sod shock tube

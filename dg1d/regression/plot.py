@@ -98,6 +98,32 @@ plt.plot(xe,ue,color=cmap[-1],lw=2)
 plt.figure(2)
 plt.plot(solution.xc,p,'o',mfc=cmap[0],mec=cmap[0])
 plt.plot(xe,pe,color=cmap[-1],lw=2)
-        
+
+# Format figures
+plt.figure(0)
+ax = plt.gca()
+plt.xlabel(r"x",fontsize=22,fontweight='bold')
+plt.ylabel(r"\rho",fontsize=22,fontweight='bold')
+plt.setp(ax.get_xmajorticklabels(),fontsize=18,fontweight='bold');
+plt.setp(ax.get_ymajorticklabels(),fontsize=18,fontweight='bold');
+plt.savefig('density.png',format='png')
+
+plt.figure(1)
+ax = plt.gca()
+plt.xlabel(r"x",fontsize=22,fontweight='bold')
+plt.ylabel(r"u",fontsize=22,fontweight='bold')
+plt.setp(ax.get_xmajorticklabels(),fontsize=18,fontweight='bold');
+plt.setp(ax.get_ymajorticklabels(),fontsize=18,fontweight='bold');
+plt.savefig('velocity.png',format='png')
+
+plt.figure(2)
+ax = plt.gca()
+plt.xlabel(r"x",fontsize=22,fontweight='bold')
+plt.ylabel(r"p",fontsize=22,fontweight='bold')
+plt.setp(ax.get_xmajorticklabels(),fontsize=18,fontweight='bold');
+plt.setp(ax.get_ymajorticklabels(),fontsize=18,fontweight='bold');
+plt.savefig('pressure.png',format='png')
+
+
 if args.show:
     plt.show()
