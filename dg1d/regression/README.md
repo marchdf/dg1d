@@ -23,9 +23,9 @@ stationary contact discontinuity       |  0   | 2.0   |     1.4|       0.0|     
 ## Sod Shock tube
 Code options can be found [here](./sodtube/deck.inp).
 
-![density](./sodtube/density.png "density")
-![velocity](./sodtube/velocity.png "velocity")
-![pressure](./sodtube/pressure.png "pressure")
+<img src="./sodtube/density.png" alt="density.png" width="400">
+<img src="./sodtube/velocity.png" alt="velocity.png" width="400">
+<img src="./sodtube/pressure.png" alt="pressure.png" width="400">
 
 # Modified Sod shock tube
 Code options can be found [here](sodtube_modified/deck.inp).
