@@ -88,19 +88,6 @@ pe   = dat[:,3]
 plt.figure(0)
 plt.plot(solution.xc,rho,'o',mfc=cmap[0],mec=cmap[0])
 plt.plot(xe,rhoe,color=cmap[-1],lw=2)
-
-# Velocity
-plt.figure(1)
-plt.plot(solution.xc,u,'o',mfc=cmap[0],mec=cmap[0])
-plt.plot(xe,ue,color=cmap[-1],lw=2)
-
-# Pressure
-plt.figure(2)
-plt.plot(solution.xc,p,'o',mfc=cmap[0],mec=cmap[0])
-plt.plot(xe,pe,color=cmap[-1],lw=2)
-
-# Format figures
-plt.figure(0)
 ax = plt.gca()
 plt.xlabel(r"x",fontsize=22,fontweight='bold')
 plt.ylabel(r"\rho",fontsize=22,fontweight='bold')
@@ -108,7 +95,10 @@ plt.setp(ax.get_xmajorticklabels(),fontsize=18,fontweight='bold');
 plt.setp(ax.get_ymajorticklabels(),fontsize=18,fontweight='bold');
 plt.savefig('density.png',format='png')
 
+# Velocity
 plt.figure(1)
+plt.plot(solution.xc,u,'o',mfc=cmap[0],mec=cmap[0])
+plt.plot(xe,ue,color=cmap[-1],lw=2)
 ax = plt.gca()
 plt.xlabel(r"x",fontsize=22,fontweight='bold')
 plt.ylabel(r"u",fontsize=22,fontweight='bold')
@@ -116,13 +106,30 @@ plt.setp(ax.get_xmajorticklabels(),fontsize=18,fontweight='bold');
 plt.setp(ax.get_ymajorticklabels(),fontsize=18,fontweight='bold');
 plt.savefig('velocity.png',format='png')
 
+# Pressure
 plt.figure(2)
+plt.plot(solution.xc,p,'o',mfc=cmap[0],mec=cmap[0])
+plt.plot(xe,pe,color=cmap[-1],lw=2)
 ax = plt.gca()
 plt.xlabel(r"x",fontsize=22,fontweight='bold')
 plt.ylabel(r"p",fontsize=22,fontweight='bold')
 plt.setp(ax.get_xmajorticklabels(),fontsize=18,fontweight='bold');
 plt.setp(ax.get_ymajorticklabels(),fontsize=18,fontweight='bold');
 plt.savefig('pressure.png',format='png')
+
+
+sname = 'sensor0000000001.dat'
+if os.path.isfile(sname):
+    sen = np.loadtxt(sname,delimiter=',')
+
+    plt.figure(3)
+    plt.plot(sen[:,0],sen[:,1],'o',mfc=cmap[0],mec=cmap[0])
+    ax = plt.gca()
+    plt.xlabel(r"x",fontsize=22,fontweight='bold')
+    plt.ylabel(r"s",fontsize=22,fontweight='bold')
+    plt.setp(ax.get_xmajorticklabels(),fontsize=18,fontweight='bold');
+    plt.setp(ax.get_ymajorticklabels(),fontsize=18,fontweight='bold');
+    plt.savefig('sensors.png',format='png')
 
 
 if args.show:

@@ -30,14 +30,34 @@ Code options can be found [here](./sodtube/deck.inp).
 # Modified Sod shock tube
 Code options can be found [here](sodtube_modified/deck.inp).
 
+<img src="./sodtube_modified/density.png" alt="density.png" width="400">
+<img src="./sodtube_modified/velocity.png" alt="velocity.png" width="400">
+<img src="./sodtube/pressure.png" alt="pressure.png" width="400">
+
 # 123 problem
 Code options can be found [here](123_problem/deck.inp).
+
+<img src="./123_problem/density.png" alt="density.png" width="400">
+<img src="./123_problem/velocity.png" alt="velocity.png" width="400">
+<img src="./123_problem/pressure.png" alt="pressure.png" width="400">
 
 # Blast wave (Left Woodward and Colella)
 Code options can be found [here](blast_wave/deck.inp).
 
+<img src="./blast_wave/density.png" alt="density.png" width="400">
+<img src="./blast_wave/velocity.png" alt="velocity.png" width="400">
+<img src="./blast_wave/pressure.png" alt="pressure.png" width="400">
+
 # Collision of two strong shocks
 Code options can be found [here](strong_shocks/deck.inp).
 
+<img src="./strong_shocks/density.png" alt="density.png" width="400">
+<img src="./strong_shocks/velocity.png" alt="velocity.png" width="400">
+<img src="./strong_shocks/pressure.png" alt="pressure.png" width="400">
+
 # Stationary contact discontinuity 
 Code options can be found [here](stationary_contact/deck.inp).
+
+<img src="./stationary_contact/density.png" alt="density.png" width="400">
+<img src="./stationary_contact/velocity.png" alt="velocity.png" width="400">
+<img src="./stationary_contact/pressure.png" alt="pressure.png" width="400">

@@ -67,52 +67,57 @@ basedir = os.getcwd()
 codedir = os.path.dirname(basedir)
 datadir = basedir
 
-#================================================================================
-# Sod shock tube
-workdir = datadir+'/sodtube'
-os.chdir(workdir)
-#map(os.remove, glob.glob("*.dat"))
-#runcode('deck.inp',codedir,False)
-os.chdir(basedir)
-runplot(workdir,False)
+# #================================================================================
+# # Sod shock tube
+# workdir = datadir+'/sodtube'
+# os.chdir(workdir)
+# map(os.remove, glob.glob("*.dat"))
+# runcode('deck.inp',codedir,False)
+# os.chdir(basedir)
+# runplot(workdir,False)
 
 #================================================================================
 # modified Sod shock tube
 workdir = datadir+'/sodtube_modified'
 os.chdir(workdir)
 map(os.remove, glob.glob("*.dat"))
-#runcode('deck.inp',codedir,False)
+runcode('deck.inp',codedir,False)
 os.chdir(basedir)
+runplot(workdir,False)
 
-#================================================================================
-# 123 problem
-workdir = datadir+'/123_problem'
-os.chdir(workdir)
-map(os.remove, glob.glob("*.dat"))
-#runcode('deck.inp',codedir,False)
-os.chdir(basedir)
+# #================================================================================
+# # 123 problem
+# workdir = datadir+'/123_problem'
+# os.chdir(workdir)
+# map(os.remove, glob.glob("*.dat"))
+# runcode('deck.inp',codedir,False)
+# os.chdir(basedir)
+# runplot(workdir,False)
 
-#================================================================================
-# Left Woodward and Colella (blast wave)
-workdir = datadir+'/blast_wave'
-os.chdir(workdir)
-map(os.remove, glob.glob("*.dat"))
-#runcode('deck.inp',codedir,False)
-os.chdir(basedir)
+# #================================================================================
+# # Left Woodward and Colella (blast wave)
+# workdir = datadir+'/blast_wave'
+# os.chdir(workdir)
+# map(os.remove, glob.glob("*.dat"))
+# runcode('deck.inp',codedir,False)
+# os.chdir(basedir)
+# runplot(workdir,False)
 
-#================================================================================
-# collision of two strong shocks
-workdir = datadir+'/strong_shocks'
-os.chdir(workdir)
-map(os.remove, glob.glob("*.dat"))
-#runcode('deck.inp',codedir,False)
-os.chdir(basedir)
+# #================================================================================
+# # collision of two strong shocks
+# workdir = datadir+'/strong_shocks'
+# os.chdir(workdir)
+# map(os.remove, glob.glob("*.dat"))
+# runcode('deck.inp',codedir,False)
+# os.chdir(basedir)
+# runplot(workdir,False)
 
-#================================================================================
-# stationary contact discontinuity
-workdir = datadir+'/stationary_contact'
-os.chdir(workdir)
-map(os.remove, glob.glob("*.dat"))
-#runcode('deck.inp',codedir,False)
-os.chdir(basedir)
+# #================================================================================
+# # stationary contact discontinuity
+# workdir = datadir+'/stationary_contact'
+# os.chdir(workdir)
+# map(os.remove, glob.glob("*.dat"))
+# runcode('deck.inp',codedir,False)
+# os.chdir(basedir)
+# runplot(workdir,False)
 

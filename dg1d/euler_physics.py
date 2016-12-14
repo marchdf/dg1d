@@ -271,20 +271,23 @@ def riemann_roe(ul,ur):
     a   = np.sqrt((constants.gamma-1)*(H-0.5*v*v))
     dp  = pR - pL
 
-    # Roe waves strengths
-    dV0 = (dp - rho*a*(vR-vL))/(2*a*a)
-    dV1 = (rhoR-rhoL) - dp/(a*a)
-    dV2 = (dp + rho*a*(vR-vL))/(2*a*a)
-   
     # Absolute value of Roe eigenvalues
     ws0 = np.fabs(v-a)
     ws1 = np.fabs(v)
     ws2 = np.fabs(v+a)
+
+    # Entropy fix
+    Da = np.maximum(0, 4*((vR-aR) - (vL-aL)))
+    idx = ws0 < 0.5*Da
+    ws0[idx] = ws0[idx]*ws0[idx]/Da[idx] + 0.25*Da[idx]
+    Da = np.maximum(0, 4*((vR+aR) - (vL+aL)))
+    idx = ws2 < 0.5*Da
+    ws2[idx] = ws2[idx]*ws2[idx]/Da[idx] + 0.25*Da[idx]
    
     # Absolute value of Roe eigenvalues * Roe waves strengths
-    ws0_dV0 = np.fabs(v-a) * (dp - rho*a*(vR-vL))/(2*a*a)
-    ws1_dV1 = np.fabs(v)   * (rhoR-rhoL) - dp/(a*a)
-    ws2_dV2 = np.fabs(v+a) * (dp + rho*a*(vR-vL))/(2*a*a)
+    ws0_dV0 = ws0 * (dp - rho*a*(vR-vL))/(2*a*a)
+    ws1_dV1 = ws1 * ((rhoR-rhoL) - dp/(a*a))
+    ws2_dV2 = ws2 * (dp + rho*a*(vR-vL))/(2*a*a)
 
     # Roe Right eigenvectors
     R00 = 1
@@ -301,21 +304,21 @@ def riemann_roe(ul,ur):
 
     # first: fx = rho*u
     F[0::3] = 0.5*(rhoL*vL + rhoR*vR) \
-              -0.5*(ws0*dV0*R00+ 
-                    ws1*dV1*R10+ 
-                    ws2*dV2*R20)
+              -0.5*(ws0_dV0*R00+ 
+                    ws1_dV1*R10+ 
+                    ws2_dV2*R20)
 
     # second: fx = rho*u*u+p
     F[1::3] = 0.5*(rhoL*vL*vL+pL  + rhoR*vR*vR+pR) \
-              -0.5*(ws0*dV0*R01+ 
-                    ws1*dV1*R11+ 
-                    ws2*dV2*R21)
+              -0.5*(ws0_dV0*R01+ 
+                    ws1_dV1*R11+ 
+                    ws2_dV2*R21)
 
     # third: fx = (E+p)*u
     F[2::3] =  0.5*((EL+pL)*vL + (ER+pR)*vR) \
-               -0.5*(ws0*dV0*R02+  
-                     ws1*dV1*R12+ 
-                     ws2*dV2*R22)
+               -0.5*(ws0_dV0*R02+  
+                     ws1_dV1*R12+ 
+                     ws2_dV2*R22)
 
     return F
 
