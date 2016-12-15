@@ -3,7 +3,7 @@ euler
 #RK scheme
 rk8
 #riemann solver
-rusanov
+roe
 #initial condition
 scktube 100 0.0 1 0.0 1000.0 1.0 0.0 0.01
 #number of outputs
@@ -13,8 +13,8 @@ scktube 100 0.0 1 0.0 1000.0 1.0 0.0 0.01
 #Courant-Friedrichs-Lewy condition
 0.5
 #order
-2
+1
 #limiting
 adaptive_hr
 #sensor thresholds
-0.01 0.01
+0.001 0.001

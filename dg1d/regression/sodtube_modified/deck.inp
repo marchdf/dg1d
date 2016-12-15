@@ -3,7 +3,7 @@ euler
 #RK scheme
 rk4
 #riemann solver
-roe
+rusanov
 #initial condition
 scktube 200 -0.4 1.0 0.75 1.0 0.125 0.0 0.1
 #number of outputs
@@ -17,4 +17,4 @@ scktube 200 -0.4 1.0 0.75 1.0 0.125 0.0 0.1
 #limiting
 adaptive_hr
 #sensor thresholds
-0.0 0.0
+0.001 0.001
