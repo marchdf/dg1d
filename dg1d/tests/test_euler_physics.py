@@ -4,6 +4,7 @@
 #
 #================================================================================
 import unittest
+import constants
 import euler_physics
 import numpy as np
 import numpy.testing as npt
@@ -15,6 +16,11 @@ import numpy.testing as npt
 #================================================================================
 class EulerPhysicsTestCase(unittest.TestCase):
         """Tests for `euler_physics.py`."""
+
+        #================================================================================
+        # Set up
+        def setUp(self):
+                constants.init()
 
         #================================================================================
         # max_wave_speed
