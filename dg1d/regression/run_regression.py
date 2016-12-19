@@ -14,6 +14,16 @@ import sys
 import glob
 import shutil
 import subprocess as sp
+import argparse
+
+#================================================================================
+#
+# Parse arguments
+#
+#================================================================================
+parser = argparse.ArgumentParser(description='Script to run regression tests')
+parser.add_argument('-g','--golds', help='Make the gold benchmark results', action="store_true")
+args = parser.parse_args()
 
 #================================================================================
 #
@@ -76,48 +86,48 @@ runcode('deck.inp',codedir,False)
 os.chdir(basedir)
 runplot(workdir,False)
 
-#================================================================================
-# modified Sod shock tube
-workdir = datadir+'/sodtube_modified'
-os.chdir(workdir)
-map(os.remove, glob.glob("*.dat"))
-runcode('deck.inp',codedir,False)
-os.chdir(basedir)
-runplot(workdir,False)
+# #================================================================================
+# # modified Sod shock tube
+# workdir = datadir+'/sodtube_modified'
+# os.chdir(workdir)
+# map(os.remove, glob.glob("*.dat"))
+# runcode('deck.inp',codedir,False)
+# os.chdir(basedir)
+# runplot(workdir,False)
 
-#================================================================================
-# 123 problem
-workdir = datadir+'/123_problem'
-os.chdir(workdir)
-map(os.remove, glob.glob("*.dat"))
-runcode('deck.inp',codedir,False)
-os.chdir(basedir)
-runplot(workdir,False)
+# #================================================================================
+# # 123 problem
+# workdir = datadir+'/123_problem'
+# os.chdir(workdir)
+# map(os.remove, glob.glob("*.dat"))
+# runcode('deck.inp',codedir,False)
+# os.chdir(basedir)
+# runplot(workdir,False)
 
-#================================================================================
-# Left Woodward and Colella (blast wave)
-workdir = datadir+'/blast_wave'
-os.chdir(workdir)
-map(os.remove, glob.glob("*.dat"))
-runcode('deck.inp',codedir,False)
-os.chdir(basedir)
-runplot(workdir,False)
+# #================================================================================
+# # Left Woodward and Colella (blast wave)
+# workdir = datadir+'/blast_wave'
+# os.chdir(workdir)
+# map(os.remove, glob.glob("*.dat"))
+# runcode('deck.inp',codedir,False)
+# os.chdir(basedir)
+# runplot(workdir,False)
 
-#================================================================================
-# collision of two strong shocks
-workdir = datadir+'/strong_shocks'
-os.chdir(workdir)
-map(os.remove, glob.glob("*.dat"))
-runcode('deck.inp',codedir,False)
-os.chdir(basedir)
-runplot(workdir,False)
+# #================================================================================
+# # collision of two strong shocks
+# workdir = datadir+'/strong_shocks'
+# os.chdir(workdir)
+# map(os.remove, glob.glob("*.dat"))
+# runcode('deck.inp',codedir,False)
+# os.chdir(basedir)
+# runplot(workdir,False)
 
-#================================================================================
-# stationary contact discontinuity
-workdir = datadir+'/stationary_contact'
-os.chdir(workdir)
-map(os.remove, glob.glob("*.dat"))
-runcode('deck.inp',codedir,False)
-os.chdir(basedir)
-runplot(workdir,False)
+# #================================================================================
+# # stationary contact discontinuity
+# workdir = datadir+'/stationary_contact'
+# os.chdir(workdir)
+# map(os.remove, glob.glob("*.dat"))
+# runcode('deck.inp',codedir,False)
+# os.chdir(basedir)
+# runplot(workdir,False)
 
