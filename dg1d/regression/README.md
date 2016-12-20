@@ -1,8 +1,7 @@
 # Regression test suite
 
-
-Execute `run_regression.py` to run the regression test suite.
-
+Execute `nosetests regression/regression.py` from the code directory
+to run the regression test suite.
 
 ## Test cases
 
@@ -11,7 +10,7 @@ The domain is [-1, 1], the ratio of specific heats is 1.4, the CFL is
 generated with an exact Riemann solver.
 
 Test | x0 | End time | rhoL | uL | pL | rhoR | uR | pR
------|-----|----------|------|----|----|------|----|---
+-----|----|----------|------|----|----|------|----|---
 Sod shock tube                         |  0   | 0.2   |       1|         0|       1|   0.125|     0.0|     0.1
 Modified Sod shock tube                | -0.4 | 0.2   |       1|      0.75|     1.0|   0.125|     0.0|     0.1
 123 problem                            |  0   | 0.15  |       1|      -2.0|     0.4|     1.0|     2.0|     0.4
