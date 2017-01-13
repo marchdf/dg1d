@@ -78,8 +78,9 @@ class RegressionTestCase(unittest.TestCase):
     def setUp(self):
 
         # Problem setup
-        self.codedir = os.getcwd() 
-        self.regdir  = os.path.join(self.codedir,'regression')
+        self.regdir = os.path.dirname(os.path.realpath(__file__))
+        self.codedir = os.path.dirname(self.regdir)
+
 
     #================================================================================
     # Execute a test
