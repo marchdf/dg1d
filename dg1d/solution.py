@@ -367,8 +367,7 @@ class Solution:
     def scktube(self):
         """Initial condition for a shock tube problem.
 
-        You need to specify the left and right primitive state in the deck.
-        
+        You need to specify the left and right primitive state in the deck.        
         """
         
         # Domain specifications
@@ -419,9 +418,7 @@ class Solution:
 
     #================================================================================
     def shuoshe(self):
-        """Initial condition for the Shu-Osher problem
-        
-        """
+        """Initial condition for the Shu-Osher problem"""
         
         # Domain specifications
         A = 0
@@ -434,18 +431,19 @@ class Solution:
             constants.gamma = 1.4
 
             # left state
-            if x <= 1:
+            if x < 1:
                 rho = 3.857143
                 u   = 2.629369
                 p   = 10.333333
-                return [rho, rho*u, 1.0/(constants.gamma-1.0)*p + 0.5*rho*u*u]
 
             # Right state
-            elif x > 1:
+            elif x >= 1:
                 rho = 1.0+0.2*np.sin(5.0*(x-5.0))
-                u   = 0
-                p   = 1
-                return [rho, rho*u, 1.0/(constants.gamma-1.0)*p + 0.5*rho*u*u]
+                u   = 0.0
+                p   = 1.0
+
+            return [rho, rho*u, 1.0/(constants.gamma-1.0)*p + 0.5*rho*u*u]
+
 
         # Set the boundary condition
         self.bc_l = 'zerograd'
