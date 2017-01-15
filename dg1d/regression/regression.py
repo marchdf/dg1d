@@ -48,19 +48,19 @@ def compare_with_golds(workdir):
     # Test density
     dat  = np.loadtxt(os.path.join(workdir,'rho0000000001.dat'),delimiter=',')
     gold = np.loadtxt(os.path.join(workdir,'rho0000000001.gold'),delimiter=',')
-    npt.assert_array_almost_equal(dat,gold,decimal=7,
-                                  err_msg='Failed on density comparison')
+    npt.assert_array_almost_equal(dat,gold,decimal=10,
+                                  err_msg='Failed on density comparison',verbose=True)
     
     # Test momentum
     dat  = np.loadtxt(os.path.join(workdir,'rhou0000000001.dat'),delimiter=',')
     gold = np.loadtxt(os.path.join(workdir,'rhou0000000001.gold'),delimiter=',')
-    npt.assert_array_almost_equal(dat,gold,decimal=7,
+    npt.assert_array_almost_equal(dat,gold,decimal=10,
                                   err_msg='Failed on momentum comparison')
 
     # Test energy
     dat  = np.loadtxt(os.path.join(workdir,'E0000000001.dat'),delimiter=',')
     gold = np.loadtxt(os.path.join(workdir,'E0000000001.gold'),delimiter=',')
-    npt.assert_array_almost_equal(dat,gold,decimal=7,
+    npt.assert_array_almost_equal(dat,gold,decimal=10,
                                   err_msg='Failed on energy comparison')
         
 

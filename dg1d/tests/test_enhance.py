@@ -35,12 +35,12 @@ class EnhanceTestCase(unittest.TestCase):
         # Make sure both left and right enhancements are correct
         npt.assert_array_almost_equal(Al, np.array([[ 1. ,  0. ,  0. ],
                                                     [ 0. ,  1. ,  0. ],
-                                                    [ 0. ,  1. ,  6. ]]), decimal = 9)
+                                                    [ 0. ,  1. ,  6. ]]), decimal = 13)
 
         
         npt.assert_array_almost_equal(Ar, np.array([[ 1. ,  0. ,  0. ],
                                                     [ 0. ,  1. ,  0. ],
-                                                    [ 0. ,  1. , -6. ]]), decimal = 9)
+                                                    [ 0. ,  1. , -6. ]]), decimal = 13)
 
 
     #================================================================================

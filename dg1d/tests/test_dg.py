@@ -40,7 +40,7 @@ class DGTestCase(unittest.TestCase):
         npt.assert_array_almost_equal(self.dgsolver.F, np.array([[0.,   0.,   1.,   2.,   3.,   5.],
                                                                  [6.,   6.,   5.,   4.,   3.,  11.],
                                                                  [ 12.,  12.,  13.,  14.,  15.,  17.],
-                                                                 [ 18.,  18.,  17.,  16.,  15.,  23.]]),decimal=7)
+                                                                 [ 18.,  18.,  17.,  16.,  15.,  23.]]),decimal=13)
 
     #================================================================================
     # inverse_mass_matrix_multiply
@@ -58,7 +58,7 @@ class DGTestCase(unittest.TestCase):
                                                                  [ 5,  6,  7,  8,  9],
                                                                  [20, 22, 24, 26, 28],
                                                                  [45, 48, 51, 54, 57],
-						                 [80, 84, 88, 92, 96]]),decimal=7)
+						                 [80, 84, 88, 92, 96]]),decimal=13)
         
 
 

@@ -44,7 +44,7 @@ class BasisTestCase(unittest.TestCase):
             test_basis = basis.Basis(order)
             psi = test_basis.evaluate_basis_edges()
             npt.assert_array_almost_equal(psi, np.array([[ 1.0, -1.0, 1.0, -1.0],
-                                                         [ 1.0,  1.0, 1.0,  1.0]]), decimal = 9)
+                                                         [ 1.0,  1.0, 1.0,  1.0]]), decimal = 13)
 
 
         #================================================================================
@@ -54,8 +54,8 @@ class BasisTestCase(unittest.TestCase):
             order = 3
             test_basis = basis.Basis(order)
             m,minv = test_basis.mass_matrix()
-            npt.assert_array_almost_equal(m, [2,2.0/3.0,2.0/5.0,2.0/7.0], decimal = 9)
-            npt.assert_array_almost_equal(minv, [1./2.,3./2.,5./2.,7./2.], decimal = 9)
+            npt.assert_array_almost_equal(m, [2,2.0/3.0,2.0/5.0,2.0/7.0], decimal = 13)
+            npt.assert_array_almost_equal(minv, [1./2.,3./2.,5./2.,7./2.], decimal = 13)
 
 
         #================================================================================
@@ -66,7 +66,7 @@ class BasisTestCase(unittest.TestCase):
             test_basis = basis.Basis(order)
             f = lambda x: [x*x]
             c = test_basis.projection(-1,1,f)
-            npt.assert_array_almost_equal(c,[1./3,0,2./3,0])
+            npt.assert_array_almost_equal(c,[1./3,0,2./3,0], decimal = 13)
 
         def test_projection1(self):
             """Is the projection correct for f(x) = sin(x) on [0,0.2]"""
@@ -76,7 +76,7 @@ class BasisTestCase(unittest.TestCase):
             order = 3
             test_basis = basis.Basis(order)
             c = test_basis.projection(a,b,f)
-            npt.assert_array_almost_equal(c,np.array([9.966711e-02, 9.940095e-02, -3.325404e-04, -6.630519e-05]))
+            npt.assert_array_almost_equal(c,np.array([9.966711e-02, 9.940095e-02, -3.325404e-04, -6.630519e-05]), decimal = 7)
 
 
 
@@ -92,7 +92,7 @@ class BasisTestCase(unittest.TestCase):
                 ls = basis.shift_legendre_polynomial(l,2)
                 
                 # This should be equal to 5.5 + 6x + 1.5 x^2
-                npt.assert_array_almost_equal(ls.convert(kind=P).coef,np.array([5.5,6,1.5]),decimal=9)
+                npt.assert_array_almost_equal(ls.convert(kind=P).coef,np.array([5.5,6,1.5]),decimal=13)
 
 
 
