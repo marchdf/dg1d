@@ -40,6 +40,11 @@ class Limiter:
             print('\tAdaptive limiting with hierarchical reconstruction')
             self.keywords = {'type' : self.adaptive_hr}
 
+            # Pre-allocate basis transforms
+            # self.L2M = np.linalg.inv(V) * solution.basis.phi # where V = [x_i^j / factorial(j)]_(i,j)
+            # self.M2L = np.linalg.inv(L2M)
+            # replace np.math.factorial(num) by a list call: factorial[num]
+            
         # By default, do not limit
         else:
             print('\tNo limiting.')

@@ -118,7 +118,7 @@ plt.setp(ax.get_ymajorticklabels(),fontsize=18,fontweight='bold');
 plt.savefig('pressure.png',format='png')
 
 
-sname = 'sensor0000000001.dat'
+sname = 'sensor{0:010d}.dat'.format(args.step)
 if os.path.isfile(sname):
     sen = np.loadtxt(sname,delimiter=',')
 

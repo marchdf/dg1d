@@ -75,7 +75,7 @@ class Basis:
 
     #================================================================================
     def evaluate_basis_edges(self):
-        """Evaluate the basis at the Gaussian quadrature nodes.
+        """Evaluate the basis at the cell edges.
 
         psi will be used to evaluate a solution at the cell edges.
         
