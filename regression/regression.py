@@ -29,6 +29,7 @@ def runcode(workdir,deck,codedir,background=True):
     
     # Launch the code
     log = open('logfile', "w")
+    print(codedir+'/main.py -d '+deck)
     proc = sp.Popen(codedir+'/main.py -d '+deck,
                     shell=True, stdout=log,stderr=sp.PIPE)
     retcode = 0
@@ -79,8 +80,8 @@ class RegressionTestCase(unittest.TestCase):
 
         # Problem setup
         self.regdir = os.path.dirname(os.path.realpath(__file__))
-        self.codedir = os.path.dirname(self.regdir)
-
+        self.codedir = os.path.join(os.path.dirname(self.regdir),'dg1d')
+                                    
 
     #================================================================================
     # Execute a test

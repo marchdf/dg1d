@@ -4,8 +4,8 @@
 #
 #================================================================================
 import unittest
-import constants
-import euler_physics
+from .context import constants
+from .context import euler_physics
 import numpy as np
 import numpy.testing as npt
 

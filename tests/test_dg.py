@@ -4,8 +4,8 @@
 #
 #================================================================================
 import unittest
-import solution
-import dg
+from .context import solution
+from .context import dg
 import numpy as np
 import numpy.testing as npt
 

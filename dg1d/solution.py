@@ -9,12 +9,12 @@ import numpy as np
 import itertools
 import copy
 
-import basis
-import enhance
-import advection_physics
-import euler_physics
-import constants
-import sensor
+import dg1d.basis as basis
+import dg1d.enhance as enhance
+import dg1d.advection_physics as advection_physics
+import dg1d.euler_physics as euler_physics
+import dg1d.constants as constants
+import dg1d.sensor as sensor
 
 #================================================================================
 #

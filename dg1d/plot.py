@@ -26,8 +26,8 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 import matplotlib.axis as axis
 
-import solution
-import dg
+import dg1d.solution as solution
+import dg1d.dg as dg
 
 #================================================================================
 #

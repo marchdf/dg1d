@@ -4,7 +4,7 @@
 #
 #================================================================================
 import unittest
-import basis
+from .context import basis
 import numpy as np
 import numpy.testing as npt
 

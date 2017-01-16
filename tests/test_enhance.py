@@ -4,8 +4,8 @@
 #
 #================================================================================
 import unittest
-import enhance
-import basis
+from .context import enhance
+from .context import basis
 import numpy as np
 import numpy.testing as npt
 
