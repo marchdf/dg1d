@@ -1,7 +1,13 @@
 init:
 	pip install -r requirements.txt
 
-test:
+unittest:
 	nosetests tests
 
-.PHONY: init test
+regtest:
+	nosetests regressions/regressions.py
+
+test:
+	nosetests --with-xunit -i tests -i regression
+
+.PHONY: init unittest regtest test

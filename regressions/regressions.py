@@ -29,7 +29,6 @@ def runcode(workdir,deck,codedir,background=True):
     
     # Launch the code
     log = open('logfile', "w")
-    print(codedir+'/main.py -d '+deck)
     proc = sp.Popen(codedir+'/main.py -d '+deck,
                     shell=True, stdout=log,stderr=sp.PIPE)
     retcode = 0
@@ -70,7 +69,7 @@ def compare_with_golds(workdir):
 # Class definitions
 #
 #================================================================================
-class RegressionTestCase(unittest.TestCase):
+class RegressionsTestCase(unittest.TestCase):
     """Regression tests for `main.py.`"""
 
 

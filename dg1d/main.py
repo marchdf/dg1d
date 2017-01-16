@@ -18,12 +18,14 @@ __status__ = "Development"
 #
 #================================================================================
 import argparse
-import sys, os
+import sys
+import os
 import numpy as np
 import subprocess
 import time
 from datetime import timedelta
 
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 import dg1d.helpers as helpers
 import dg1d.deck as deck
 import dg1d.solution as solution

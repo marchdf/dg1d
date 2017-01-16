@@ -1,7 +1,6 @@
 import sys
 import os
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-print(sys.path)
 
 import dg1d.basis as basis
 import dg1d.solution as solution

@@ -1,6 +1,6 @@
 # Regression test suite
 
-Execute `nosetests regression/regression.py` from the code directory
+Execute `nosetests regressions/regressions.py` from the code directory
 to run the regression test suite.
 
 ## Test cases
