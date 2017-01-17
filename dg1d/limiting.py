@@ -40,10 +40,16 @@ class Limiter:
             print('\tAdaptive limiting with hierarchical reconstruction')
             self.keywords = {'type' : self.adaptive_hr}
 
-            # Pre-allocate basis transforms
-            # self.L2M = np.linalg.inv(V) * solution.basis.phi # where V = [x_i^j / factorial(j)]_(i,j)
-            # self.M2L = np.linalg.inv(L2M)
-            # replace np.math.factorial(num) by a list call: factorial[num]
+            # Pre-allocate basis transforms. We don't use the builtin
+            # python ones because they are slow!
+            V = np.zeros((solution.basis.N_s,solution.basis.N_s))
+            x = solution.basis.x
+            for i in range(solution.basis.N_s):
+                for j in range(solution.basis.N_s):
+                    V[i,j] = x[i]**j / np.math.factorial(j)
+
+            self.L2M = np.dot(np.linalg.inv(V), solution.basis.phi)
+            self.M2L = np.linalg.inv(self.L2M)
             
         # By default, do not limit
         else:
@@ -200,6 +206,14 @@ class Limiter:
     def legendre_to_monomial(self,l):
         r"""Transform a Legendre solution to a monomial (Taylor series) representation
 
+        Using built-in python this could be done with: 
+
+        t = leg.leg2poly(l)
+
+        return np.concatenate([t*spm.factorial(np.arange(len(t))),np.zeros(len(l)-len(t))])
+
+        where:
+        
         :math:`l(x) = \sum l_i L_i(x)` where :math:`L_i(x)` are the Legendre polynomials
 
         :math:`p(x) = \sum p_i x^i(x) = \sum t_i \frac{x^i}{i!}`
@@ -212,17 +226,25 @@ class Limiter:
         coefficients are deleted from the polynomial representation.
 
         """
-        t = leg.leg2poly(l)
-        return np.concatenate([t*spm.factorial(np.arange(len(t))),np.zeros(len(l)-len(t))])
-
+        return np.dot(self.L2M,l)
    
+
     #================================================================================
     def monomial_to_legendre(self,t):
-        """Transform a monomial (Taylor series) solution to a Legendre representation"""
+        """Transform a monomial (Taylor series) solution to a Legendre representation
+        
+        Using built-in python this could be done with: 
+        
         l = leg.poly2leg(t/spm.factorial(np.arange(len(t))))
+        
         return np.concatenate([l,np.zeros(len(t)-len(l))])
+        
+        but this is very slow...
 
+        """      
+        return np.dot(self.M2L,t)
     
+
     #================================================================================
     def limit_monomial(self,ac,al,ar):
         """Limit a monomial cell solution with hierarchical reconstruction"""
