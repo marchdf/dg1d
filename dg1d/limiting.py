@@ -193,13 +193,15 @@ class Limiter:
     
     #================================================================================
     def legendre_to_monomial(self,l):
-        """Transform a Legendre solution to a monomial (Taylor series) representation
-        
-        $l(x) = \sum l_i L_i(x)$ where $L_i(x)$ are the Legendre polynomials
-        $p(x) = \sum p_i x^i(x) = \sum t_i \frac{x^i}{i!}$
-        
-        We know: $p_i = \frac{t_i}{i!} = leg2poly(l)_i $
-        Therefore: $t_i = i! leg2poly(l)_i$
+        r"""Transform a Legendre solution to a monomial (Taylor series) representation
+
+        :math:`l(x) = \sum l_i L_i(x)` where :math:`L_i(x)` are the Legendre polynomials
+
+        :math:`p(x) = \sum p_i x^i(x) = \sum t_i \frac{x^i}{i!}`
+
+        We know: :math:`p_i = \frac{t_i}{i!} = leg2poly(l)_i`
+
+        Therefore: :math:`t_i = i!~leg2poly(l)_i`
 
         The zero padding is necessary because higher order
         coefficients are deleted from the polynomial representation.
@@ -261,10 +263,11 @@ class Limiter:
 
     #================================================================================
     def integrate_monomial_derivative(self,k,n):
-        """The integral of the kth derivative of nth order monomial (from -1 to 1)
+        r"""The integral of the kth derivative of nth order monomial (from -1 to 1)
 
-        Returns $\frac{2}{(n-k+1)!}$ if n-k+1 is odd, 0 otherwise
-        Basically, calculates $\int_{-1}^1 \frac{\partial^k}{\partial x^k} \frac{x^n}{n!} \mathrm{d} x$
+        Returns :math:`\frac{2}{(n-k+1)!}` if :math:`n-k+1` is odd, 0 otherwise
+
+        Basically, calculates :math:`\int_{-1}^1 \frac{\partial^k}{\partial x^k} \frac{x^n}{n!} \mathrm{d} x`
         """
         num = n-k+1
         if (num%2): return 2.0/np.math.factorial(num)
@@ -273,9 +276,9 @@ class Limiter:
 
     #================================================================================
     def integrate_monomial_derivative_bounds(self,k,n,a,b):
-        """The integral of the kth derivative of nth order monomial (from a to b)
+        r"""The integral of the kth derivative of nth order monomial (from a to b)
 
-        Returns $\int_{a}^{b} \frac{\partial^k}{\partialx^k} \frac{x^n}{n!} \mathrm{d} x$
+        Returns :math:`\int_{a}^{b} \frac{\partial^k}{\partial x^k} \frac{x^n}{n!} \mathrm{d} x`
         """
         num = n-k+1
         return (b**num - a**num)/np.math.factorial(num)

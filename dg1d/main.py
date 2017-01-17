@@ -35,22 +35,6 @@ import dg1d.limiting as limiting
 
 #================================================================================
 #
-# Parse arguments
-#
-#================================================================================
-parser = argparse.ArgumentParser(description='A simple one-dimensional Discontinuous Galerkin solver.')
-parser.add_argument('-d','--deck', help='Name of input deck file', default="deck.inp")
-args = parser.parse_args()
-
-#================================================================================
-#
-# Some defaults variables
-#
-#================================================================================
-
-
-#================================================================================
-#
 # Function definitions
 #
 #================================================================================
@@ -65,6 +49,13 @@ def get_git_revision_hash():
 #================================================================================
 if __name__ == '__main__':
 
+    #================================================================================
+    # Parse arguments
+    parser = argparse.ArgumentParser(description='A simple one-dimensional Discontinuous Galerkin solver.')
+    parser.add_argument('-d','--deck', help='Name of input deck file', default="deck.inp")
+    args = parser.parse_args()
+
+    
     #================================================================================
     # Problem setup
     start = time.time()
@@ -85,6 +76,7 @@ if __name__ == '__main__':
     limiter = limiting.Limiter(deck.limiting,sol)
     limiter.limit(sol)
     
+
     #================================================================================
     # Solve the problem
     print("Integrating the solution in time.")

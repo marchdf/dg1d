@@ -30,9 +30,10 @@ class DG:
         """Calculates the residual for the DG method
         
         residual = Minv*(Q+F)
-        where Minv is the inverse mass matrix
-              Q is the edge fluxes
-              F is the interior flux
+
+        where Minv is the inverse mass matrix, Q is the edge fluxes, F
+        is the interior flux.
+
         """
 
         # Apply boundary conditions

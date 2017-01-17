@@ -31,18 +31,6 @@ import dg1d.dg as dg
 
 #================================================================================
 #
-# Parse arguments
-#
-#================================================================================
-parser = argparse.ArgumentParser(description='A simple plot tool for the one-dimensional DG data')
-parser.add_argument('-s','--show', help='Show the plots', action='store_true')
-parser.add_argument('-f','--file', dest='step', help='File to load', type=int, required=True)
-parser.add_argument('-t','--type', dest='system', help='Type of system to solve', type=str, default='advection')
-args = parser.parse_args()
-
-
-#================================================================================
-#
 # Some defaults variables
 #
 #================================================================================
@@ -55,68 +43,78 @@ markertype = ['s','d','o','p','h']
                                         
 #================================================================================
 #
-# Problem setup
+# Main
 #
 #================================================================================
+if __name__ == '__main__':
 
-solution = solution.Solution('empty',args.system,0)
-solution.loader(args.step)
+    #================================================================================
+    # Parse arguments
+    parser = argparse.ArgumentParser(description='A simple plot tool for the one-dimensional DG data')
+    parser.add_argument('-s','--show', help='Show the plots', action='store_true')
+    parser.add_argument('-f','--file', dest='step', help='File to load', type=int, required=True)
+    parser.add_argument('-t','--type', dest='system', help='Type of system to solve', type=str, default='advection')
+    args = parser.parse_args()
 
-# Collocate the solution to the Gaussian nodes
-ug = solution.collocate()
+    # Load solution
+    solution = solution.Solution('empty',args.system,0)
+    solution.loader(args.step)
 
-# Collocate to the cell edge values
-uf = solution.evaluate_faces()
+    # Collocate the solution to the Gaussian nodes
+    ug = solution.collocate()
 
-# Get the primitive variables for Euler
-if args.system == 'euler':
-    gamma  = 1.4
-    rho  = ug[:,0::solution.N_F]
-    u    = ug[:,1::solution.N_F]/rho
-    p    = (gamma-1)*(ug[:,2::solution.N_F] - 0.5*rho*u*u)
-    ug[:,1::solution.N_F]   = u
-    ug[:,2::solution.N_F]   = p
+    # Collocate to the cell edge values
+    uf = solution.evaluate_faces()
 
-    rho  = uf[:,0::solution.N_F]
-    u    = uf[:,1::solution.N_F]/rho
-    p    = (gamma-1)*(uf[:,2::solution.N_F] - 0.5*rho*u*u)
-    uf[:,1::solution.N_F]   = u
-    uf[:,2::solution.N_F]   = p
+    # Get the primitive variables for Euler
+    if args.system == 'euler':
+        gamma  = 1.4
+        rho  = ug[:,0::solution.N_F]
+        u    = ug[:,1::solution.N_F]/rho
+        p    = (gamma-1)*(ug[:,2::solution.N_F] - 0.5*rho*u*u)
+        ug[:,1::solution.N_F]   = u
+        ug[:,2::solution.N_F]   = p
+
+        rho  = uf[:,0::solution.N_F]
+        u    = uf[:,1::solution.N_F]/rho
+        p    = (gamma-1)*(uf[:,2::solution.N_F] - 0.5*rho*u*u)
+        uf[:,1::solution.N_F]   = u
+        uf[:,2::solution.N_F]   = p
 
 
-# Plot each field
-for field in range(solution.N_F):
+    # Plot each field
+    for field in range(solution.N_F):
 
-    plt.figure(field)
+        plt.figure(field)
     
-    # Plot each element solution in a different color
-    # Skip plotting the ghost cells
-    for e in range(1,solution.N_E+1):
-        a = solution.x[e-1]
-        b = solution.x[e]
-        xg = 0.5*(b-a)*solution.basis.x + 0.5*(b+a)
+        # Plot each element solution in a different color
+        # Skip plotting the ghost cells
+        for e in range(1,solution.N_E+1):
+            a = solution.x[e-1]
+            b = solution.x[e]
+            xg = 0.5*(b-a)*solution.basis.x + 0.5*(b+a)
         
-        # plot the solution at the Gaussian nodes (circles)
-        plt.plot(xg,ug[:,e*solution.N_F+field],'o',mfc=cmap[e%len(cmap)],mec=cmap[e%len(cmap)])
+            # plot the solution at the Gaussian nodes (circles)
+            plt.plot(xg,ug[:,e*solution.N_F+field],'o',mfc=cmap[e%len(cmap)],mec=cmap[e%len(cmap)])
         
-        # Plot the solution at the cell edges (squares)
-        plt.plot([a,b],uf[:,e*solution.N_F+field],'s',mfc=cmap[e%len(cmap)],mec='black')
+            # Plot the solution at the cell edges (squares)
+            plt.plot([a,b],uf[:,e*solution.N_F+field],'s',mfc=cmap[e%len(cmap)],mec='black')
 
-    # Plot the exact solution
-    if args.system == 'advection':
-        xe = np.linspace(-1,1,200)
-        fe = np.sin(2*np.pi*xe)
-        plt.plot(xe,fe,'k')
+        # Plot the exact solution
+        if args.system == 'advection':
+            xe = np.linspace(-1,1,200)
+            fe = np.sin(2*np.pi*xe)
+            plt.plot(xe,fe,'k')
 
 
-# Plot the sensors if they exist
-if os.path.isfile('sensor0000000000.dat'):
-    plt.figure(solution.N_F)
-    dat = np.loadtxt('sensor{0:010d}.dat'.format(args.step),delimiter=',')
+    # Plot the sensors if they exist
+    if os.path.isfile('sensor0000000000.dat'):
+        plt.figure(solution.N_F)
+        dat = np.loadtxt('sensor{0:010d}.dat'.format(args.step),delimiter=',')
 
-    # plot sensors at cell centers
-    plt.plot(dat[:,0],dat[:,1],'o',mfc=cmap[0],mec=cmap[0])
-    plt.ylim([-0.1,2.1])
+        # plot sensors at cell centers
+        plt.plot(dat[:,0],dat[:,1],'o',mfc=cmap[0],mec=cmap[0])
+        plt.ylim([-0.1,2.1])
         
-if args.show:
-    plt.show()
+    if args.show:
+        plt.show()
