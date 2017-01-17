@@ -50,6 +50,9 @@ class Limiter:
 
             self.L2M = np.dot(np.linalg.inv(V), solution.basis.phi)
             self.M2L = np.linalg.inv(self.L2M)
+
+            # Pre-allocate some common integrals we need
+            # integrate monomial bounds can be stored in a matrix
             
         # By default, do not limit
         else:
@@ -204,44 +207,13 @@ class Limiter:
     
     #================================================================================
     def legendre_to_monomial(self,l):
-        r"""Transform a Legendre solution to a monomial (Taylor series) representation
-
-        Using built-in python this could be done with: 
-
-        t = leg.leg2poly(l)
-
-        return np.concatenate([t*spm.factorial(np.arange(len(t))),np.zeros(len(l)-len(t))])
-
-        where:
-        
-        :math:`l(x) = \sum l_i L_i(x)` where :math:`L_i(x)` are the Legendre polynomials
-
-        :math:`p(x) = \sum p_i x^i(x) = \sum t_i \frac{x^i}{i!}`
-
-        We know: :math:`p_i = \frac{t_i}{i!} = leg2poly(l)_i`
-
-        Therefore: :math:`t_i = i!~leg2poly(l)_i`
-
-        The zero padding is necessary because higher order
-        coefficients are deleted from the polynomial representation.
-
-        """
+        """Transform a Legendre solution to a monomial (Taylor series) representation"""
         return np.dot(self.L2M,l)
    
 
     #================================================================================
     def monomial_to_legendre(self,t):
-        """Transform a monomial (Taylor series) solution to a Legendre representation
-        
-        Using built-in python this could be done with: 
-        
-        l = leg.poly2leg(t/spm.factorial(np.arange(len(t))))
-        
-        return np.concatenate([l,np.zeros(len(t)-len(l))])
-        
-        but this is very slow...
-
-        """      
+        """Transform a monomial (Taylor series) solution to a Legendre representation"""      
         return np.dot(self.M2L,t)
     
 
@@ -297,8 +269,10 @@ class Limiter:
         Basically, calculates :math:`\int_{-1}^1 \frac{\partial^k}{\partial x^k} \frac{x^n}{n!} \mathrm{d} x`
         """
         num = n-k+1
-        if (num%2): return 2.0/np.math.factorial(num)
-        else: return 0.0
+        if (num%2):
+            return 2.0/np.math.factorial(num)
+        else:
+            return 0.0
 
 
     #================================================================================
@@ -313,15 +287,8 @@ class Limiter:
 
     #================================================================================
     def scalar_minmod(self,a,b):
-        """Minmod function for two scalars"""
+        """Minmod function for two scalars
 
-        signa = np.sign(a);
-        if (signa != np.sign(b)):
-            return 0
-
-        fabsa = np.fabs(a);
-        fabsb = np.fabs(b);
-        if (fabsa<fabsb):
-            return signa*fabsa;
-        else:
-            return signa*fabsb;
+        Idead from http://codegolf.stackexchange.com/questions/42079/shortest-minmod-function
+        """
+        return sorted([a,b,0])[1]
