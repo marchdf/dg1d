@@ -51,8 +51,16 @@ class Limiter:
             self.L2M = np.dot(np.linalg.inv(V), solution.basis.phi)
             self.M2L = np.linalg.inv(self.L2M)
 
-            # Pre-allocate some common integrals we need
-            # integrate monomial bounds can be stored in a matrix
+            # Pre-allocate some common integrals we need to limit
+            self.integral_monomial_derivative = np.zeros((solution.basis.N_s,solution.basis.N_s))
+            self.integral_monomial_derivative_bounds_31 = np.zeros((solution.basis.N_s,solution.basis.N_s))
+            self.integral_monomial_derivative_bounds_13 = np.zeros((solution.basis.N_s,solution.basis.N_s))
+            for m in range(solution.basis.p,0,-1):
+                for n in range(m-1,solution.basis.p+1):
+                    self.integral_monomial_derivative[m-1,n] = self.integrate_monomial_derivative(m-1,n)
+                    if(n>=m+1):
+                        self.integral_monomial_derivative_bounds_31[m-1,n] = self.integrate_monomial_derivative_bounds(m-1,n,-3,-1)
+                        self.integral_monomial_derivative_bounds_13[m-1,n] = self.integrate_monomial_derivative_bounds(m-1,n,1,3)
             
         # By default, do not limit
         else:
@@ -235,14 +243,14 @@ class Limiter:
             # center, right. Calculate the remainder polynomial in our
             # cells and its two neighbors
             for n in range(m-1,N+1):
-                integral = self.integrate_monomial_derivative(m-1,n)
+                integral = self.integral_monomial_derivative[m-1,n]
                 avgdUL += al[n]*integral
                 avgdUC += ac[n]*integral
                 avgdUR += ar[n]*integral
                 if(n>=m+1):
-                    avgRL += alim[n]*self.integrate_monomial_derivative_bounds(m-1,n,-3,-1)
+                    avgRL += alim[n]*self.integral_monomial_derivative_bounds_31[m-1,n]
                     avgRC += alim[n]*integral
-                    avgRR += alim[n]*self.integrate_monomial_derivative_bounds(m-1,n,1,3)
+                    avgRR += alim[n]*self.integral_monomial_derivative_bounds_13[m-1,n]
 
             # Approximate the average of the linear part
             avgLL = 0.5*(avgdUL - avgRL) # avg = \frac{1}{2} \int_{-1}^1 U \ud x
