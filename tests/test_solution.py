@@ -4,7 +4,7 @@
 #
 #================================================================================
 import unittest
-import solution
+import dg1d.solution as solution
 import numpy as np
 import numpy.testing as npt
 

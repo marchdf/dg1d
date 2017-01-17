@@ -4,8 +4,8 @@
 #
 #================================================================================
 import unittest
-import solution
-import limiting
+from .context import solution
+from .context import limiting
 import numpy as np
 import numpy.testing as npt
 

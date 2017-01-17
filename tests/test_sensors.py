@@ -4,8 +4,8 @@
 #
 #================================================================================
 import unittest
-import solution
-import sensor
+import dg1d.solution as solution
+import dg1d.sensor as sensor
 import numpy as np
 import numpy.testing as npt
 

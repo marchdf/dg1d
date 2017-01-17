@@ -69,7 +69,7 @@ def compare_with_golds(workdir):
 # Class definitions
 #
 #================================================================================
-class RegressionTestCase(unittest.TestCase):
+class RegressionsTestCase(unittest.TestCase):
     """Regression tests for `main.py.`"""
 
 
@@ -79,8 +79,8 @@ class RegressionTestCase(unittest.TestCase):
 
         # Problem setup
         self.regdir = os.path.dirname(os.path.realpath(__file__))
-        self.codedir = os.path.dirname(self.regdir)
-
+        self.codedir = os.path.join(os.path.dirname(self.regdir),'dg1d')
+                                    
 
     #================================================================================
     # Execute a test
