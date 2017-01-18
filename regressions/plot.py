@@ -26,10 +26,8 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 import matplotlib.axis as axis
 
-
-codedir = '..'
-sys.path.insert(0, codedir)
-import solution
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+import dg1d.solution as solution
 
 #================================================================================
 #

@@ -223,12 +223,10 @@ def sanity_check_dt(dt,n,t):
     """
 
     if dt < 1e-14:
-        print("Next time step is too small ({0:e}<1e-14). Exiting at step {1:7d} and time {2:e}.\n".format(dt,n,t))
-        sys.exit()
+        sys.exit("Next time step is too small ({0:e}<1e-14). Exiting at step {1:7d} and time {2:e}.\n".format(dt,n,t))
         
     if np.isnan(dt):
-        print("Time step is NaN. Exiting at step {0:7d} and time {1:e}.\n".format(n,t))
-        sys.exit()
+        sys.exit("Time step is NaN. Exiting at step {0:7d} and time {1:e}.\n".format(n,t))
 
 #================================================================================
 def adjust_for_output(dt,t,tf,tout):

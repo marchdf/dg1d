@@ -22,9 +22,9 @@ one-dimensional, structured, and the elements are of constant size.
 	```{bash}
 	git commit -m "Developed feature"
 	git checkout develop
-	git pull                     [fix any identified conflicts between local and remote branches of "develop"]
+	git pull                     # fix any identified conflicts between local and remote branches of "develop"
 	git checkout feature-branch
-	git merge develop        [fix any identified conflicts between "develop" and "feature-branch"]
+	git merge develop            # fix any identified conflicts between "develop" and "feature-branch"
 	```
 
 3. Push feature branch to dg1d repository:

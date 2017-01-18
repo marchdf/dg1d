@@ -89,7 +89,7 @@ class RegressionsTestCase(unittest.TestCase):
         
         # Run code
         [os.remove(f) for f in glob.glob(os.path.join(workdir,'*.dat'))]
-        runcode(workdir,'deck.inp',self.codedir,False)
+        retcode = runcode(workdir,'deck.inp',self.codedir,False)
         
         # Test with gold
         compare_with_golds(workdir)

@@ -141,8 +141,7 @@ def riemann_godunov(ul,ur):
                 # Test for max iterations
                 k = k + 1
                 if (k > kmax):
-                    print("Godunov fixed-point iteration did not converge. Exiting.")
-                    sys.exit(1)
+                    sys.exit("Godunov fixed-point iteration did not converge. Exiting.")
 
                 # Set old value to new value
                 pm1 = pm2

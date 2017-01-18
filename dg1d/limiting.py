@@ -40,6 +40,8 @@ class Limiter:
             print('\tAdaptive limiting with hierarchical reconstruction')
             self.keywords = {'type' : self.adaptive_hr}
 
+            self.ulim = np.zeros(solution.u.shape)
+
             # Pre-allocate basis transforms. We don't use the builtin
             # python ones because they are slow!
             V = np.zeros((solution.basis.N_s,solution.basis.N_s))
@@ -61,7 +63,8 @@ class Limiter:
                     if(n>=m+1):
                         self.integral_monomial_derivative_bounds_31[m-1,n] = self.integrate_monomial_derivative_bounds(m-1,n,-3,-1)
                         self.integral_monomial_derivative_bounds_13[m-1,n] = self.integrate_monomial_derivative_bounds(m-1,n,1,3)
-            
+
+           
         # By default, do not limit
         else:
             print('\tNo limiting.')
@@ -183,16 +186,21 @@ class Limiter:
         solution.sensors.sensing(solution)
         
         # loop over all the interior elements
+        self.ulim = np.copy(solution.u)
         for e in range(1,solution.N_E+1):
+        #for e in range(solution.N_E,0,-1):
 
             # test if we need to do limiting (sensors are on)
             if solution.sensors.sensors[e] != 0:
 
                 # loop over the fields and call HR
                 for f in range(0,solution.N_F):
-                    solution.u[:,e*solution.N_F+f] = self.hr(solution.u[:,e*solution.N_F+f],
-                                                             solution.u[:,(e-1)*solution.N_F+f],
-                                                             solution.u[:,(e+1)*solution.N_F+f])
+                    self.ulim[:,e*solution.N_F+f] = self.hr(solution.u[:,e*solution.N_F+f],
+                                                            solution.u[:,(e-1)*solution.N_F+f],
+                                                            solution.u[:,(e+1)*solution.N_F+f])
+
+        solution.u = np.copy(self.ulim)
+        solution.apply_bc()
 
 
     #================================================================================

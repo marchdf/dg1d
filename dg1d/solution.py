@@ -376,8 +376,7 @@ class Solution:
 
         # check parameter length to make sure
         if (len(self.params) != 8):
-            print("Not enough input conditions in the deck. Exiting")
-            sys.exit(1)
+            sys.exit("Not enough input conditions in the deck. Exiting")
 
         # parse the parameters
         xdiaph = float(self.params[1])
