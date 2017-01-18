@@ -35,5 +35,4 @@ def delta(i,j):
         else:
             return 0
     else:
-        print('Call the delta function with integers only! Exiting.')
-        sys.exit()
+        sys.exit('Call the delta function with integers only! Exiting.')

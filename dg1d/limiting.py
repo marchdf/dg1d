@@ -6,7 +6,6 @@
 import sys
 import numpy as np
 from numpy.polynomial import legendre as leg # import the Legendre functions
-import scipy.misc as spm
 
 import dg1d.solution as solution
 
