@@ -1,8 +1,8 @@
-#=========================================================================
+# ========================================================================
 #
 # Imports
 #
-#=========================================================================
+# ========================================================================
 import os
 import glob
 import subprocess as sp
@@ -11,11 +11,11 @@ import numpy as np
 import numpy.testing as npt
 
 
-#=========================================================================
+# ========================================================================
 #
 # Function definitions
 #
-#=========================================================================
+# ========================================================================
 def runcode(workdir, deck, codedir, background=True):
     """Run the DG code (in background by default) given the input deck
 
@@ -40,7 +40,7 @@ def runcode(workdir, deck, codedir, background=True):
     os.chdir(cwd)
     return retcode
 
-#=========================================================================
+# ========================================================================
 
 
 def compare_with_golds(workdir):
@@ -68,15 +68,15 @@ def compare_with_golds(workdir):
                                   err_msg='Failed on energy comparison')
 
 
-#=========================================================================
+# ========================================================================
 #
 # Class definitions
 #
-#=========================================================================
+# ========================================================================
 class RegressionsTestCase(unittest.TestCase):
     """Regression tests for `main.py.`"""
 
-    #=========================================================================
+    # ========================================================================
     # Set up
     def setUp(self):
 
@@ -84,7 +84,7 @@ class RegressionsTestCase(unittest.TestCase):
         self.regdir = os.path.dirname(os.path.realpath(__file__))
         self.codedir = os.path.join(os.path.dirname(self.regdir), 'dg1d')
 
-    #=========================================================================
+    # ========================================================================
     # Execute a test
     def launch(self, workdir):
         """Execute the sequence of command to run a test"""
@@ -99,7 +99,7 @@ class RegressionsTestCase(unittest.TestCase):
         # If test passed, make a plot
         self.runplot(workdir, False)
 
-    #=========================================================================
+    # ========================================================================
     # Makes the plots
     def runplot(self, workdir, background=True):
         """Run the plot tool on a problem directory
@@ -119,42 +119,42 @@ class RegressionsTestCase(unittest.TestCase):
 
         return retcode
 
-    #=========================================================================
+    # ========================================================================
     # Sod shock tube
     def test_sodtube(self):
         """Is the Sod shock tube problem correct?"""
         workdir = self.regdir + '/sodtube'
         self.launch(workdir)
 
-    #=========================================================================
+    # ========================================================================
     # modified Sod shock tube
     def test_modified_sodtube(self):
         """Is the modified Sod shock tube problem correct?"""
         workdir = self.regdir + '/sodtube_modified'
         self.launch(workdir)
 
-    #=========================================================================
+    # ========================================================================
     # 123 problem
     def test_123_problem(self):
         """Is the 123 problem correct?"""
         workdir = self.regdir + '/123_problem'
         self.launch(workdir)
 
-    #=========================================================================
+    # ========================================================================
     # Left Woodward and Colella (blast wave)
     def test_blast_wave(self):
         """Is the blast_wave problem correct?"""
         workdir = self.regdir + '/blast_wave'
         self.launch(workdir)
 
-    #=========================================================================
+    # ========================================================================
     # collision of two strong shocks
     def test_strong_shocks(self):
         """Is the collision of two strong shocks problem correct?"""
         workdir = self.regdir + '/strong_shocks'
         self.launch(workdir)
 
-    #=========================================================================
+    # ========================================================================
     # stationary contact discontinuity
     def test_stationary_contact(self):
         """Is the stationary contact discontinuity problem correct?"""

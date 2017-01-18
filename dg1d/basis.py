@@ -1,24 +1,24 @@
-#=========================================================================
+# ========================================================================
 #
 # Imports
 #
-#=========================================================================
+# ========================================================================
 import numpy as np
 from numpy.polynomial import Polynomial as P
 from numpy.polynomial import legendre as leg  # import the Legendre functions
 from numpy.polynomial import Legendre as L   # import the Legendre class
 
-#=========================================================================
+# ========================================================================
 #
 # Class definitions
 #
-#=========================================================================
+# ========================================================================
 
 
 class Basis:
     'Generate the basis functions, gradients and Gaussian quadrature'
 
-    #=========================================================================
+    # ========================================================================
     def __init__(self, order):
 
         print("Generating the basis functions.")
@@ -46,7 +46,7 @@ class Basis:
         # Construct the (unscaled) mass matrix and its inverse
         self.m, self.minv = self.mass_matrix()
 
-    #=========================================================================
+    # ========================================================================
     def evaluate_basis_gauss(self):
         """Evaluate the basis at the Gaussian quadrature nodes.
 
@@ -74,7 +74,7 @@ class Basis:
 
         return phi, dphi_w
 
-    #=========================================================================
+    # ========================================================================
     def evaluate_basis_edges(self):
         """Evaluate the basis at the cell edges.
 
@@ -85,7 +85,7 @@ class Basis:
         psi[0, 1::2] = -1
         return psi
 
-    #=========================================================================
+    # ========================================================================
     def mass_matrix(self):
         """Return the mass matrix and inverse mass matrix (of the Legendre
            polynomial basis)
@@ -96,7 +96,7 @@ class Basis:
         idx = np.arange(self.N_s)
         return 2.0 / (2 * idx + 1), (2 * idx + 1) / 2.0
 
-    #=========================================================================
+    # ========================================================================
     def projection(self, a, b, f, component=0):
         r"""Given a function, returns the approximating polynomial in the interval [a,b]
 
@@ -134,13 +134,13 @@ class Basis:
 
         return coef
 
-    #=========================================================================
+    # ========================================================================
     def shifted_xgauss(self, a, b):
         """Return the Gaussian nodes in the interval [a,b]"""
         return 0.5 * (b - a) * self.x + 0.5 * (b + a)
 
 
-#=========================================================================
+# ========================================================================
 def shift_legendre_polynomial(l, shift):
     """Returns the Legendre polynomial shifted by a certain amount
 
@@ -155,7 +155,7 @@ def shift_legendre_polynomial(l, shift):
     return L(ls.coef)
 
 
-#=========================================================================
+# ========================================================================
 def integrate_legendre_product(l1, l2):
     """Returns the integral of the product of two Legendre polynomials in the interval [-1,1]"""
 

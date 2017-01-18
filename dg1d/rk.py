@@ -1,19 +1,19 @@
-#=========================================================================
+# ========================================================================
 #
 # Imports
 #
-#=========================================================================
+# ========================================================================
 import sys
 import numpy as np
 import dg1d.rk_coeffs as rkc
 
-#=========================================================================
+# ========================================================================
 #
 # Function definitions
 #
-#=========================================================================
+# ========================================================================
 
-#=========================================================================
+# ========================================================================
 
 
 def integrate(solution, deck, dgsolver, limiter):
@@ -54,7 +54,7 @@ def integrate(solution, deck, dgsolver, limiter):
         classic_rk(solution, deck, dgsolver, limiter, coeffs, alphas, betas)
 
 
-#=========================================================================
+# ========================================================================
 def classic_rk(solution, deck, dgsolver, limiter, coeffs, alphas, betas):
     """Integrate in time using the classic RK4 scheme"""
 
@@ -124,7 +124,7 @@ def classic_rk(solution, deck, dgsolver, limiter, coeffs, alphas, betas):
                 tout = next(tout_array)
 
 
-#=========================================================================
+# ========================================================================
 def low_storage_rk4(solution, deck, dgsolver, limiter):
     """Integrate in time using the classic RK4 scheme with low storage algorithm"""
 
@@ -194,7 +194,7 @@ def low_storage_rk4(solution, deck, dgsolver, limiter):
                 tout = next(tout_array)
 
 
-#=========================================================================
+# ========================================================================
 def get_next_time_step(solution, tout, cfl, tf):
     """Returns the next time step and output/done flags"""
 
@@ -208,7 +208,7 @@ def get_next_time_step(solution, tout, cfl, tf):
     return adjust_for_output(dt, solution.t, tf, tout)
 
 
-#=========================================================================
+# ========================================================================
 def cfl_time_step(solution, cfl):
     """Given the solution and the CFL condition, determine the next time step size
 
@@ -222,7 +222,7 @@ def cfl_time_step(solution, cfl):
     # return (solution.dx**2)*cfl/( v * (2*solution.basis.p+1) )
 
 
-#=========================================================================
+# ========================================================================
 def sanity_check_dt(dt, n, t):
     """Make sure the next time step is not absurd
 
@@ -236,7 +236,7 @@ def sanity_check_dt(dt, n, t):
         sys.exit(
             "Time step is NaN. Exiting at step {0:7d} and time {1:e}.\n".format(n, t))
 
-#=========================================================================
+# ========================================================================
 
 
 def adjust_for_output(dt, t, tf, tout):

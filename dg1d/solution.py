@@ -1,8 +1,8 @@
-#=========================================================================
+# ========================================================================
 #
 # Imports
 #
-#=========================================================================
+# ========================================================================
 import sys
 import re
 import numpy as np
@@ -15,17 +15,17 @@ import dg1d.euler_physics as euler_physics
 import dg1d.constants as constants
 import dg1d.sensor as sensor
 
-#=========================================================================
+# ========================================================================
 #
 # Class definitions
 #
-#=========================================================================
+# ========================================================================
 
 
 class Solution:
     'Generate the solution (initialize, ic, mesh, etc)'
 
-    #=========================================================================
+    # ========================================================================
     def __init__(self, icline, system, order, riemann_solver='', enhancement_type='', sensor_thresholds=[]):
 
         print("Generating the solution.")
@@ -78,7 +78,7 @@ class Solution:
             self.issensing = True
             self.sensors = sensor.Sensor(sensor_thresholds, self.N_E + 2)
 
-    #=========================================================================
+    # ========================================================================
     def set_manipulation_functions(self, system, riemann_solver):
         """Define a dictionary containing the necessary functions"""
 
@@ -116,7 +116,7 @@ class Solution:
             else:
                 self.keywords['riemann'] = euler_physics.riemann_roe
 
-    #=========================================================================
+    # ========================================================================
     def printer(self, nout, dt):
         """Outputs the solution to a file
 
@@ -163,7 +163,7 @@ class Solution:
             np.savetxt(fname[0], xc_sen, fmt='%.18e, %.0d',
                        delimiter=',', header=hline)
 
-    #=========================================================================
+    # ========================================================================
     def loader(self, step):
         """Load the solution from a file"""
 
@@ -218,12 +218,12 @@ class Solution:
             step = self.N_F
             self.u[:, start:end:step] = dat[:, 1::].transpose()
 
-    #=========================================================================
+    # ========================================================================
     def format_fnames(self, step, fields):
         """Returns a list of file names for a given step"""
         return [field + '{0:010d}.dat'.format(step) for field in fields]
 
-    #=========================================================================
+    # ========================================================================
     def sinewave(self):
         """Sets up the advection of a simple sine wave at a constant velocity"""
 
@@ -242,7 +242,7 @@ class Solution:
         # Set up the rest of the IC
         self.setup_common_ic(f, A, B)
 
-    #=========================================================================
+    # ========================================================================
     def simplew(self):
         """Initial condition for two rarefaction waves moving away from each other.
 
@@ -291,7 +291,7 @@ class Solution:
         # Set up the rest of the IC
         self.setup_common_ic(f, A, B)
 
-    #=========================================================================
+    # ========================================================================
     def entrpyw(self):
         """Initial condition for an entropy wave.
 
@@ -326,7 +326,7 @@ class Solution:
         # Set up the rest of the IC
         self.setup_common_ic(f, A, B)
 
-    #=========================================================================
+    # ========================================================================
     def acsticw(self):
         """Initial condition for the propagation of an acoustic wave.
 
@@ -365,7 +365,7 @@ class Solution:
         # Set up the rest of the IC
         self.setup_common_ic(f, A, B)
 
-    #=========================================================================
+    # ========================================================================
     def scktube(self):
         """Initial condition for a shock tube problem.
 
@@ -416,7 +416,7 @@ class Solution:
         # Set up the rest of the IC
         self.setup_common_ic(f, A, B)
 
-    #=========================================================================
+    # ========================================================================
     def shuoshe(self):
         """Initial condition for the Shu-Osher problem"""
 
@@ -451,7 +451,7 @@ class Solution:
         # Set up the rest of the IC
         self.setup_common_ic(f, A, B)
 
-    #=========================================================================
+    # ========================================================================
     def ictest(self):
         """Sets up a test solution."""
 
@@ -470,7 +470,7 @@ class Solution:
         # Set up the rest of the IC
         self.setup_common_ic(f, A, B)
 
-    #=========================================================================
+    # ========================================================================
     def setup_common_ic(self, f, A, B):
         """Common stuff always done when setting up an initial condition"""
 
@@ -497,7 +497,7 @@ class Solution:
         # Scale the inverse mass matrix
         self.scaled_minv = self.basis.minv * 2.0 / self.dx
 
-    #=========================================================================
+    # ========================================================================
     def populate(self, f):
         """Populate the initial condition, given a function f
 
@@ -515,13 +515,13 @@ class Solution:
                 self.u[:, e * self.N_F +
                        field] = self.basis.projection(a, b, f, field)
 
-    #=========================================================================
+    # ========================================================================
     def add_ghosts(self):
         """Add ghost cells to the solution vector"""
         self.u = np.c_[np.zeros((self.basis.N_s, self.N_F)),
                        self.u, np.zeros((self.basis.N_s, self.N_F))]
 
-    #=========================================================================
+    # ========================================================================
     def apply_bc(self):
         """Populates the ghost cells with the correct data depending on the BC"""
 
@@ -541,55 +541,55 @@ class Solution:
         else:
             print("{0:s} is an invalid boundary condition. Exiting.".format(self.bc_r))
 
-    #=========================================================================
+    # ========================================================================
     def copy(self):
         """Returns a deep copy of a solution"""
         return copy.deepcopy(self)
 
-    #=========================================================================
+    # ========================================================================
     def copy_data_only(self, other):
         """Copy data u from other solution into the self"""
         self.u = np.copy(other.u)
 
-    #=========================================================================
+    # ========================================================================
     def smart_axpy(self, a, x):
         """Adds a*x to u only if a is non-zero"""
         if np.fabs(a) > 1e-15:
             self.u += a * x
 
-    #=========================================================================
+    # ========================================================================
     def riemann(self, ul, ur):
         """Returns the flux at an interface by calling the right Riemann solver"""
         return self.keywords['riemann'](ul, ur)
 
-    #=========================================================================
+    # ========================================================================
     def interior_flux(self, ug):
         """Returns the interio flux given the solution at the Gaussian nodes"""
         return self.keywords['interior_flux'](ug)
 
-    #=========================================================================
+    # ========================================================================
     def max_wave_speed(self):
         """Returns the maximum wave speed in the domain (based on the cell averages)"""
         return self.keywords['max_wave_speed'](self.u)
 
-    #=========================================================================
+    # ========================================================================
     def collocate(self):
         """Collocate the solution to the Gaussian quadrature nodes"""
         return np.dot(self.basis.phi, self.u)
 
-    #=========================================================================
+    # ========================================================================
     def evaluate_faces(self):
         """Evaluate the solution at the cell edges/faces"""
 
         # Call the correct face evaluation procedure
         return self.keywords['evaluate_face_solution']()
 
-    #=========================================================================
+    # ========================================================================
     def collocate_faces(self):
         """Collocate the solution to the cell edges/faces"""
         return np.dot(self.basis.psi, self.u)
 
-    #=========================================================================
+    # ========================================================================
     def enhanced_faces(self):
         """Get the value of the enhanced solution at the faces"""
         return self.enhance.face_value(self.u, self.N_F)

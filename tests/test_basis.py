@@ -1,8 +1,8 @@
-#=========================================================================
+# =========================================================================
 #
 # Imports
 #
-#=========================================================================
+# =========================================================================
 import unittest
 from .context import basis
 import numpy as np
@@ -11,17 +11,17 @@ import numpy.testing as npt
 from numpy.polynomial import Polynomial as P   # import the Legendre class
 from numpy.polynomial import Legendre as L     # import the Legendre class
 
-#=========================================================================
+# =========================================================================
 #
 # Class definitions
 #
-#=========================================================================
+# =========================================================================
 
 
 class BasisTestCase(unittest.TestCase):
     """Tests for `basis.py`."""
 
-    #=========================================================================
+    # =========================================================================
     # evaluate_basis_gauss
     def test_evaluate_basis_gauss(self):
         """Are the basis correctly evaluated at the Gaussian quadrature nodes?"""
@@ -42,7 +42,7 @@ class BasisTestCase(unittest.TestCase):
                                                             0.665150971,  0.898651315],
                                                         [1.412870929, -0.412870929, -0.412870929,  1.412870929]]), decimal=9)
 
-    #=========================================================================
+    # =========================================================================
     # evaluate_basis_edges
     def test_evaluate_basis_edges(self):
         """Are the basis correctly evaluated at the edges?"""
@@ -52,7 +52,7 @@ class BasisTestCase(unittest.TestCase):
         npt.assert_array_almost_equal(psi, np.array([[1.0, -1.0, 1.0, -1.0],
                                                      [1.0,  1.0, 1.0,  1.0]]), decimal=13)
 
-    #=========================================================================
+    # =========================================================================
     # mass_matrix
     def test_mass_matrix(self):
         """Is the mass matrix and its inverse correct?"""
@@ -64,7 +64,7 @@ class BasisTestCase(unittest.TestCase):
         npt.assert_array_almost_equal(
             minv, [1. / 2., 3. / 2., 5. / 2., 7. / 2.], decimal=13)
 
-    #=========================================================================
+    # =========================================================================
     # projection
     def test_projection0(self):
         """Is the projection correct for f(x) = x^2 on [-1,1]"""
@@ -85,7 +85,7 @@ class BasisTestCase(unittest.TestCase):
         npt.assert_array_almost_equal(c, np.array(
             [9.966711e-02, 9.940095e-02, -3.325404e-04, -6.630519e-05]), decimal=7)
 
-    #=========================================================================
+    # =========================================================================
     # shift_legendre_polynomial
     def test_shift_legendre_polynomial(self):
         """Is the shifting of Legendre polynomials correct"""
@@ -100,7 +100,7 @@ class BasisTestCase(unittest.TestCase):
         npt.assert_array_almost_equal(ls.convert(
             kind=P).coef, np.array([5.5, 6, 1.5]), decimal=13)
 
-    #=========================================================================
+    # =========================================================================
     # integrate_legendre_product
     def test_integrate_legendre_product(self):
         """Is the integral of the product of two Legendre polynomials correct"""

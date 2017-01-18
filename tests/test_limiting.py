@@ -1,8 +1,8 @@
-#=========================================================================
+# =========================================================================
 #
 # Imports
 #
-#=========================================================================
+# =========================================================================
 import unittest
 from .context import solution
 from .context import limiting
@@ -10,15 +10,15 @@ import numpy as np
 import numpy.testing as npt
 
 
-#=========================================================================
+# =========================================================================
 #
 # Class definitions
 #
-#=========================================================================
+# =========================================================================
 class LimitingTestCase(unittest.TestCase):
     """Tests for `limiting.py`."""
 
-    #=========================================================================
+    # =========================================================================
     # Set up
     def setUp(self):
         self.solution_biswas = solution.Solution(
@@ -44,7 +44,7 @@ class LimitingTestCase(unittest.TestCase):
         self.solution_hr.apply_bc()
         self.hr_limiter = limiting.Limiter('adaptive_hr', self.solution_hr)
 
-    #=========================================================================
+    # =========================================================================
     # test_biswas_limiting_procedure
     def test_biswas_limiting_procedure(self):
         """Is the Biswas limiting procedure correct?"""
@@ -58,7 +58,7 @@ class LimitingTestCase(unittest.TestCase):
                                                                             0.,  0.,  0.,  0.,  1.,  1.,  1., ],
                                                                         [3.,  3.,  3.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  1.,  1.,  1., ]]))
 
-    #=========================================================================
+    # =========================================================================
     # test_deltas
     def test_deltas(self):
         """Is the calculation for the deltas is correct?"""
@@ -76,7 +76,7 @@ class LimitingTestCase(unittest.TestCase):
                                                         0.33333333,  -0.33333333, -0.33333333, -0.33333333],
                                                     [0.6, 0.6, 0.6, -0.2,        -0.2,        -0.2,         -0.4,        -0.4,        -0.4]]))
 
-    #=========================================================================
+    # =========================================================================
     # test_minmod
     def test_minmod(self):
         """Is the minmod procedure correct?"""
@@ -97,7 +97,7 @@ class LimitingTestCase(unittest.TestCase):
         npt.assert_array_almost_equal(M, np.array([[0, 0, 0],
                                                    [0, -1, 6]]), decimal=7)
 
-    #=========================================================================
+    # =========================================================================
     # test_hr_limiting_procedure
     def test_hr_limiting_procedure(self):
         """Is the adaptive HR limiting procedure correct?"""
@@ -114,7 +114,7 @@ class LimitingTestCase(unittest.TestCase):
                                                                         0.33333333,  0.,          0.,  0.,  3., 1., 4.],
                                                                     [2., 4., 3.,  0.2, 0., 0., 0.,          0.3, 0.,          0.06666667,  0.,  0.1, 4., 1., 5.]]))
 
-    #=========================================================================
+    # =========================================================================
     # test_legendre_to_monomial
     def test_legendre_to_monomial(self):
         """Is the Legendre to monomial procedure correct?"""
@@ -126,7 +126,7 @@ class LimitingTestCase(unittest.TestCase):
         npt.assert_array_almost_equal(p, np.array(
             [-1. * 1, -3.5 * 1, 3. * 2, 7.5 * 6]))
 
-    #=========================================================================
+    # =========================================================================
     # test_monomial_to_legendre
     def test_monomial_to_legendre(self):
         """Is the monomial to Legendre procedure correct?"""
@@ -137,7 +137,7 @@ class LimitingTestCase(unittest.TestCase):
         # Test
         npt.assert_array_almost_equal(u, np.array([0., 1., 2., 3.]))
 
-    #=========================================================================
+    # =========================================================================
     # test_limit_monomial_linear
     def test_limit_monomial_linear(self):
         """Is the monomial limiting procedure correct for a linear polynomial?
@@ -164,7 +164,7 @@ class LimitingTestCase(unittest.TestCase):
                                               np.array([-4., 1]))  # right
         npt.assert_array_almost_equal(alim, np.array([-3., -0.5]))
 
-    #=========================================================================
+    # =========================================================================
     # test_limit_monomial
     def test_limit_monomial(self):
         """Is the monomial limiting procedure correct for a general polynomial?
@@ -183,7 +183,7 @@ class LimitingTestCase(unittest.TestCase):
         npt.assert_array_almost_equal(alim, np.array(
             [-0.76388889, 0., 0.58333333, -0.5]))
 
-    #=========================================================================
+    # =========================================================================
     # test_integrate_monomial_derivative
     def test_integrate_monomial_derivative(self):
         """Is the integration of monomial derivative correct?"""
@@ -196,7 +196,7 @@ class LimitingTestCase(unittest.TestCase):
         npt.assert_equal(res1, [2.0, 0.0, 1. / 3, 0.0, 1. / 60])
         npt.assert_equal(res2, [2.0, 0.0, 1. / 3, 0.0])
 
-    #=========================================================================
+    # =========================================================================
     # test_integrate_monomial_derivative_bounds
     def test_integrate_monomial_derivative_bounds(self):
         """Is the integration of monomial derivative with bounds correct?"""
@@ -209,7 +209,7 @@ class LimitingTestCase(unittest.TestCase):
         npt.assert_equal(res1, [2., -4., 13. / 3, -10. / 3, 121. / 60])
         npt.assert_equal(res2, [2., 4, 13. / 3, 10. / 3])
 
-    #=========================================================================
+    # =========================================================================
     # test_scalar_minmod
     def test_scalar_minmod(self):
         """Is the scalar minmod function correct?"""

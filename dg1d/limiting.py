@@ -1,25 +1,25 @@
-#=========================================================================
+# ========================================================================
 #
 # Imports
 #
-#=========================================================================
+# ========================================================================
 import sys
 import numpy as np
 from numpy.polynomial import legendre as leg  # import the Legendre functions
 
 import dg1d.solution as solution
 
-#=========================================================================
+# ========================================================================
 #
 # Class definitions
 #
-#=========================================================================
+# ========================================================================
 
 
 class Limiter:
     'Generate the limiter'
 
-    #=========================================================================
+    # ========================================================================
     def __init__(self, limiting_type, solution):
 
         print("Setting up the limiter:")
@@ -75,14 +75,14 @@ class Limiter:
         else:
             print('\tNo limiting.')
 
-    #=========================================================================
+    # ========================================================================
     def limit(self, solution):
         """Limit a solution"""
 
         if self.keywords['type'] is not None:
             self.keywords['type'](solution)
 
-    #=========================================================================
+    # ========================================================================
     def full_biswas(self, solution):
         """Limit a solution everywhere in the domain using the Biswas limiter"""
 
@@ -108,7 +108,7 @@ class Limiter:
                         solution.u[k, e * solution.N_F +
                                    f] = result[k - 1, (e - 1) * solution.N_F + f]
 
-    #=========================================================================
+    # ========================================================================
     def deltas(self, solution):
         """Calculate the difference between left and right neighbors"""
 
@@ -130,7 +130,7 @@ class Limiter:
 
         return deltam, deltap
 
-    #=========================================================================
+    # ========================================================================
     def minmod(self, A, B, C):
         """Given three arrays do an element-by-element minmod
 
@@ -180,7 +180,7 @@ class Limiter:
         # Reshape the matrix and return the results
         return M.reshape(A.shape)
 
-    #=========================================================================
+    # ========================================================================
     def adaptive_hr(self, solution):
         """Limit a solution in the domain using adaptive hierarchical reconstruction"""
 
@@ -205,7 +205,7 @@ class Limiter:
         solution.u = np.copy(self.ulim)
         solution.apply_bc()
 
-    #=========================================================================
+    # ========================================================================
     def hr(self, uc, ul, ur):
         """Limit a cell solution with hierarchical reconstruction"""
 
@@ -222,17 +222,17 @@ class Limiter:
 
         return uc_lim
 
-    #=========================================================================
+    # ========================================================================
     def legendre_to_monomial(self, l):
         """Transform a Legendre solution to a monomial (Taylor series) representation"""
         return np.dot(self.L2M, l)
 
-    #=========================================================================
+    # ========================================================================
     def monomial_to_legendre(self, t):
         """Transform a monomial (Taylor series) solution to a Legendre representation"""
         return np.dot(self.M2L, t)
 
-    #=========================================================================
+    # ========================================================================
     def limit_monomial(self, ac, al, ar):
         """Limit a monomial cell solution with hierarchical reconstruction"""
 
@@ -282,7 +282,7 @@ class Limiter:
         alim[0] = avgLC
         return alim
 
-    #=========================================================================
+    # ========================================================================
     def integrate_monomial_derivative(self, k, n):
         r"""The integral of the kth derivative of nth order monomial (from -1 to 1)
 
@@ -296,7 +296,7 @@ class Limiter:
         else:
             return 0.0
 
-    #=========================================================================
+    # ========================================================================
     def integrate_monomial_derivative_bounds(self, k, n, a, b):
         r"""The integral of the kth derivative of nth order monomial (from a to b)
 
@@ -305,7 +305,7 @@ class Limiter:
         num = n - k + 1
         return (b**num - a**num) / np.math.factorial(num)
 
-    #=========================================================================
+    # ========================================================================
     def scalar_minmod(self, a, b):
         """Minmod function for two scalars
 

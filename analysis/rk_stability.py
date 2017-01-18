@@ -13,11 +13,11 @@ __license__ = "GPL"
 __email__ = "marchdf@umich.edu"
 __status__ = "Development"
 
-#=========================================================================
+# ========================================================================
 #
 # Imports
 #
-#=========================================================================
+# ========================================================================
 import argparse
 import sys
 import os
@@ -33,22 +33,22 @@ sys.path.insert(0, '../dg1d')
 import rk_coeffs as rkc
 import aux_functions as auxf
 
-#=========================================================================
+# ========================================================================
 #
 # Parse arguments
 #
-#=========================================================================
+# ========================================================================
 parser = argparse.ArgumentParser(
     description='A simple plot tool for the one-dimensional DG data')
 parser.add_argument('-s', '--show', help='Show the plots', action='store_true')
 args = parser.parse_args()
 
 
-#=========================================================================
+# ========================================================================
 #
 # Some defaults variables
 #
-#=========================================================================
+# ========================================================================
 plt.rc('text', usetex=True)
 plt.rc('font', family='serif', serif='Times')
 cmap_med = ['#F15A60', '#7AC36A', '#5A9BD4', '#FAA75B',
@@ -59,11 +59,11 @@ dashseq = [(None, None), [10, 5], [10, 4, 3, 4], [
     3, 3], [10, 4, 3, 4, 3, 4], [3, 3], [3, 3]]
 markertype = ['s', 'd', 'o', 'p', 'h']
 
-#=========================================================================
+# ========================================================================
 #
 # Function definitions
 #
-#=========================================================================
+# ========================================================================
 
 
 def exact_stability_boundary(coeffs, B, fignum=0, coloridx=0):
@@ -118,7 +118,7 @@ def exact_stability_boundary(coeffs, B, fignum=0, coloridx=0):
     return x, y
 
 
-#=========================================================================
+# ========================================================================
 def approximate_stability_boundary(coeffs, B, fignum=0, coloridx=0, pltlabel=''):
     """Finds the approximate stability boundary of an explicit RK scheme
 
@@ -160,7 +160,7 @@ def approximate_stability_boundary(coeffs, B, fignum=0, coloridx=0, pltlabel='')
     return x, y, cs1.collections[0]
 
 
-#=========================================================================
+# ========================================================================
 def get_formatted_rk_coeffs(method='rk4'):
     """Returns the RK coefficients formatted so that we can use them"""
 
@@ -197,11 +197,11 @@ def get_formatted_rk_coeffs(method='rk4'):
     return coeffs, B
 
 
-#=========================================================================
+# ========================================================================
 #
 # Problem setup
 #
-#=========================================================================
+# ========================================================================
 
 # Plot the exact stability boundary for RK4
 #coeffs, B = get_formatted_rk_coeffs()

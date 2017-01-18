@@ -1,25 +1,25 @@
-#=========================================================================
+# =========================================================================
 #
 # Imports
 #
-#=========================================================================
+# =========================================================================
 import unittest
 from .context import enhance
 from .context import basis
 import numpy as np
 import numpy.testing as npt
 
-#=========================================================================
+# =========================================================================
 #
 # Class definitions
 #
-#=========================================================================
+# =========================================================================
 
 
 class EnhanceTestCase(unittest.TestCase):
     """Tests for `enhance.py`."""
 
-    #=========================================================================
+    # =========================================================================
     # enhancement_matrix
     def test_enhancement_matrices(self):
         """Are the enhancement matrices correct?"""
@@ -43,7 +43,7 @@ class EnhanceTestCase(unittest.TestCase):
                                                     [0.,  1.,  0.],
                                                     [0.,  1., -6.]]), decimal=13)
 
-    #=========================================================================
+    # =========================================================================
     # enhancement_vectors
     def test_left_enhancement_vectors(self):
         """Are the left enhancement vectors correct?"""
@@ -76,7 +76,7 @@ class EnhanceTestCase(unittest.TestCase):
         npt.assert_array_almost_equal(betaR, np.array(
             [0.7734375, -0.6796875,  0.4375]), decimal=7)
 
-    #=========================================================================
+    # =========================================================================
     # face_value
     def test_face_value(self):
         """Is the enhanced evaluation of the faces, given a solution, correct?"""

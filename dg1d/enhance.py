@@ -1,8 +1,8 @@
-#=========================================================================
+# ========================================================================
 #
 # Imports
 #
-#=========================================================================
+# ========================================================================
 import sys
 import re
 import numpy as np
@@ -14,15 +14,15 @@ import copy
 import dg1d.basis as basis
 
 
-#=========================================================================
+# ========================================================================
 #
 # Class definitions
 #
-#=========================================================================
+# ========================================================================
 class Enhance:
     'Generate enhancement procedures'
 
-    #=========================================================================
+    # ========================================================================
     def __init__(self, solution_order, method, solution_size):
 
         print("Generating the enhancement procedure.")
@@ -48,7 +48,7 @@ class Enhance:
         # Pre-allocated storage of the face values
         self.uf_tmp = np.zeros((2, solution_size))
 
-    #=========================================================================
+    # ========================================================================
     def face_value(self, u, N_F):
         """Calculates the value of the enhanced solution at the faces"""
 
@@ -63,7 +63,7 @@ class Enhance:
         return self.uf_tmp
 
 
-#=========================================================================
+# ========================================================================
 def left_enhancement_vectors(Ainv, Binv, solution_order, modes, psi):
     """Returns the enhancement vectors
 
@@ -95,7 +95,7 @@ def left_enhancement_vectors(Ainv, Binv, solution_order, modes, psi):
     return alphaL, alphaR, betaL, betaR
 
 
-#=========================================================================
+# ========================================================================
 def enhancement_matrices(solution_order, modes):
     """Returns the enhancement matrices (and their inverse)
 
