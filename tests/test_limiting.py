@@ -177,9 +177,9 @@ class LimitingTestCase(unittest.TestCase):
         npt.assert_array_almost_equal(alim, np.array([-0.75, 0, 0.5]))
 
         # Cubic polynomial
-        alim = self.hr_limiter.limit_monomial(np.array([-1., 5, 2, 7]),  # center
-                                              np.array([1., 2, 3, 1]),  # left
-                                              np.array([0., 6, 1, 2]))  # right
+        alim = self.hr_limiter.limit_monomial(np.array([-1., 5, 2, 7]),
+                                              np.array([1., 2, 3, 1]),
+                                              np.array([0., 6, 1, 2]))
         npt.assert_array_almost_equal(alim, np.array(
             [-0.76388889, 0., 0.58333333, -0.5]))
 

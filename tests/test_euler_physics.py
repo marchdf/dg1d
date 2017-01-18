@@ -49,7 +49,9 @@ class EulerPhysicsTestCase(unittest.TestCase):
 
         # Transform to conserved variables
         def ptoc(tp):
-            """Take a test case containing rhoL, uL, pL, rhoR, uR, pR and turn them into conservative variables"""
+            """Take a test case containing rhoL, uL, pL, rhoR, uR, pR and turn 
+            them into conservative variables
+            """
             tc = np.zeros(tp.shape)
             tc[0] = tp[0]
             tc[1] = tp[0] * tp[1]

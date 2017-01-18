@@ -51,7 +51,8 @@ def compare_with_golds(workdir):
     gold = np.loadtxt(os.path.join(
         workdir, 'rho0000000001.gold'), delimiter=',')
     npt.assert_array_almost_equal(dat, gold, decimal=10,
-                                  err_msg='Failed on density comparison', verbose=True)
+                                  err_msg='Failed on density comparison',
+                                  verbose=True)
 
     # Test momentum
     dat = np.loadtxt(os.path.join(
@@ -91,7 +92,7 @@ class RegressionsTestCase(unittest.TestCase):
 
         # Run code
         [os.remove(f) for f in glob.glob(os.path.join(workdir, '*.dat'))]
-        retcode = runcode(workdir, 'deck.inp', self.codedir, False)
+        runcode(workdir, 'deck.inp', self.codedir, False)
 
         # Test with gold
         compare_with_golds(workdir)

@@ -53,7 +53,7 @@ class SolutionTestCase(unittest.TestCase):
     # =========================================================================
     # test_ictest
     def test_ictest(self):
-        """Is the initial condition setup correct (populate, x, xc, dx, ghosts, scaled_minv)?"""
+        """Is the initial condition setup correct?"""
         sol = solution.Solution('ictest 2', 'advection', 3)
 
         # coefficient calculation

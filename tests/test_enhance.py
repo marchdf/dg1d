@@ -37,11 +37,13 @@ class EnhanceTestCase(unittest.TestCase):
         # Make sure both left and right enhancements are correct
         npt.assert_array_almost_equal(Al, np.array([[1.,  0.,  0.],
                                                     [0.,  1.,  0.],
-                                                    [0.,  1.,  6.]]), decimal=13)
+                                                    [0.,  1.,  6.]]),
+                                      decimal=13)
 
         npt.assert_array_almost_equal(Ar, np.array([[1.,  0.,  0.],
                                                     [0.,  1.,  0.],
-                                                    [0.,  1., -6.]]), decimal=13)
+                                                    [0.,  1., -6.]]),
+                                      decimal=13)
 
     # =========================================================================
     # enhancement_vectors
@@ -79,7 +81,8 @@ class EnhanceTestCase(unittest.TestCase):
     # =========================================================================
     # face_value
     def test_face_value(self):
-        """Is the enhanced evaluation of the faces, given a solution, correct?"""
+        """Is the enhanced evaluation of the faces, given a solution, correct?
+        """
 
         # Setup the procedure
         order = 2

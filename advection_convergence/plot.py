@@ -13,12 +13,9 @@ __status__ = "Development"
 #
 # ===============================================================================
 import argparse
-import sys
 import os
 import numpy as np
-import matplotlib as mpl
 import matplotlib.pyplot as plt
-import matplotlib.axis as axis
 
 # ===============================================================================
 #
@@ -126,7 +123,8 @@ for p, order in enumerate(orders):
         timers[k] = get_timer(ppdir + '/logfile')
 
     # Plot the errors
-    print(- np.diff(np.log(errors)) / np.diff(np.log(resolutions)), 2 * order + 1)
+    print(- np.diff(np.log(errors))
+          / np.diff(np.log(resolutions)), 2 * order + 1)
     plt.figure(1)
     plt.loglog(resolutions, errors, markertype[p], color=cmap[
                p], mec=cmap[p], mfc=cmap[p], lw=2, ls='-', ms=10)

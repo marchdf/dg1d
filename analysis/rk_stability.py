@@ -20,14 +20,9 @@ __status__ = "Development"
 # ========================================================================
 import argparse
 import sys
-import os
 import scipy as sp
 import numpy as np
-import matplotlib as mpl
 import matplotlib.pyplot as plt
-import matplotlib.axis as axis
-import sympy as sp
-import scipy.optimize
 
 sys.path.insert(0, '../dg1d')
 import rk_coeffs as rkc
@@ -119,7 +114,7 @@ def exact_stability_boundary(coeffs, B, fignum=0, coloridx=0):
 
 
 # ========================================================================
-def approximate_stability_boundary(coeffs, B, fignum=0, coloridx=0, pltlabel=''):
+def approximate_stability_bndry(coeffs, B, fignum=0, coloridx=0, pltlabel=''):
     """Finds the approximate stability boundary of an explicit RK scheme
 
     coeffs is the bottom row of the Butcher table
@@ -151,7 +146,7 @@ def approximate_stability_boundary(coeffs, B, fignum=0, coloridx=0, pltlabel='')
     plt.figure(fignum)
     cs1 = plt.contour(ZR, ZI, sigma, [1], colors=cmap[coloridx], linewidths=2)
     cs2 = plt.contour(ZR, -ZI, sigma, [1], colors=cmap[coloridx], linewidths=2)
-    #plt.clabel(cs1,cs1.levels,inline=True,fmt = pltlabel, fontsize=10)
+    # plt.clabel(cs1,cs1.levels,inline=True,fmt = pltlabel, fontsize=10)
     p = cs1.collections[0].get_paths()[0]
     v = p.vertices
     x = v[:, 0]
@@ -204,8 +199,8 @@ def get_formatted_rk_coeffs(method='rk4'):
 # ========================================================================
 
 # Plot the exact stability boundary for RK4
-#coeffs, B = get_formatted_rk_coeffs()
-#x,y = exact_stability_boundary(coeffs,B,0,0)
+# coeffs, B = get_formatted_rk_coeffs()
+# x,y = exact_stability_boundary(coeffs,B,0,0)
 
 
 # Methods to plot
@@ -215,7 +210,7 @@ ps = [None] * len(methods)
 # Loop over these methods
 for k, method in enumerate(methods):
     coeffs, B = get_formatted_rk_coeffs(method)
-    x, y, ps[k] = approximate_stability_boundary(coeffs, B, 0, k, method)
+    x, y, ps[k] = approximate_stability_bndry(coeffs, B, 0, k, method)
 
 # Format figure
 plt.figure(0)

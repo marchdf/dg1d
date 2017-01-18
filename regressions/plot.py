@@ -21,11 +21,8 @@ __status__ = "Development"
 import argparse
 import sys
 import os
-import scipy as sp
 import numpy as np
-import matplotlib as mpl
 import matplotlib.pyplot as plt
-import matplotlib.axis as axis
 
 sys.path.insert(0, os.path.abspath(
     os.path.join(os.path.dirname(__file__), '..')))

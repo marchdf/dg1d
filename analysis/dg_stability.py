@@ -20,16 +20,11 @@ __status__ = "Development"
 # ========================================================================
 import argparse
 import sys
-import os
-import scipy as sp
 import numpy as np
-import matplotlib as mpl
 import matplotlib.pyplot as plt
-import matplotlib.axis as axis
 from matplotlib.patches import Polygon
 from matplotlib.collections import PatchCollection
 import sympy as smp
-#import scipy.optimize
 from numpy.polynomial import legendre as leg  # import the Legendre functions
 from numpy.polynomial import Legendre as L   # import the Legendre class
 from numpy import linalg as nla
@@ -76,7 +71,8 @@ markertype = ['s', 'd', 'o', 'p', 'h']
 def dg_interior_flux_matrix(p):
     """Calculate the interior flux matrix for the standard DG advection equations
 
-    There is an analytical expression I could use for this too. See my thesis page 74.
+    There is an analytical expression I could use for this too.
+    See my thesis page 74.
     """
     F = np.zeros((p + 1, p + 1))
     for i in range(0, p + 1):
@@ -232,7 +228,7 @@ def get_eigenvalue(Minv, F, G0, G1, T):
 # ========================================================================
 
 # Polynomial degree and basis
-#orders = [1,2,3,4]
+# orders = [1,2,3,4]
 orders = [3]
 
 # Symbols
@@ -242,13 +238,13 @@ T = smp.Symbol('T')
 for k, p in enumerate(orders):
 
     # Get the discretization matrices
-    #Minv, F, G0, G1 = dg_matrices(p,T)
+    # Minv, F, G0, G1 = dg_matrices(p,T)
     Minv, F, G0, G1 = icb_matrices(p, [0, 1, 2], T)
 
     # Eigenvalues
     x, y = get_eigenvalue(Minv, F, G0, G1, T)
     xy = np.vstack((x, y)).transpose()
-    print("For p={0:d}, estimate of where the stability region intersects y=0 axis: {1:f}".format(
+    print("For p={0:d},  the stability region intersect at y=0: {1:f}".format(
         p, np.min(x)))
     print("\tThe maximum real part is {0:.12f}".format(np.max(x)))
 
