@@ -1,7 +1,9 @@
 import sys
 import numpy as np
 
-#================================================================================
+#=========================================================================
+
+
 def sort_roots_angle(roots):
     """Radial sort of the roots
 
@@ -10,8 +12,8 @@ def sort_roots_angle(roots):
 
     """
     # Get one long array with all the roots
-    reshaped = roots.reshape((roots.size,),order='F')
-    
+    reshaped = roots.reshape((roots.size,), order='F')
+
     # Separate the real and imaginary parts
     x, y = np.real(reshaped), np.imag(reshaped)
 
@@ -25,10 +27,10 @@ def sort_roots_angle(roots):
     return x[idx], y[idx]
 
 
-#================================================================================
-def delta(i,j):
+#=========================================================================
+def delta(i, j):
     """Given two integers, return 1 if i==j and 0 if not"""
-    
+
     if isinstance(i, int) and isinstance(i, int):
         if i == j:
             return 1
