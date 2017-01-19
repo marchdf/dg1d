@@ -21,81 +21,21 @@ class LimitingTestCase(unittest.TestCase):
     # =========================================================================
     # Set up
     def setUp(self):
-        self.solution_biswas = solution.Solution(
-            'entrpyw 3', 'euler', 3, '', '', [-1, -1])
-        self.solution_biswas.u = np.array([[0, 0, 0, 1, 1, 1, 2, 2, 2, 3, 3, 3, 0, 0, 0],
-                                           [0, 0, 0, 2, 2, 2, 2, 2,
-                                               2, 3, 3, 3, 0, 0, 0],
-                                           [0, 0, 0, 1, 1, 1, 4, 4,
-                                               4, 3, 3, 3, 0, 0, 0],
-                                           [0, 0, 0, 1, 1, 1, 2, 2, 2, 3, 3, 3, 0, 0, 0]], dtype=float)
-        self.solution_biswas.apply_bc()
-        self.biswas_limiter = limiting.Limiter(
-            'full_biswas', self.solution_biswas)
-
         self.solution_hr = solution.Solution(
-            'entrpyw 3', 'euler', 3, '', '', [-1, -1])
-        self.solution_hr.u = np.array([[0, 0, 0, 1, 1, 1, 2, 2, 2, 3, 3, 3, 0, 0, 0],
-                                       [0, 0, 0, 2, 2, 2, 2, 4,
-                                           2, 9, 8, 3, 0, 0, 0],
-                                       [0, 0, 0, 3, 1, 4, 6, 3,
-                                           4, 1, 6, 3, 0, 0, 0],
-                                       [0, 0, 0, 4, 1, 5, 7, 2, 2, 2, 4, 3, 0, 0, 0]], dtype=float)
+            'entrpyw 3', 'euler', 1, '', '', [-1, -1])
+
+        self.solution_hr.u = np.array(
+            [[0, 0, 0, 1.5, 1.5, 1.5, 2.25, 2.25, 2.25, 0.75, 0.75, 0.75, 0, 0, 0],
+             [0, 0, 0, 0.5, 0.5, 0.5, -0.75, -0.75, -0.75, -0.25, -0.25, -0.25, 0, 0, 0]],
+            dtype=float)
+
+        # self.solution_hr.u = np.array(
+        #     [[0, 0, 0, 1, 1, 1, 2, 2, 2, 3, 3, 3, 0, 0, 0],
+        #      [0, 0, 0, 2, 2, 2, 2, 4, 2, 9, 8, 3, 0, 0, 0],
+        #      [0, 0, 0, 3, 1, 4, 6, 3, 4, 1, 6, 3, 0, 0, 0],
+        #      [0, 0, 0, 4, 1, 5, 7, 2, 2, 2, 4, 3, 0, 0, 0]], dtype=float)
         self.solution_hr.apply_bc()
         self.hr_limiter = limiting.Limiter('adaptive_hr', self.solution_hr)
-
-    # =========================================================================
-    # test_biswas_limiting_procedure
-    def test_biswas_limiting_procedure(self):
-        """Is the Biswas limiting procedure correct?"""
-
-        # Test limiting
-        self.biswas_limiter.limit(self.solution_biswas)
-        npt.assert_array_almost_equal(self.solution_biswas.u, np.array([[3.,  3.,  3.,  1.,  1.,  1.,  2.,  2.,  2.,  3.,  3.,  3.,  1.,  1.,  1., ],
-                                                                        [3.,  3.,  3.,  0.,  0.,  0.,  1.,  1.,
-                                                                            1.,  0.,  0.,  0.,  2.,  2.,  2., ],
-                                                                        [3.,  3.,  3.,  0.,  0.,  0.,  0.,  0.,
-                                                                            0.,  0.,  0.,  0.,  1.,  1.,  1., ],
-                                                                        [3.,  3.,  3.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  1.,  1.,  1., ]]))
-
-    # =========================================================================
-    # test_deltas
-    def test_deltas(self):
-        """Is the calculation for the deltas is correct?"""
-
-        dm, dp = self.biswas_limiter.deltas(self.solution_biswas)
-
-        # Make sure they are correct
-        npt.assert_array_almost_equal(dm, np.array([[-2.,         -2.,         -2.,          1.,  1.,  1.,  1.,          1.,          1.],
-                                                    [-0.33333333, -0.33333333, -0.33333333,  0.,  0.,
-                                                        0.,  0.33333333,  0.33333333,  0.33333333],
-                                                    [-0.4,        -0.4,        -0.4,         0.6, 0.6, 0.6, -0.2,       -0.2,        -0.2]]))
-
-        npt.assert_array_almost_equal(dp, np.array([[1.,  1.,  1.,   1.,          1.,          1.,          -2.,         -2.,         -2.],
-                                                    [0.,  0.,  0.,   0.33333333,  0.33333333,
-                                                        0.33333333,  -0.33333333, -0.33333333, -0.33333333],
-                                                    [0.6, 0.6, 0.6, -0.2,        -0.2,        -0.2,         -0.4,        -0.4,        -0.4]]))
-
-    # =========================================================================
-    # test_minmod
-    def test_minmod(self):
-        """Is the minmod procedure correct?"""
-
-        dummy_solution = solution.Solution('sinewave 3', 'advection', 3)
-        limiter = limiting.Limiter('full', dummy_solution)
-
-        # Dummy variables
-        A = np.array([[0, 0, -1],
-                      [3, -4, 11]])
-        B = np.array([[-2, 1, 2],
-                      [-3, -8, 10]])
-        C = np.array([[-3, 3, 5],
-                      [4, -1, 6]])
-
-        # Minmod procedure
-        M = limiter.minmod(A, B, C)
-        npt.assert_array_almost_equal(M, np.array([[0, 0, 0],
-                                                   [0, -1, 6]]), decimal=7)
 
     # =========================================================================
     # test_hr_limiting_procedure
@@ -107,12 +47,17 @@ class LimitingTestCase(unittest.TestCase):
 
         # Test limiting
         self.hr_limiter.limit(self.solution_hr)
-        npt.assert_array_almost_equal(self.solution_hr.u, np.array([[3., 3., 3.,  1.,  1., 1., 2.,          2.,  2.,          3.,          3.,  3.,  1., 1., 1.],
-                                                                    [9., 8., 3., -1.7, 0., 0., 0.,         -2.8,
-                                                                        0.,         -0.23333333,  0., -0.6, 2., 2., 2.],
-                                                                    [1., 6., 3.,  0.,  0., 0., 0.33333333,  0.,
-                                                                        0.33333333,  0.,          0.,  0.,  3., 1., 4.],
-                                                                    [2., 4., 3.,  0.2, 0., 0., 0.,          0.3, 0.,          0.06666667,  0.,  0.1, 4., 1., 5.]]))
+        npt.assert_array_almost_equal(self.solution_hr.u,
+                                      np.array(
+                                          [[0.75, 0.75, 0.75, 1.5, 1.5, 1.5, 2.25, 2.25, 2.25, 0.75, 0.75, 0.75, 1.5, 1.5, 1.5],
+                                           [0, 0, 0, 0.375, 0.375, 0.375, 0, 0, 0, 0, 0, 0, 0.375, 0.375, 0.375]]))
+
+        # np.array([[3., 3., 3.,  1.,  1., 1., 2.,          2.,  2.,          3.,          3.,  3.,  1., 1., 1.],
+        #                               [9., 8., 3., -1.7, 0., 0., 0.,         -2.8,
+        #                                   0.,         -0.23333333,  0., -0.6, 2., 2., 2.],
+        #                               [1., 6., 3.,  0.,  0., 0., 0.33333333,  0.,
+        #                                   0.33333333,  0.,          0.,  0.,  3., 1., 4.],
+        #                               [2., 4., 3.,  0.2, 0., 0., 0.,          0.3, 0.,          0.06666667,  0.,  0.1, 4., 1., 5.]]))
 
     # =========================================================================
     # test_legendre_to_monomial
@@ -187,9 +132,9 @@ class LimitingTestCase(unittest.TestCase):
     # test_integrate_monomial_derivative
     def test_integrate_monomial_derivative(self):
         """Is the integration of monomial derivative correct?"""
-        res1 = [self.hr_limiter.integrate_monomial_derivative(
+        res1 = [limiting.integrate_monomial_derivative(
             1, n) for n in range(1, 6)]
-        res2 = [self.hr_limiter.integrate_monomial_derivative(
+        res2 = [limiting.integrate_monomial_derivative(
             2, n) for n in range(2, 6)]
 
         # Test
@@ -200,9 +145,9 @@ class LimitingTestCase(unittest.TestCase):
     # test_integrate_monomial_derivative_bounds
     def test_integrate_monomial_derivative_bounds(self):
         """Is the integration of monomial derivative with bounds correct?"""
-        res1 = [self.hr_limiter.integrate_monomial_derivative_bounds(
+        res1 = [limiting.integrate_monomial_derivative_bounds(
             1, n, -3, -1) for n in range(1, 6)]
-        res2 = [self.hr_limiter.integrate_monomial_derivative_bounds(
+        res2 = [limiting.integrate_monomial_derivative_bounds(
             2, n, 1, 3) for n in range(2, 6)]
 
         # Test
@@ -213,10 +158,10 @@ class LimitingTestCase(unittest.TestCase):
     # test_scalar_minmod
     def test_scalar_minmod(self):
         """Is the scalar minmod function correct?"""
-        npt.assert_equal(self.hr_limiter.scalar_minmod(-1, 0.5), 0)
-        npt.assert_equal(self.hr_limiter.scalar_minmod(0.7, 0.5), 0.5)
-        npt.assert_equal(self.hr_limiter.scalar_minmod(0.7, -0.5), 0)
-        npt.assert_equal(self.hr_limiter.scalar_minmod(-0.7, -0.2), -0.2)
+        npt.assert_equal(limiting.scalar_minmod(-1, 0.5), 0)
+        npt.assert_equal(limiting.scalar_minmod(0.7, 0.5), 0.5)
+        npt.assert_equal(limiting.scalar_minmod(0.7, -0.5), 0)
+        npt.assert_equal(limiting.scalar_minmod(-0.7, -0.2), -0.2)
 
 
 if __name__ == '__main__':

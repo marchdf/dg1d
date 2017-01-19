@@ -26,7 +26,8 @@ class Solution:
     'Generate the solution (initialize, ic, mesh, etc)'
 
     # ========================================================================
-    def __init__(self, icline, system, order, riemann_solver='', enhancement_type='', sensor_thresholds=[]):
+    def __init__(self, icline, system, order, riemann_solver='',
+                 enhancement_type='', sensor_thresholds=[]):
 
         print("Generating the solution.")
 
