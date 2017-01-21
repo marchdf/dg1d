@@ -3,11 +3,7 @@
 # Imports
 #
 # ========================================================================
-import sys
 import numpy as np
-from numpy.polynomial import legendre as leg  # import the Legendre functions
-
-import dg1d.solution as solution
 
 # ========================================================================
 #
@@ -82,9 +78,7 @@ class Limiter:
         # loop over all the interior elements
         self.ulim = np.copy(solution.u)
         for e in range(1, solution.N_E + 1):
-            # for e in range(solution.N_E,0,-1):
 
-            # test if we need to do limiting (sensors are on)
             if solution.sensors.sensors[e] != 0:
 
                 # loop over the fields and call HR
@@ -151,11 +145,11 @@ class Limiter:
                 avgdUC += ac[n] * integral
                 avgdUR += ar[n] * integral
                 if(n >= m + 1):
-                    avgRL += alim[n] * \
-                        self.integral_monomial_derivative_bounds_31[m - 1, n]
+                    avgRL += alim[n] \
+                        * self.integral_monomial_derivative_bounds_31[m - 1, n]
                     avgRC += alim[n] * integral
-                    avgRR += alim[n] * \
-                        self.integral_monomial_derivative_bounds_13[m - 1, n]
+                    avgRR += alim[n] \
+                        * self.integral_monomial_derivative_bounds_13[m - 1, n]
 
             # Approximate the average of the linear part
             # avg = \frac{1}{2} \int_{-1}^1 U \ud x

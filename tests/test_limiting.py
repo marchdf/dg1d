@@ -19,72 +19,135 @@ class LimitingTestCase(unittest.TestCase):
     """Tests for `limiting.py`."""
 
     # =========================================================================
-    # Set up
     def setUp(self):
-        self.solution_hr = solution.Solution(
-            'entrpyw 3', 'euler', 1, '', '', [-1, -1])
 
-        self.solution_hr.u = np.array(
-            [[0, 0, 0, 1.5, 1.5, 1.5, 2.25, 2.25, 2.25, 0.75, 0.75, 0.75, 0, 0, 0],
-             [0, 0, 0, 0.5, 0.5, 0.5, -0.75, -0.75, -0.75, -0.25, -0.25, -0.25, 0, 0, 0]],
-            dtype=float)
+        # p = 1 solution
+        self.hr1 = solution.Solution(
+            'entrpyw 5', 'euler', 1, '', '', [-1, -1])
+        self.hr1.apply_bc()
+        self.hr1_limiter = limiting.Limiter('adaptive_hr', self.hr1)
 
-        # self.solution_hr.u = np.array(
-        #     [[0, 0, 0, 1, 1, 1, 2, 2, 2, 3, 3, 3, 0, 0, 0],
-        #      [0, 0, 0, 2, 2, 2, 2, 4, 2, 9, 8, 3, 0, 0, 0],
-        #      [0, 0, 0, 3, 1, 4, 6, 3, 4, 1, 6, 3, 0, 0, 0],
-        #      [0, 0, 0, 4, 1, 5, 7, 2, 2, 2, 4, 3, 0, 0, 0]], dtype=float)
-        self.solution_hr.apply_bc()
-        self.hr_limiter = limiting.Limiter('adaptive_hr', self.solution_hr)
+        # p = 2 solution
+        self.hr2 = solution.Solution(
+            'entrpyw 5', 'euler', 2, '', '', [-1, -1])
+        self.hr2.apply_bc()
+        self.hr2_limiter = limiting.Limiter('adaptive_hr', self.hr2)
+
+        # p = 3 solution
+        self.hr3 = solution.Solution(
+            'entrpyw 5', 'euler', 3, '', '', [-1, -1])
+        self.hr3.apply_bc()
+        self.hr3_limiter = limiting.Limiter('adaptive_hr', self.hr3)
 
     # =========================================================================
-    # test_hr_limiting_procedure
-    def test_hr_limiting_procedure(self):
-        """Is the adaptive HR limiting procedure correct?"""
+    def test_hr1_limiting_procedure(self):
+        """Is the adaptive HR limiting for p = 1 procedure correct?"""
 
         # Do the sensors. In this case we are limiting everywhere
-        self.solution_hr.sensors.sensing(self.solution_hr)
+        self.hr1.sensors.sensing(self.hr1)
 
         # Test limiting
-        self.hr_limiter.limit(self.solution_hr)
-        npt.assert_array_almost_equal(self.solution_hr.u,
+        self.hr1_limiter.limit(self.hr1)
+        npt.assert_array_almost_equal(self.hr1.u,
                                       np.array(
-                                          [[0.75, 0.75, 0.75, 1.5, 1.5, 1.5, 2.25, 2.25, 2.25, 0.75, 0.75, 0.75, 1.5, 1.5, 1.5],
-                                           [0, 0, 0, 0.375, 0.375, 0.375, 0, 0, 0, 0, 0, 0, 0.375, 0.375, 0.375]]))
+                                          [[1.10990656,  1.10990656,  3.05495328,  0.89009344,  0.89009344,  2.94504672,
+                                            0.82216745,  0.82216745,  2.91108373,  1., 1., 3.,
+                                            1.17783255,  1.17783255,  3.08891627,  1.10990656,  1.10990656,  3.05495328,
+                                            0.89009344,  0.89009344,  2.94504672],
+                                           [-0.03396299, - 0.03396299, -0.0169815, -0.03396299, -0.03396299, -0.0169815,
+                                            0., 0., 0., 0.08891627, 0.08891627,  0.04445814,
+                                            0., 0., 0., -0.03396299, -0.03396299, -0.0169815,
+                                            -0.03396299, -0.03396299, -0.0169815]]))
 
-        # np.array([[3., 3., 3.,  1.,  1., 1., 2.,          2.,  2.,          3.,          3.,  3.,  1., 1., 1.],
-        #                               [9., 8., 3., -1.7, 0., 0., 0.,         -2.8,
-        #                                   0.,         -0.23333333,  0., -0.6, 2., 2., 2.],
-        #                               [1., 6., 3.,  0.,  0., 0., 0.33333333,  0.,
-        #                                   0.33333333,  0.,          0.,  0.,  3., 1., 4.],
-        #                               [2., 4., 3.,  0.2, 0., 0., 0.,          0.3, 0.,          0.06666667,  0.,  0.1, 4., 1., 5.]]))
+    # ======================================================================
+    def test_hr2_limiting_procedure(self):
+        """Is the adaptive HR limiting for p = 2 procedure correct?"""
+
+        # Do the sensors. In this case we are limiting everywhere
+        self.hr2.sensors.sensing(self.hr2)
+
+        # Test limiting
+        self.hr2_limiter.limit(self.hr2)
+        npt.assert_array_almost_equal(self.hr2.u,
+                                      np.array(
+                                          [[1.10997359e+00,  1.10997359e+00,  3.05498679e+00,  8.90026412e-01,
+                                            8.90026412e-01,  2.94501321e+00,  8.22058997e-01,  8.22058997e-01,
+                                            2.91102950e+00,  1.00000000e+00,  1.00000000e+00,  3.00000000e+00,
+                                            1.17794100e+00,   1.17794100e+00,   3.08897050e+00,   1.10997359e+00,
+                                            1.10997359e+00,   3.05498679e+00,   8.90026412e-01,   8.90026412e-01,
+                                            2.94501321e+00],
+                                           [-3.39837076e-02, -3.39837076e-02, -1.69918538e-02, -3.39837076e-02,
+                                            -3.39837076e-02, -1.69918538e-02,   7.73823581e-03,   7.73823581e-03,
+                                            3.86911791e-03,   8.89705015e-02,   8.89705015e-02,   4.44852507e-02,
+                                            7.73823581e-03,   7.73823581e-03,   3.86911791e-03, -3.39837076e-02,
+                                            -3.39837076e-02, -1.69918538e-02, -3.39837076e-02, -3.39837076e-02,
+                                            -1.69918538e-02],
+                                           [-1.38777878e-17, -1.38777878e-17, -1.22587126e-16,   0.00000000e+00,
+                                            0.00000000e+00,   0.00000000e+00,   1.39073145e-02,   1.39073145e-02,
+                                            6.95365723e-03,   0.00000000e+00,  0.00000000e+00,   0.00000000e+00,
+                                            -1.39073145e-02, -1.39073145e-02, -6.95365723e-03, -1.38777878e-17,
+                                            -1.38777878e-17, -1.22587126e-16,  0.00000000e+00,   0.00000000e+00,
+                                            0.00000000e+00]]))
+
+    # ======================================================================
+    def test_hr3_limiting_procedure(self):
+        """Is the adaptive HR limiting for p = 3 procedure correct?"""
+
+        # Do the sensors. In this case we are limiting everywhere
+        self.hr3.sensors.sensing(self.hr3)
+
+        # Test limiting
+        self.hr3_limiter.limit(self.hr3)
+        npt.assert_array_almost_equal(self.hr3.u,
+                                      np.array(
+                                          [[1.10997336e+00,   1.10997336e+00,   3.05498668e+00,   8.90026639e-01,
+                                            8.90026639e-01,   2.94501332e+00,   8.22059365e-01,   8.22059365e-01,
+                                            2.91102968e+00,   1.00000000e+00,   1.00000000e+00,   3.00000000e+00,
+                                            1.17794064e+00,   1.17794064e+00,   3.08897032e+00,   1.10997336e+00,
+                                            1.10997336e+00,   3.05498668e+00,   8.90026639e-01,   8.90026639e-01,
+                                            2.94501332e+00],
+                                           [-5.81479895e-02, -5.81479895e-02, -2.90739948e-02, -5.81479895e-02,
+                                            -5.81479895e-02, -2.90739948e-02,   6.61865938e-03,   6.61865938e-03,
+                                            3.30932969e-03,  1.15735473e-01,   1.15735473e-01,   5.78677367e-02,
+                                            6.61865938e-03,  6.61865938e-03,   3.30932969e-03,  -5.81479895e-02,
+                                            -5.81479895e-02, -2.90739948e-02, -5.81479895e-02, -5.81479895e-02,
+                                            -2.90739948e-02],
+                                           [-4.64699081e-03, -4.64699081e-03, -2.32349540e-03,  4.64699081e-03,
+                                            4.64699081e-03,  2.32349540e-03, 1.35340989e-02,  1.35340989e-02,
+                                            6.76704945e-03,  6.49084445e-17, 6.49084445e-17,  2.17491393e-16,
+                                            -1.35340989e-02,  -1.35340989e-02, -6.76704945e-03,  -4.64699081e-03,
+                                            -4.64699081e-03,  -2.32349540e-03,  4.64699081e-03,  4.64699081e-03,
+                                            2.32349540e-03],
+                                           [9.29398162e-04, 9.29398162e-04, 4.64699081e-04, 9.29398162e-04,
+                                            9.29398162e-04, 4.64699081e-04, -1.56761345e-18, -1.56761345e-18,
+                                            -7.83806724e-19, -2.43319598e-03, -2.43319598e-03, -1.21659799e-03,
+                                            -1.56761345e-18, -1.56761345e-18, -7.83806724e-19,  9.29398162e-04,
+                                            9.29398162e-04, 4.64699081e-04, 9.29398162e-04, 9.29398162e-04,
+                                            4.64699081e-04]]))
 
     # =========================================================================
-    # test_legendre_to_monomial
     def test_legendre_to_monomial(self):
         """Is the Legendre to monomial procedure correct?"""
 
         u = np.array([0., 1., 2., 3.])
-        p = self.hr_limiter.legendre_to_monomial(u)
+        p = self.hr3_limiter.legendre_to_monomial(u)
 
         # Test
         npt.assert_array_almost_equal(p, np.array(
             [-1. * 1, -3.5 * 1, 3. * 2, 7.5 * 6]))
 
     # =========================================================================
-    # test_monomial_to_legendre
     def test_monomial_to_legendre(self):
         """Is the monomial to Legendre procedure correct?"""
 
         p = np.array([-1. * 1, -3.5 * 1, 3. * 2, 7.5 * 6])
-        u = self.hr_limiter.monomial_to_legendre(p)
+        u = self.hr3_limiter.monomial_to_legendre(p)
 
         # Test
         npt.assert_array_almost_equal(u, np.array([0., 1., 2., 3.]))
 
     # =========================================================================
-    # test_limit_monomial_linear
-    def test_limit_monomial_linear(self):
+    def test_limit_monomial_p1(self):
         """Is the monomial limiting procedure correct for a linear polynomial?
 
         The only coefficient that matters here is the zeroth order
@@ -92,44 +155,48 @@ class LimitingTestCase(unittest.TestCase):
         """
 
         # Linear polynomial
-        alim = self.hr_limiter.limit_monomial(np.array([3., 4]),  # center
-                                              np.array([1., 2]),  # left
-                                              np.array([5., 6]))  # right
+        alim = self.hr1_limiter.limit_monomial(np.array([3., 4]),  # center
+                                               np.array([1., 2]),  # left
+                                               np.array([5., 6]))  # right
         npt.assert_array_almost_equal(alim, np.array([3., 1]))
 
         # Another linear polynomial
-        alim = self.hr_limiter.limit_monomial(np.array([-1., 3]),  # center
-                                              np.array([0., -3]),  # left
-                                              np.array([2., 1]))  # right
+        alim = self.hr1_limiter.limit_monomial(np.array([-1., 3]),
+                                               np.array([0., -3]),
+                                               np.array([2., 1]))
         npt.assert_array_almost_equal(alim, np.array([-1., 0]))
 
         # Another linear polynomial
-        alim = self.hr_limiter.limit_monomial(np.array([-3., 3]),  # center
-                                              np.array([-1., -3]),  # left
-                                              np.array([-4., 1]))  # right
+        alim = self.hr1_limiter.limit_monomial(np.array([-3., 3]),
+                                               np.array([-1., -3]),
+                                               np.array([-4., 1]))
         npt.assert_array_almost_equal(alim, np.array([-3., -0.5]))
 
     # =========================================================================
-    # test_limit_monomial
-    def test_limit_monomial(self):
-        """Is the monomial limiting procedure correct for a general polynomial?
+    def test_limit_monomial_p2(self):
+        """Is the monomial limiting procedure correct for a quadratic polynomial?
         """
-
-        # Quadratic polynomial
-        alim = self.hr_limiter.limit_monomial(np.array([-1., 5, 2]),  # center
-                                              np.array([1., 2, 3]),  # left
-                                              np.array([0., 6, 3]))  # right
+        alim = self.hr2_limiter.limit_monomial(np.array([-1., 5, 2]),
+                                               np.array([1., 2, 3]),
+                                               np.array([0., 6, 3]))
         npt.assert_array_almost_equal(alim, np.array([-0.75, 0, 0.5]))
 
-        # Cubic polynomial
-        alim = self.hr_limiter.limit_monomial(np.array([-1., 5, 2, 7]),
-                                              np.array([1., 2, 3, 1]),
-                                              np.array([0., 6, 1, 2]))
+        alim = self.hr2_limiter.limit_monomial(np.array([1., 2, 3]),
+                                               np.array([0., 6, 3]),
+                                               np.array([-1., 5, 2]))
+        npt.assert_array_almost_equal(alim, np.array([1.5, 0.0, 0.0]))
+
+    # =========================================================================
+    def test_limit_monomial_p3(self):
+        """Is the monomial limiting procedure correct for a cubic polynomial?
+        """
+        alim = self.hr3_limiter.limit_monomial(np.array([-1., 5, 2, 7]),
+                                               np.array([1., 2, 3, 1]),
+                                               np.array([0., 6, 1, 2]))
         npt.assert_array_almost_equal(alim, np.array(
             [-0.76388889, 0., 0.58333333, -0.5]))
 
     # =========================================================================
-    # test_integrate_monomial_derivative
     def test_integrate_monomial_derivative(self):
         """Is the integration of monomial derivative correct?"""
         res1 = [limiting.integrate_monomial_derivative(
@@ -142,7 +209,6 @@ class LimitingTestCase(unittest.TestCase):
         npt.assert_equal(res2, [2.0, 0.0, 1. / 3, 0.0])
 
     # =========================================================================
-    # test_integrate_monomial_derivative_bounds
     def test_integrate_monomial_derivative_bounds(self):
         """Is the integration of monomial derivative with bounds correct?"""
         res1 = [limiting.integrate_monomial_derivative_bounds(
@@ -155,7 +221,6 @@ class LimitingTestCase(unittest.TestCase):
         npt.assert_equal(res2, [2., 4, 13. / 3, 10. / 3])
 
     # =========================================================================
-    # test_scalar_minmod
     def test_scalar_minmod(self):
         """Is the scalar minmod function correct?"""
         npt.assert_equal(limiting.scalar_minmod(-1, 0.5), 0)
