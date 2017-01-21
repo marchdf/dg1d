@@ -6,11 +6,6 @@
 A simple one-dimensional Discontinuous Galerkin solver.
 
 """
-__author__ = 'Marc T. Henry de Frahan'
-__copyright__ = "Copyright (C) 2016, Regents of the University of Michigan"
-__license__ = "GPL"
-__email__ = "marchdf@umich.edu"
-__status__ = "Development"
 
 # ========================================================================
 #
@@ -20,7 +15,6 @@ __status__ = "Development"
 import argparse
 import sys
 import os
-import numpy as np
 import subprocess
 import time
 from datetime import timedelta

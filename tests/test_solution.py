@@ -4,7 +4,7 @@
 #
 # =========================================================================
 import unittest
-import dg1d.solution as solution
+from .context import solution
 import numpy as np
 import numpy.testing as npt
 
@@ -24,7 +24,6 @@ class SolutionTestCase(unittest.TestCase):
         self.solution = solution.Solution('sinewave 10', 'advection', 3)
 
     # =========================================================================
-    # collocate
     def test_collocate(self):
         """Is the collocation procedure correct?"""
         ug = self.solution.collocate()
@@ -39,7 +38,6 @@ class SolutionTestCase(unittest.TestCase):
                                       decimal=7)
 
     # =========================================================================
-    # collocate_faces
     def test_collocate_faces(self):
         """Is the collocation procedure for the faces correct?"""
 
@@ -51,7 +49,6 @@ class SolutionTestCase(unittest.TestCase):
                                       decimal=7)
 
     # =========================================================================
-    # test_ictest
     def test_ictest(self):
         """Is the initial condition setup correct?"""
         sol = solution.Solution('ictest 2', 'advection', 3)

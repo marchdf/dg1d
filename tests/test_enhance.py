@@ -20,7 +20,6 @@ class EnhanceTestCase(unittest.TestCase):
     """Tests for `enhance.py`."""
 
     # =========================================================================
-    # enhancement_matrix
     def test_enhancement_matrices(self):
         """Are the enhancement matrices correct?"""
 
@@ -46,7 +45,6 @@ class EnhanceTestCase(unittest.TestCase):
                                       decimal=13)
 
     # =========================================================================
-    # enhancement_vectors
     def test_left_enhancement_vectors(self):
         """Are the left enhancement vectors correct?"""
 
@@ -79,7 +77,6 @@ class EnhanceTestCase(unittest.TestCase):
             [0.7734375, -0.6796875,  0.4375]), decimal=7)
 
     # =========================================================================
-    # face_value
     def test_face_value(self):
         """Is the enhanced evaluation of the faces, given a solution, correct?
         """

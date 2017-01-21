@@ -11,3 +11,4 @@ import dg1d.dg as dg
 import dg1d.euler_physics as euler_physics
 import dg1d.limiting as limiting
 import dg1d.rk as rk
+import dg1d.sensor as sensor

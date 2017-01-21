@@ -20,13 +20,11 @@ class DGTestCase(unittest.TestCase):
     """Tests for `dg.py`."""
 
     # =========================================================================
-    # Set up
     def setUp(self):
         self.solution = solution.Solution('sinewave 10', 'advection', 3)
         self.dgsolver = dg.DG(self.solution)
 
     # =========================================================================
-    # add_interior_face_fluxes
     def test_add_interior_face_fluxes(self):
         """Is the interior and face fluxes addition correct?"""
 
@@ -47,7 +45,6 @@ class DGTestCase(unittest.TestCase):
                                                                  [18.,  18.,  17.,  16.,  15.,  23.]]), decimal=13)
 
     # =========================================================================
-    # inverse_mass_matrix_multiply
     def test_inverse_mass_matrix_multiply(self):
         """Is the mass matrix multiplication correct?"""
 

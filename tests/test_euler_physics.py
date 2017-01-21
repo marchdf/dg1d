@@ -20,7 +20,6 @@ class EulerPhysicsTestCase(unittest.TestCase):
     """Tests for `euler_physics.py`."""
 
     # =========================================================================
-    # Set up
     def setUp(self):
 
         # initialize gamma (needed in flux calculations)
@@ -83,7 +82,6 @@ class EulerPhysicsTestCase(unittest.TestCase):
                             t6[3::]]).flatten()
 
     # =========================================================================
-    # max_wave_speed
     def test_max_wave_speed(self):
         """Is the max wave speed solver correct?"""
 
@@ -97,7 +95,6 @@ class EulerPhysicsTestCase(unittest.TestCase):
         npt.assert_array_almost_equal(m, 2.74833147735, decimal=7)
 
     # =========================================================================
-    # riemann_rusanov
     def test_riemann_rusanov(self):
         """Is the Rusanov Riemann solver correct?"""
 
@@ -115,7 +112,6 @@ class EulerPhysicsTestCase(unittest.TestCase):
                                       decimal=6)
 
     # =========================================================================
-    # riemann_godunov
     def test_riemann_godunov(self):
         """Is the Godunov Riemann solver correct?"""
 
@@ -133,7 +129,6 @@ class EulerPhysicsTestCase(unittest.TestCase):
                                       decimal=6)
 
     # =========================================================================
-    # riemann_roe
     def test_riemann_roe(self):
         """Is the Roe Riemann solver correct?"""
 
@@ -151,7 +146,6 @@ class EulerPhysicsTestCase(unittest.TestCase):
                                       decimal=6)
 
     # =========================================================================
-    # interior_flux
     def test_interior_flux(self):
         """Is the interior flux correct?"""
 

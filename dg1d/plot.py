@@ -7,11 +7,6 @@ A sample plotting tool for the one-dimensional DG data. The exact
 solution plotted is for the sinewave initial condition.
 
 """
-__author__ = 'Marc T. Henry de Frahan'
-__copyright__ = "Copyright (C) 2016, Regents of the University of Michigan"
-__license__ = "GPL"
-__email__ = "marchdf@umich.edu"
-__status__ = "Development"
 
 # ========================================================================
 #
@@ -19,16 +14,11 @@ __status__ = "Development"
 #
 # ========================================================================
 import argparse
-import sys
 import os
-import scipy as sp
 import numpy as np
-import matplotlib as mpl
 import matplotlib.pyplot as plt
-import matplotlib.axis as axis
 
 import dg1d.solution as solution
-import dg1d.dg as dg
 
 # ========================================================================
 #

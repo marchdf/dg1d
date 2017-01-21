@@ -22,7 +22,6 @@ class BasisTestCase(unittest.TestCase):
     """Tests for `basis.py`."""
 
     # =========================================================================
-    # evaluate_basis_gauss
     def test_evaluate_basis_gauss(self):
         """Are the basis correctly evaluated at the Gaussian quadrature nodes?
         """
@@ -44,7 +43,6 @@ class BasisTestCase(unittest.TestCase):
                                                         [1.412870929, -0.412870929, -0.412870929,  1.412870929]]), decimal=9)
 
     # =========================================================================
-    # evaluate_basis_edges
     def test_evaluate_basis_edges(self):
         """Are the basis correctly evaluated at the edges?"""
         order = 3
@@ -55,7 +53,6 @@ class BasisTestCase(unittest.TestCase):
                                       decimal=13)
 
     # =========================================================================
-    # mass_matrix
     def test_mass_matrix(self):
         """Is the mass matrix and its inverse correct?"""
         order = 3
@@ -67,7 +64,6 @@ class BasisTestCase(unittest.TestCase):
             minv, [1. / 2., 3. / 2., 5. / 2., 7. / 2.], decimal=13)
 
     # =========================================================================
-    # projection
     def test_projection0(self):
         """Is the projection correct for f(x) = x^2 on [-1,1]"""
         order = 3
@@ -79,6 +75,7 @@ class BasisTestCase(unittest.TestCase):
         c = test_basis.projection(-1, 1, f)
         npt.assert_array_almost_equal(c, [1. / 3, 0, 2. / 3, 0], decimal=13)
 
+    # =========================================================================
     def test_projection1(self):
         """Is the projection correct for f(x) = sin(x) on [0,0.2]"""
 
@@ -95,7 +92,6 @@ class BasisTestCase(unittest.TestCase):
             decimal=7)
 
     # =========================================================================
-    # shift_legendre_polynomial
     def test_shift_legendre_polynomial(self):
         """Is the shifting of Legendre polynomials correct"""
 
@@ -110,7 +106,6 @@ class BasisTestCase(unittest.TestCase):
             kind=P).coef, np.array([5.5, 6, 1.5]), decimal=13)
 
     # =========================================================================
-    # integrate_legendre_product
     def test_integrate_legendre_product(self):
         """Is the integral of the product of two Legendre polynomials correct
         """

@@ -4,7 +4,6 @@
 #
 # ========================================================================
 import numpy as np
-from numpy.polynomial import Polynomial as P
 from numpy.polynomial import legendre as leg  # import the Legendre functions
 from numpy.polynomial import Legendre as L   # import the Legendre class
 
