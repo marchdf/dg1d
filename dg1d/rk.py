@@ -13,8 +13,6 @@ import dg1d.rk_coeffs as rkc
 #
 # ========================================================================
 
-# ========================================================================
-
 
 def integrate(solution, deck, dgsolver, limiter):
     """Integrate in time using an RK scheme"""
@@ -23,34 +21,7 @@ def integrate(solution, deck, dgsolver, limiter):
         low_storage_rk4(solution, deck, dgsolver, limiter)
 
     else:
-        if deck.rk == 'rk3':
-            coeffs, alphas, betas = rkc.get_rk3_coefficients()
-
-        elif deck.rk == 'rk4':
-            coeffs, alphas, betas = rkc.get_rk4_coefficients()
-
-        elif deck.rk == 'rk5':
-            coeffs, alphas, betas = rkc.get_rk5_coefficients()
-
-        elif deck.rk == 'rk6':
-            coeffs, alphas, betas = rkc.get_rk6_coefficients()
-
-        elif deck.rk == 'rk8':
-            coeffs, alphas, betas = rkc.get_rk8_coefficients()
-
-        elif deck.rk == 'rk10':
-            coeffs, alphas, betas = rkc.get_rk10_coefficients()
-
-        elif deck.rk == 'rk12':
-            coeffs, alphas, betas = rkc.get_rk12_coefficients()
-
-        elif deck.rk == 'rk14':
-            coeffs, alphas, betas = rkc.get_rk14_coefficients()
-
-        else:
-            print('Unrecognized RK option, default to RK4')
-            coeffs, alphas, betas = rkc.get_rk4_coefficients()
-
+        coeffs, alphas, betas = rkc.get_rk_coefficients(deck.rk)
         classic_rk(solution, deck, dgsolver, limiter, coeffs, alphas, betas)
 
 

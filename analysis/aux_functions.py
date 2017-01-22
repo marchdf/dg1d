@@ -1,9 +1,8 @@
 import sys
 import numpy as np
 
+
 # ========================================================================
-
-
 def sort_roots_angle(roots):
     """Radial sort of the roots
 

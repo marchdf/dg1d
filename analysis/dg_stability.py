@@ -7,11 +7,6 @@ Investigate stability of various DG methods and plot the
 stability regions.
 
 """
-__author__ = 'Marc T. Henry de Frahan'
-__copyright__ = "Copyright (C) 2016, Regents of the University of Michigan"
-__license__ = "GPL"
-__email__ = "marchdf@umich.edu"
-__status__ = "Development"
 
 # ========================================================================
 #
@@ -20,6 +15,7 @@ __status__ = "Development"
 # ========================================================================
 import argparse
 import sys
+import os
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.patches import Polygon
@@ -30,20 +26,10 @@ from numpy.polynomial import Legendre as L   # import the Legendre class
 from numpy import linalg as nla
 
 import aux_functions as auxf
-
-sys.path.insert(0, '../dg1d')
-import basis
-import enhance
-
-# ========================================================================
-#
-# Parse arguments
-#
-# ========================================================================
-parser = argparse.ArgumentParser(
-    description='A simple plot tool for the one-dimensional DG data')
-parser.add_argument('-s', '--show', help='Show the plots', action='store_true')
-args = parser.parse_args()
+sys.path.insert(0, os.path.abspath(
+    os.path.join(os.path.dirname(__file__), '..')))
+import dg1d.basis as basis
+import dg1d.enhance as enhance
 
 
 # ========================================================================
@@ -83,9 +69,8 @@ def dg_interior_flux_matrix(p):
 
     return F
 
+
 # ========================================================================
-
-
 def dg_interface_flux_matrix(p, T):
     """The interface flux matrices, we use upwinding to get the fluxes
      Denote T the translation necessary to evaluate the flux from the
@@ -223,51 +208,61 @@ def get_eigenvalue(Minv, F, G0, G1, T):
 
 # ========================================================================
 #
-# Basic information/setup
+# Main
 #
 # ========================================================================
+if __name__ == '__main__':
 
-# Polynomial degree and basis
-# orders = [1,2,3,4]
-orders = [3]
+    # ========================================================================
+    # Parse arguments
+    parser = argparse.ArgumentParser(
+        description='A simple plot tool for the one-dimensional DG data')
+    parser.add_argument(
+        '-s', '--show', help='Show the plots', action='store_true')
+    args = parser.parse_args()
 
-# Symbols
-T = smp.Symbol('T')
+    # Polynomial degree and basis
+    # orders = [1,2,3,4]
+    orders = [3]
 
-# Loop on the orders
-for k, p in enumerate(orders):
+    # Symbols
+    T = smp.Symbol('T')
 
-    # Get the discretization matrices
-    # Minv, F, G0, G1 = dg_matrices(p,T)
-    Minv, F, G0, G1 = icb_matrices(p, [0, 1, 2], T)
+    # Loop on the orders
+    for k, p in enumerate(orders):
 
-    # Eigenvalues
-    x, y = get_eigenvalue(Minv, F, G0, G1, T)
-    xy = np.vstack((x, y)).transpose()
-    print("For p={0:d},  the stability region intersect at y=0: {1:f}".format(
-        p, np.min(x)))
-    print("\tThe maximum real part is {0:.12f}".format(np.max(x)))
+        # Get the discretization matrices
+        # Minv, F, G0, G1 = dg_matrices(p,T)
+        Minv, F, G0, G1 = icb_matrices(p, [0, 1, 2], T)
 
-    # Plot
+        # Eigenvalues
+        x, y = get_eigenvalue(Minv, F, G0, G1, T)
+        xy = np.vstack((x, y)).transpose()
+        print("For p={0:d},  the stability region intersect at y=0: {1:f}".format(
+            p, np.min(x)))
+        print("\tThe maximum real part is {0:.12f}".format(np.max(x)))
+
+        # Plot
+        plt.figure(0)
+        ax = plt.gca()
+        polygons = []
+        polygons.append(Polygon(xy))
+        p = PatchCollection(polygons,
+                            edgecolors=cmap[k],
+                            linewidths=2,
+                            facecolors='none')
+        ax.add_collection(p)
+
+    # Format the plot
     plt.figure(0)
-    ax = plt.gca()
-    polygons = []
-    polygons.append(Polygon(xy))
-    p = PatchCollection(polygons, edgecolors=cmap[
-                        k], linewidths=2, facecolors='none')
-    ax.add_collection(p)
+    plt.xlabel(r"$\Re(\lambda)$", fontsize=22, fontweight='bold')
+    plt.ylabel(r"$\Im(\lambda)$", fontsize=22, fontweight='bold')
+    # plt.xlim([-10,1])
+    # plt.ylim([-8,8])
+    plt.axis('equal')
+    plt.setp(ax.get_xmajorticklabels(), fontsize=18, fontweight='bold')
+    plt.setp(ax.get_ymajorticklabels(), fontsize=18, fontweight='bold')
+    plt.savefig('dg_stability.pdf', format='pdf')
 
-
-# Format the plot
-plt.figure(0)
-plt.xlabel(r"$\Re(\lambda)$", fontsize=22, fontweight='bold')
-plt.ylabel(r"$\Im(\lambda)$", fontsize=22, fontweight='bold')
-# plt.xlim([-10,1])
-# plt.ylim([-8,8])
-plt.axis('equal')
-plt.setp(ax.get_xmajorticklabels(), fontsize=18, fontweight='bold')
-plt.setp(ax.get_ymajorticklabels(), fontsize=18, fontweight='bold')
-plt.savefig('dg_stability.pdf', format='pdf')
-
-if args.show:
-    plt.show()
+    if args.show:
+        plt.show()

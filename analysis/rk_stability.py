@@ -7,11 +7,6 @@ Investigate stability of various (explicit) RK methods and plot the
 stability regions.
 
 """
-__author__ = 'Marc T. Henry de Frahan'
-__copyright__ = "Copyright (C) 2016, Regents of the University of Michigan"
-__license__ = "GPL"
-__email__ = "marchdf@umich.edu"
-__status__ = "Development"
 
 # ========================================================================
 #
@@ -20,24 +15,15 @@ __status__ = "Development"
 # ========================================================================
 import argparse
 import sys
+import os
 import scipy as sp
 import numpy as np
 import matplotlib.pyplot as plt
 
-sys.path.insert(0, '../dg1d')
-import rk_coeffs as rkc
 import aux_functions as auxf
-
-# ========================================================================
-#
-# Parse arguments
-#
-# ========================================================================
-parser = argparse.ArgumentParser(
-    description='A simple plot tool for the one-dimensional DG data')
-parser.add_argument('-s', '--show', help='Show the plots', action='store_true')
-args = parser.parse_args()
-
+sys.path.insert(0, os.path.abspath(
+    os.path.join(os.path.dirname(__file__), '..')))
+import dg1d.rk_coeffs as rkc
 
 # ========================================================================
 #
@@ -61,7 +47,7 @@ markertype = ['s', 'd', 'o', 'p', 'h']
 # ========================================================================
 
 
-def exact_stability_boundary(coeffs, B, fignum=0, coloridx=0):
+def exact_stability_bndry(coeffs, B, fignum=0, coloridx=0):
     """Returns points on the stability boundary of an explicit RK scheme
 
     coeffs is the bottom row of the Butcher table
@@ -156,30 +142,13 @@ def approximate_stability_bndry(coeffs, B, fignum=0, coloridx=0, pltlabel=''):
 
 
 # ========================================================================
-def get_formatted_rk_coeffs(method='rk4'):
-    """Returns the RK coefficients formatted so that we can use them"""
+def get_formatted_rk_coeffs(method):
+    """Returns the RK coefficients formatted so that we can use them in
+    this script
 
-    # Get the coefficients
-    if method == 'rk3':
-        coeffs, alphas, betas = rkc.get_rk3_coefficients()
-    elif method == 'rk4':
-        coeffs, alphas, betas = rkc.get_rk4_coefficients()
-    elif method == 'rk5':
-        coeffs, alphas, betas = rkc.get_rk5_coefficients()
-    elif method == 'rk6':
-        coeffs, alphas, betas = rkc.get_rk6_coefficients()
-    elif method == 'rk8':
-        coeffs, alphas, betas = rkc.get_rk8_coefficients()
-    elif method == 'rk10':
-        coeffs, alphas, betas = rkc.get_rk10_coefficients()
-    elif method == 'rk12':
-        coeffs, alphas, betas = rkc.get_rk12_coefficients()
-    elif method == 'rk14':
-        coeffs, alphas, betas = rkc.get_rk14_coefficients()
-    else:
-        print('Wrong RK method, defaulting to RK4')
-        coeffs, alphas, betas = rkc.get_rk4_coefficients()
+    """
 
+    coeffs, alphas, betas = rkc.get_rk_coefficients(method)
     coeffs = np.array(coeffs)
 
     # Number of stages
@@ -194,34 +163,42 @@ def get_formatted_rk_coeffs(method='rk4'):
 
 # ========================================================================
 #
-# Problem setup
+# Main
 #
 # ========================================================================
+if __name__ == '__main__':
 
-# Plot the exact stability boundary for RK4
-# coeffs, B = get_formatted_rk_coeffs()
-# x,y = exact_stability_boundary(coeffs,B,0,0)
+    # ========================================================================
+    # Parse arguments
+    parser = argparse.ArgumentParser(
+        description='A simple plot tool for the one-dimensional DG data')
+    parser.add_argument(
+        '-s', '--show', help='Show the plots', action='store_true')
+    args = parser.parse_args()
 
+    # Plot the exact stability boundary for RK4
+    # coeffs, B = get_formatted_rk_coeffs()
+    # x,y = exact_stability_bndry(coeffs,B,0,0)
 
-# Methods to plot
-methods = ['rk3', 'rk4', 'rk5', 'rk6', 'rk8', 'rk10', 'rk12', 'rk14']
-ps = [None] * len(methods)
+    # Methods to plot
+    methods = ['rk3', 'rk4', 'rk5', 'rk6', 'rk8', 'rk10', 'rk12', 'rk14']
+    ps = [None] * len(methods)
 
-# Loop over these methods
-for k, method in enumerate(methods):
-    coeffs, B = get_formatted_rk_coeffs(method)
-    x, y, ps[k] = approximate_stability_bndry(coeffs, B, 0, k, method)
+    # Loop over these methods
+    for k, method in enumerate(methods):
+        coeffs, B = get_formatted_rk_coeffs(method)
+        x, y, ps[k] = approximate_stability_bndry(coeffs, B, 0, k, method)
 
-# Format figure
-plt.figure(0)
-ax = plt.gca()
-plt.legend(ps, [m.upper() for m in methods])
-plt.axis('equal')
-plt.xlabel(r"$\Re(\lambda \Delta t)$", fontsize=22, fontweight='bold')
-plt.ylabel(r"$\Im(\lambda \Delta t)$", fontsize=22, fontweight='bold')
-plt.setp(ax.get_xmajorticklabels(), fontsize=18, fontweight='bold')
-plt.setp(ax.get_ymajorticklabels(), fontsize=18, fontweight='bold')
-plt.savefig('rk_stability.pdf', format='pdf')
+    # Format figure
+    plt.figure(0)
+    ax = plt.gca()
+    plt.legend(ps, [m.upper() for m in methods])
+    plt.axis('equal')
+    plt.xlabel(r"$\Re(\lambda \Delta t)$", fontsize=22, fontweight='bold')
+    plt.ylabel(r"$\Im(\lambda \Delta t)$", fontsize=22, fontweight='bold')
+    plt.setp(ax.get_xmajorticklabels(), fontsize=18, fontweight='bold')
+    plt.setp(ax.get_ymajorticklabels(), fontsize=18, fontweight='bold')
+    plt.savefig('rk_stability.pdf', format='pdf')
 
-if args.show:
-    plt.show()
+    if args.show:
+        plt.show()

@@ -10,9 +10,41 @@ import numpy as np
 # Function definitions
 #
 # ========================================================================
+
+
+def get_rk_coefficients(method='rk4'):
+    """Returns the RK coefficients for a given method"""
+
+    if method == 'rk3':
+        return get_rk3_coefficients()
+
+    elif method == 'rk4':
+        return get_rk4_coefficients()
+
+    elif method == 'rk5':
+        return get_rk5_coefficients()
+
+    elif method == 'rk6':
+        return get_rk6_coefficients()
+
+    elif method == 'rk8':
+        return get_rk8_coefficients()
+
+    elif method == 'rk10':
+        return get_rk10_coefficients()
+
+    elif method == 'rk12':
+        return get_rk12_coefficients()
+
+    elif method == 'rk14':
+        return get_rk14_coefficients()
+
+    else:
+        print('Unrecognized RK option, default to RK4')
+        return get_rk4_coefficients()
+
+
 # ========================================================================
-
-
 def get_rk3_coefficients():
     """Returns the coefficients for the Kutta's third order method"""
 
