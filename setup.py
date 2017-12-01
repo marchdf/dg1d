@@ -6,7 +6,7 @@ except ImportError:
 config = {
     'description': 'One-dimensional Discontinuous Galerkin code for Euler equations',
     'author': 'Marc T. Henry de Frahan',
-    'license': 'GNU General Public License v3',
+    'license': 'Apache License 2.0',
     'url': 'https://github.com/marchdf/dg1d',
     'download_url': 'https://github.com/marchdf/dg1d',
     'author_email': 'marchdf@umich.edu',
